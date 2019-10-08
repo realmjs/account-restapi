@@ -5,6 +5,12 @@ import React, { Component } from 'react'
 import { postMessage } from '../../lib/message'
 
 import Error from './Error'
+import SignUp from './SignUp'
+
+const routes = {
+  error: Error,
+  signup: SignUp
+}
 
 export default class App extends Component {
   constructor(props) {
@@ -12,8 +18,9 @@ export default class App extends Component {
 
   }
   render() {
+    const Page = routes[this.props.data.route]
     return (
-     <Error {...this.props} />
+      React.createElement(Page, {...this.props})
     )
   }
 }
