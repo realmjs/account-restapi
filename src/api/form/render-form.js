@@ -12,16 +12,14 @@ function render(helpers) {
       _renderError(res, 400, 'Invalid parameters')
       return
     }
-    const app = req.query.app
-    helpers.Collections.Apps.find({app}, (apps) => {
-      if (apps && apps[0]) {
-        const title = req.query.title || 'Form'
-        const name = req.query.name
-        _renderForm(res, name, title, realm, apps[0], req.query)
-      } else {
-        _renderError(res, 403, 'Application is not registered')
-      }
-    })
+    const app = helpers.Apps.find( app => app.id === req.query.app )
+    if (app) {
+      const title = req.query.title || 'Form'
+      const name = req.query.name
+      _renderForm(res, name, title, app, req.query)
+    } else {
+      _renderError(res, 403, 'Application is not registered')
+    }
   }
 }
 
@@ -36,7 +34,7 @@ function _renderError(res, code, detail) {
 }
 
 function _renderForm(res, name, title, app, query) {
-  const data = { route: name, targetOrigin: app.url, app: app.appId, query }
+  const data = { route: name, targetOrigin: app.url, app: app.id, query }
   res.writeHead( 200, { "Content-Type": "text/html" } )
   res.end(html({title, data, script: process.env.SCRIPT}))
 }
