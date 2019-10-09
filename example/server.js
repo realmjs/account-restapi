@@ -13,7 +13,11 @@ api.helpers({ Database: dbh.drivers})
 
 const express = require('express')
 const app = express()
-app.use('/', (req,res,next) => {console.log(`${req.method.toUpperCase()} request to: ${req.path}`); next()}, api.generate())
+app.use('/',
+  (req,res,next) => {console.log(`${req.method.toUpperCase()} request to: ${req.path}`); next()},
+  (req,res,next) => setTimeout(_ => next(), 0),
+  api.generate()
+)
 
 // setup hot reload
 const webpack = require('webpack')
