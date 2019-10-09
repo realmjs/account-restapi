@@ -19,7 +19,7 @@ function validateParameters() {
 function checkUserExistance(helpers) {
   return function(req, res, next) {
     const user = req.body.user
-    helpers.Database.USERS.find({ username: `= ${user.email}`})
+    helpers.Database.LOGIN.find({ username: `= ${user.email}`})
     .then( users => {
       if (users && users.length > 0) {
         res.status(403).send({ error: 'email is already used' })

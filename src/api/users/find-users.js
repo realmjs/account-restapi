@@ -4,7 +4,7 @@
 function findUserByUsername(helpers) {
   return function(req, res, next) {
     if (req.query && req.query.u) {
-      helpers.Database.USERS.find({ username: `= ${req.query.u}`})
+      helpers.Database.LOGIN.find({ username: `= ${req.query.u}`})
       .then( users => {
         if (users && users.length > 0) {
           res.status(200).json({ username: req.query.u })

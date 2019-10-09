@@ -14,7 +14,7 @@ function validateParameters() {
 
 function findUser(helpers) {
   return function(req, res, next) {
-    helpers.Database.USERS.find({ username: `= ${req.body.username}`})
+    helpers.Database.LOGIN.find({ username: `= ${req.body.username}`})
     .then( users => {
       if (users && users.length > 0) {
         req.user = users[0]
