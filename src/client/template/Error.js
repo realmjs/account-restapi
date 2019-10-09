@@ -6,6 +6,10 @@ export default class Error extends Component {
   constructor(props) {
     super(props)
   }
+  componentDidMount() {
+    const error = this.props.data.error
+    this.props.done({ status: error.code })
+  }
   render() {
     const error = this.props.data.error
     return (

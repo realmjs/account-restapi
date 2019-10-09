@@ -6,10 +6,12 @@ import { postMessage } from '../../lib/message'
 
 import Error from './Error'
 import SignUp from './SignUp'
+import SSO from './SSO'
 
 const routes = {
   error: Error,
-  signup: SignUp
+  signup: SignUp,
+  sso: SSO,
 }
 
 export default class App extends Component {

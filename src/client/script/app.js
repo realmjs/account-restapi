@@ -10,7 +10,7 @@ import App from '../Template/App'
 
 document.addEventListener("DOMContentLoaded", function(event) {
   postMessage('iframe.loaded',  {height: 615, width: 460})
-  render(<App data = {__data} xclose = {xclose} xdone = {xdone} />, document.getElementById("root"))
+  render(<App data = {__data} close = {xclose} done = {xdone} />, document.getElementById("root"))
 })
 
 function xclose() {
