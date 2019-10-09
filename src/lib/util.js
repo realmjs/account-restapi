@@ -13,6 +13,14 @@ function generateAuthenTokenMiddleware() {
   }
 }
 
+function setHttpCookieMiddleware() {
+  return function(req, res, next) {
+    const cookie = encodeCookie(req.user)
+    res.cookie('__r_c_sess_', cookie, { httpOnly: true })
+    next()
+  }
+}
+
 function encodeCookie(user) {
   return JSON.stringify({
     uid: jwt.sign({uid: user.uid}, process.env.COOKIE_SECRET_KEY),
@@ -56,4 +64,4 @@ function hashPassword(password) {
   return hash.digest('hex')
 }
 
-module.exports = { generateAuthenTokenMiddleware, encodeCookie, decodeCookie, serializeUser, checkPassword, hashPassword }
+module.exports = { generateAuthenTokenMiddleware, setHttpCookieMiddleware, encodeCookie, decodeCookie, serializeUser, checkPassword, hashPassword }

@@ -22,4 +22,10 @@ api.add('/form', {
   get: require('./form/render-form')
 })
 
+/* users */
+api.add('/users', {
+  get: require('./users/find-users'),
+  post: require('./users/create-user')
+})
+
 module.exports = api
