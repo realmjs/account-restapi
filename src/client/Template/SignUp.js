@@ -87,8 +87,10 @@ export default class SignUp extends Component {
     }
   }
   onConfirm(route) {
-    return e => {
-      const form = {...this.state.form}
+    return this[`onConfirm${route.replace(/^\w/, c => c.toUpperCase())}`].bind(this)
+  }
+  onConfirmEmail() {
+    const form = {...this.state.form}
       const email = form.input.email
       if (email.length === 0) {
         form.error.email = "Email is empty"
@@ -121,6 +123,5 @@ export default class SignUp extends Component {
         form.syncing.email = false
         this.setState({ form })
       })
-    }
   }
 }
