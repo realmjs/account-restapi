@@ -28,4 +28,9 @@ api.add('/users', {
   post: require('./users/create-user')
 })
 
+/* session */
+api.add('/session', {
+  post: require('./session/create-session')
+})
+
 module.exports = api
