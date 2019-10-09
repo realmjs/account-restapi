@@ -104,22 +104,24 @@ export default class SignUp extends Component {
       }
       form.syncing.email = true
       this.setState({ form })
-      xhttp.get(`/users?u=${email}`)
+      xhttp.get(`/users?u=${email}`, { timeout: 5000 })
       .then( status => {
+        const form = {...this.state.form}
+        form.syncing.email = false
         if (status === 200) {
           form.error.email = "This email has been used"
-          form.syncing.email = false
         } else if (status === 404) {
           form.error.email = ""
-          form.syncing.email = false
           this.next()
         } else {
-          // unexpected error from server --> show a toast here
+          form.error.email = `Error: ${status}`
+          console.error(`Error returned by server: ${status}`)
         }
         this.setState({ form })
       })
       .catch( err => {
-        // timeout error --> show a toast here
+        const form = {...this.state.form}
+        form.error.email = `Error: Network timeout`
         form.syncing.email = false
         this.setState({ form })
       })
