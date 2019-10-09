@@ -2,6 +2,8 @@
 
 import React, { Component } from 'react'
 
+import xhttp from '@realmjs/xhttp-request'
+
 import Navigator from './Widget/Navigator'
 import Email from './Widget/Email'
 import Password from './Widget/Password'
@@ -102,17 +104,22 @@ export default class SignUp extends Component {
       this.setState({ form })
       xhttp.get(`/users?u=${email}`)
       .then( status => {
-        form.error.email = "This email has been used"
-        form.syncing.email = false
-      })
-      .catch( status => {
-        if (status === 404) {
+        if (status === 200) {
+          form.error.email = "This email has been used"
+          form.syncing.email = false
+        } else if (status === 404) {
           form.error.email = ""
           form.syncing.email = false
           this.next()
         } else {
-          // unexpected error from server --> show a toash here
+          // unexpected error from server --> show a toast here
         }
+        this.setState({ form })
+      })
+      .catch( err => {
+        // timeout error --> show a toast here
+        form.syncing.email = false
+        this.setState({ form })
       })
     }
   }
