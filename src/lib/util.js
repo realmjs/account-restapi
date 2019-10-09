@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken')
 
 const crypto = require('crypto')
 
+const COOKIE_SESSION = '__r_c_sess_'
+
 function generateAuthenTokenMiddleware() {
   return function(req, res, next) {
     const user = req.user
@@ -16,7 +18,7 @@ function generateAuthenTokenMiddleware() {
 function setHttpCookieMiddleware() {
   return function(req, res, next) {
     const cookie = encodeCookie(req.user)
-    res.cookie('__r_c_sess_', cookie, { httpOnly: true })
+    res.cookie(COOKIE_SESSION, cookie, { httpOnly: true })
     next()
   }
 }
@@ -30,11 +32,9 @@ function encodeCookie(user) {
 
 function decodeCookie(cookies) {
   return new Promise((resolve, reject) => {
-    const session = JSON.parse(cookies.session)
-    if (!session.uid) {
-      reject('invalid_session')
-      return
-    }
+    if (!cookies || !cookies[COOKIE_SESSION]) { reject('no_cookie'); return }
+    const session = JSON.parse(cookies[COOKIE_SESSION])
+    if (!session.uid) { reject('invalid_session'); return }
     jwt.verify(session.uid, process.env.COOKIE_SECRET_KEY, (err, decoded) => {
       if (err) {
         reject(err)

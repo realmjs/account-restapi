@@ -30,6 +30,7 @@ api.add('/users', {
 
 /* session */
 api.add('/session', {
+  get: require('./session/sso'),
   post: require('./session/create-session')
 })
 
