@@ -4,13 +4,15 @@ require('dotenv').config()
 
 const api = require('../src/api')
 
+const DatabaseHelper = require('@realmjs/dynamodb-helper')
+const dbh = new DatabaseHelper({
+  aws: { region: process.env.AWS_REGION, endpoint: process.env.AWS_ENDPOINT },
+})
+dbh.addTable('USERS', {indexes: ['LOGIN']})
+api.helpers({ Database: dbh.drivers})
+
 const express = require('express')
-
 const app = express()
-
-// const path = require('path')
-// app.use('/assets', express.static(path.join(__dirname, '../build/clients')))
-
 app.use('/', (req,res,next) => {console.log(`${req.method.toUpperCase()} request to: ${req.path}`); next()}, api.generate())
 
 // setup hot reload
