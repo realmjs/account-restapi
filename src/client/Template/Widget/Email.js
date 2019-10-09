@@ -26,7 +26,7 @@ export default class Email extends PureComponent {
           <label className="w3-right w3-text-red"> {error} </label>
           <input className = {`w3-input w3-border ${error.length === 0 ? '' : 'w3-border-red'}`}
                 type = "text"
-                placeholder = "email@examaple.com"
+                placeholder = "email@example.com"
                 value = {email}
                 onChange = {this.props.getTypedInput('email')}
                 onKeyUp = {this.props.handleKeyUp('email')}
