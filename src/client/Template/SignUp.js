@@ -136,4 +136,9 @@ export default class SignUp extends Component {
     console.log(profile)
     this.next()
   }
+  onConfirmTerm(done) {
+    console.log('Term is accepted')
+    done && done('')
+    this.next()
+  }
 }
