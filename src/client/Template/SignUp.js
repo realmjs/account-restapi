@@ -91,39 +91,45 @@ export default class SignUp extends Component {
   }
   onConfirmEmail() {
     const form = {...this.state.form}
-      const email = form.input.email
-      if (email.length === 0) {
-        form.error.email = "Email is empty"
-        this.setState({ form })
-        return
-      }
-      if (!isEmail(email)) {
-        form.error.email = "Invalid email"
-        this.setState({ form })
-        return
-      }
-      form.syncing.email = true
+    const email = form.input.email
+    if (email.length === 0) {
+      form.error.email = "Email is empty"
       this.setState({ form })
-      xhttp.get(`/users?u=${email}`, { timeout: 5000 })
-      .then( status => {
-        const form = {...this.state.form}
-        form.syncing.email = false
-        if (status === 200) {
-          form.error.email = "This email has been used"
-        } else if (status === 404) {
-          form.error.email = ""
-          this.next()
-        } else {
-          form.error.email = `Error: ${status}`
-          console.error(`Error returned by server: ${status}`)
-        }
-        this.setState({ form })
-      })
-      .catch( err => {
-        const form = {...this.state.form}
-        form.error.email = `Error: Network timeout`
-        form.syncing.email = false
-        this.setState({ form })
-      })
+      return
+    }
+    if (!isEmail(email)) {
+      form.error.email = "Invalid email"
+      this.setState({ form })
+      return
+    }
+    form.syncing.email = true
+    this.setState({ form })
+    xhttp.get(`/users?u=${email}`, { timeout: 5000 })
+    .then( status => {
+      const form = {...this.state.form}
+      form.syncing.email = false
+      if (status === 200) {
+        form.error.email = "This email has been used"
+      } else if (status === 404) {
+        form.error.email = ""
+        this.next()
+      } else {
+        form.error.email = `Error: ${status}`
+        console.error(`Error returned by server: ${status}`)
+      }
+      this.setState({ form })
+    })
+    .catch( err => {
+      const form = {...this.state.form}
+      form.error.email = `Error: Network timeout`
+      form.syncing.email = false
+      this.setState({ form })
+    })
+  }
+  onConfirmPassword(password) {
+    const form = {...this.state.form}
+    form.input.password = password
+    this.setState({ form })
+    this.next()
   }
 }
