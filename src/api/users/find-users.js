@@ -12,7 +12,10 @@ function findUserByUsername(helpers) {
           res.status(404).json({ error: 'Not found' })
         }
       })
-      .catch( err => res.status(403).json({ error: 'Unable to access Database' }))
+      .catch( err => {
+        helpers.alert && helpers.alert(err)
+        res.status(403).json({ error: 'Unable to access Database' })
+      })
     } else {
       // find user by other attribute such as uid (token) need authenticate
       // it will be implemented by future
