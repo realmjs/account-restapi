@@ -4,12 +4,18 @@ require('dotenv').config()
 
 const api = require('../src/api')
 
+const aws = { region: process.env.AWS_REGION, endpoint: process.env.AWS_ENDPOINT }
+if (process.env.PROXY) {
+  const proxy = require('proxy-agent')
+  aws.httpOptions = { agent: proxy(process.env.PROXY) }
+}
+
 const DatabaseHelper = require('@realmjs/dynamodb-helper')
-const dbh = new DatabaseHelper({
-  aws: { region: process.env.AWS_REGION, endpoint: process.env.AWS_ENDPOINT },
-})
+const dbh = new DatabaseHelper({ aws })
 dbh.addTable('USERS', {indexes: ['LOGIN']})
 api.helpers({ Database: dbh.drivers})
+
+api.helpers({ alert : msg => console.log(msg) })
 
 const express = require('express')
 const app = express()
