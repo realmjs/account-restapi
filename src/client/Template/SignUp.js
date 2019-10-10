@@ -11,8 +11,6 @@ import Profile from './Widget/Profile'
 import Term from './Widget/Term'
 import Welcome from './Widget/Welcome'
 
-import { isEmail } from '../../lib/form'
-
 const routes = [
   { name: 'email', template: Email },
   { name: 'password', template: Password },
@@ -27,13 +25,13 @@ export default class SignUp extends Component {
     this.state = {
       activeRoute: 'email',
       form: {
-        input: { email: '' },
-        error: { email: '' },
-        syncing: { email: false },
+        email: '',
+        password: '',
+        profile: null,
       }
     }
     this.flow = ['email', 'password', 'profile', 'term', 'welcome']
-    const methods = ['navigate', 'next', 'back', 'getTypedInput', 'handleKeyUp', 'onConfirm']
+    const methods = ['navigate', 'next', 'back', 'onConfirm']
     methods.forEach( method => this[method] = this[method].bind(this) )
   }
   render() {
@@ -44,10 +42,9 @@ export default class SignUp extends Component {
                     navigate = {this.navigate}
                     next = {this.next}
                     back = {this.back}
-                    getTypedInput = {this.getTypedInput}
-                    handleKeyUp = {this.handleKeyUp}
                     onConfirm= {this.onConfirm}
                     form = {this.state.form}
+                    {...this.props}
 
         />
       </div>
@@ -71,74 +68,56 @@ export default class SignUp extends Component {
     }
     return this
   }
-  getTypedInput(name) {
-    return e => {
-      const form = {...this.state.form}
-      form.input[name] = e.target.value
-      form.error[name] = ''
-      this.setState({ form })
-    }
-  }
-  handleKeyUp(name) {
-    return e => {
-      if (e.which === 13 || e.keyCode === 13) {
-        return this.onConfirm(name)()
-      }
-    }
-  }
   onConfirm(route) {
     return this[`onConfirm${route.replace(/^\w/, c => c.toUpperCase())}`].bind(this)
   }
-  onConfirmEmail() {
-    const form = {...this.state.form}
-    const email = form.input.email
-    if (email.length === 0) {
-      form.error.email = "Email is empty"
-      this.setState({ form })
-      return
-    }
-    if (!isEmail(email)) {
-      form.error.email = "Invalid email"
-      this.setState({ form })
-      return
-    }
-    form.syncing.email = true
-    this.setState({ form })
+  onConfirmEmail(email, done) {
     xhttp.get(`/users?u=${email}`, { timeout: 5000 })
     .then( status => {
-      const form = {...this.state.form}
-      form.syncing.email = false
       if (status === 200) {
-        form.error.email = "This email has been used"
+        done && done("This email has been used")
       } else if (status === 404) {
-        form.error.email = ""
+        done && done()
+        const form = {...this.state.form}
+        form.email = email
+        this.setState({ form })
         this.next()
       } else {
-        form.error.email = `Error: ${status}`
+        done && done(`Error: ${status}`)
         console.error(`Error returned by server: ${status}`)
       }
-      this.setState({ form })
     })
     .catch( err => {
-      const form = {...this.state.form}
-      form.error.email = `Error: Network timeout`
-      form.syncing.email = false
-      this.setState({ form })
+      done && done(`Error: Network timeout`)
     })
   }
   onConfirmPassword(password) {
     const form = {...this.state.form}
-    form.input.password = password
+    form.password = password
     this.setState({ form })
     this.next()
   }
   onConfirmProfile(profile) {
-    console.log(profile)
+    const form = {...this.state.form}
+    form.profile = profile
+    this.setState({ form })
     this.next()
   }
   onConfirmTerm(done) {
     console.log('Term is accepted')
-    done && done('')
-    this.next()
+    const user = {...this.state.form}
+    xhttp.post(`/users`, { user })
+    .then( status => {
+      if (status === 200) {
+        done && done()
+        this.next()
+      } else {
+        done && done(`Error: ${status}`)
+        console.error(`POST /users --> Error returned by server: ${status}`)
+      }
+    })
+    .catch( err => {
+      done && done(`Error: Network timeout`)
+    })    
   }
 }

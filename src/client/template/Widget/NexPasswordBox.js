@@ -36,12 +36,10 @@ export default class NewPasswordBox extends Component {
         <div className ="w3-text-blue" >
           Create your new secret password.
         </div>
-        <div className ="w3-text-grey" >
+        <div className ="w3-text-grey" style = {{marginBottom: '32px'}}>
           Your password should contain lower case, upper case,
           at least one number and special characters.
         </div>
-
-        <hr />
 
         {this._renderPasswordBox()}
 

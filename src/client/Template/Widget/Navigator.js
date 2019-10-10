@@ -13,7 +13,7 @@ export default class Navigator extends PureComponent {
           this.props.routes.map( route => {
             return (
               <div key={route.name} className={route.animate || ''} style={{ display: route.name === this.props.activeRoute? 'block' : 'none' }}>
-                { React.createElement(route.template, { ...this.props }) }
+                { React.createElement(route.template, { active: route.name === this.props.activeRoute, ...this.props }) }
               </div>
             )
           })

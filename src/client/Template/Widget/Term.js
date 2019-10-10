@@ -17,6 +17,13 @@ export default class Term extends PureComponent {
     this._renderAgreementBox = this._renderAgreementBox.bind(this)
     this._renderRegisterButton = this._renderRegisterButton.bind(this)
   }
+  static getDerivedStateFromProps(props, state) {
+    if (!props.active) {
+      return { checked : false }
+    } else {
+      return null
+    }
+  }
   render() {
     return (
       <div>

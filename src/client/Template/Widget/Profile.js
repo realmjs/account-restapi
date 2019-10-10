@@ -25,11 +25,10 @@ export default class Profile extends PureComponent {
           <BackButton onClick = {this.props.back} />
         </header>
         <div >
-          <div className ="w3-text-blue" >
-            <h3> {form.input.email} </h3>
+          <div className ="w3-text-blue w3-border-bottom" >
+            <h3> {form.email} </h3>
           </div>
-          <hr />
-          <div className ="w3-text-blue" >
+          <div className ="w3-text-blue" style={{ marginTop: '12px' }}>
             Please input your profile
           </div>
           <div style = {{marginBottom: '24px'}}>
@@ -137,7 +136,7 @@ export default class Profile extends PureComponent {
     const displayName = lastWord && lastWord.length > 0 ? lastWord[0].trim() : 'N/A'
     /* construct profile */
     const profile = {
-      email: [this.props.form.input.email],
+      email: [this.props.form.email],
       fullName: this._formatName(this.state.fullName) || 'N/A',
       displayName,
       gender: this.state.gender || 'N/A',
