@@ -132,4 +132,8 @@ export default class SignUp extends Component {
     this.setState({ form })
     this.next()
   }
+  onConfirmProfile(profile) {
+    console.log(profile)
+    this.next()
+  }
 }
