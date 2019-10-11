@@ -24,7 +24,7 @@ class Email extends PureComponent {
       <div>
         <header>
           <span onClick={this.props.close} className="w3-button w3-right w3-red" style={{ display: (window.self === window.top)? 'none': 'block'}}>&times;</span>
-          <h3 className="w3-text-blue" style={{fontWeight: "bold"}} > Sign In </h3>
+          <h3 className="w3-text-blue" style={{fontWeight: "bold"}} > Login </h3>
         </header>
         <p className="w3-text-blue-grey">
           Please enter your email
