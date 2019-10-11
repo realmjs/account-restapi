@@ -18,6 +18,7 @@ function findUser(helpers) {
     .then( users => {
       if (users && users.length > 0) {
         req.user = users[0]
+        next()
       } else {
         res.status(404).send({ error: 'User is not exist' })
       }
