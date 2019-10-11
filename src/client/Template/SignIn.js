@@ -4,8 +4,8 @@ import React, { Component, PureComponent } from 'react'
 
 import xhttp from '@realmjs/xhttp-request'
 
-import Navigator from './Widget/Navigator'
-import BackButton from './Widget/BackButton'
+import Navigator from './CommonWidget/Navigator'
+import BackButton from './CommonWidget/BackButton'
 
 import { isEmail } from '../../lib/form'
 
