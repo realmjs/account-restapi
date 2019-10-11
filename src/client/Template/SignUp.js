@@ -43,12 +43,21 @@ class Email extends PureComponent {
                 disabled = {this.state.syncing}
           />
         </p>
-        <button type="submit" className={`w3-button w3-blue w3-right`} onClick={this.onConfirm} disabled = {this.state.syncing} >
-          Next {' '}
-          {
-            this.state.syncing? <i className ="fa fa-circle-o-notch fa-spin" /> : <i className ="fa fa-chevron-right" />
-          }
-        </button>
+        <div style = {{marginBottom: '42px'}}>
+          <div className="w3-cell-row">
+            <div className="w3-cell">
+              <label className="w3-text-red w3-large"><a href={`/form?name=signin&app=${__data.app}`}> Login with an registered account </a></label>
+            </div>
+            <div className="w3-cell" style={{textAlign: 'right'}}>
+              <button type="submit" className={`w3-button w3-blue `} onClick={this.onConfirm} disabled = {this.state.syncing} >
+                Next {' '}
+                {
+                  this.state.syncing? <i className ="fa fa-circle-o-notch fa-spin" /> : <i className ="fa fa-chevron-right" />
+                }
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     )
   }
