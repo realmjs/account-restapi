@@ -166,6 +166,15 @@ class Password extends PureComponent {
 class Welcome extends PureComponent {
   constructor(props) {
     super(props)
+    this.state = {}
+  }
+  static getDerivedStateFromProps(props, state) {
+    if (props.active) {
+      setTimeout( _ => props.close(), 1500)
+      return null
+    } else {
+      return null
+    }
   }
   render() {
     const user = this.props.user
@@ -271,7 +280,7 @@ export default class SignIn extends Component {
         done && done()
         const session = JSON.parse(responseText)
         this.setState({ user: session.user})
-        this.props.xdone && this.props.xdone(session)
+        this.props.done && this.props.done({status: 200, session})
         this.next()
       } else {
         done && done(`Error: Failed to signing in`)

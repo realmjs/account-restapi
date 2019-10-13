@@ -493,7 +493,7 @@ export default class SignUp extends Component {
       if (status === 200) {
         done && done()
         const session = JSON.parse(responseText)
-        this.props.xdone && this.props.xdone(session)
+        this.props.done && this.props.done({status: 200, session})
         this.next()
       } else {
         done && done(`Error: ${status}`)
