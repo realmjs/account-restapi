@@ -1,6 +1,7 @@
 "use strict"
 
 const { generateAuthenTokenMiddleware, serializeUser, decodeCookie } = require('../../lib/util')
+const html = require('../../lib/html')
 
 function validateParameters(helpers) {
   return function(req, res, next) {
@@ -49,6 +50,7 @@ function findUser(helpers) {
     .then( users => {
       if (users && users.length > 0) {
         req.user = users[0]
+        next()
       } else {
         const data = { route: 'error', targetOrigin: app.url, error: {code: 404, detail: 'no user'} }
         res.writeHead( 404, { "Content-Type": "text/html" } )
