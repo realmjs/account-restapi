@@ -31,7 +31,8 @@ api.add('/users', {
 /* session */
 api.add('/session', {
   get: require('./session/sso'),
-  post: require('./session/create-session')
+  post: require('./session/create-session'),
+  delete: require('./session/delete-session'),
 })
 
 module.exports = api
