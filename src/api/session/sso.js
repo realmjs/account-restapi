@@ -18,7 +18,7 @@ function validateParameters(helpers) {
       next()
     } else {
       const data = { route: 'error', error: {code: 404, detail: 'App not found'} }
-      res.writeHead( 404, { "Content-Type": "text/html" } )
+      res.writeHead( 200, { "Content-Type": "text/html" } )
       res.end(html({title: 'Error', data, script: process.env.SCRIPT, style: false}))
     }
   }
@@ -53,7 +53,7 @@ function findUser(helpers) {
         next()
       } else {
         const data = { route: 'error', targetOrigin: app.url, error: {code: 404, detail: 'no user'} }
-        res.writeHead( 404, { "Content-Type": "text/html" } )
+        res.writeHead( 200, { "Content-Type": "text/html" } )
         res.end(html({title: 'Error', data, script: process.env.SCRIPT, style: false}))
       }
     })
