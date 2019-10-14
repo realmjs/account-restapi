@@ -32,7 +32,7 @@ class Email extends PureComponent {
           Please enter your email to create a new account
         </p>
         <p>
-          <label> Email </label>
+          <label className="w3-text-grey"> Email </label>
           <label className="w3-right w3-text-red"> {this.state.error || ''} </label>
           <input className = {`w3-input w3-border ${this.state.error && this.state.error.length > 0 ? 'w3-border-red' : ''}`}
                 type = "text"
@@ -143,7 +143,7 @@ class Profile extends PureComponent {
           </div>
           <div style = {{marginBottom: '24px'}}>
             <p>
-              <label>Full Name</label>
+              <label className="w3-text-grey">Full Name</label>
               <input  className="w3-input w3-border"
                       type="text"
                       value={this.state.fullName}
@@ -152,7 +152,7 @@ class Profile extends PureComponent {
               />
             </p>
             <p>
-              <label>Gender</label> <br />
+              <label className="w3-text-grey">Gender</label> <br />
               <span style={{marginRight: '32px'}}>
                 <input  className="w3-radio" type="radio" name="gender" value="male"
                         checked = {this.state.gender === 'male'}
@@ -169,7 +169,7 @@ class Profile extends PureComponent {
               </span>
             </p>
             <p>
-              <label>Phone Number</label>
+              <label className="w3-text-grey">Phone Number</label>
               {
                 this.state.phone.map((phone, index) => {
                   return (
@@ -191,7 +191,7 @@ class Profile extends PureComponent {
               }
             </p>
             <p>
-              <label>Address <span style={{fontStyle: 'italic'}}> (Optional. Need for delivery) </span> </label>
+              <label className="w3-text-grey">Address <span style={{fontStyle: 'italic'}}> (Optional. Need for delivery) </span> </label>
               <input    className="w3-input w3-border"
                         type="text"
                         value={this.state.address}

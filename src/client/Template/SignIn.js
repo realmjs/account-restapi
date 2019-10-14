@@ -30,7 +30,7 @@ class Email extends PureComponent {
           Please enter your email
         </p>
         <p>
-          <label> Email </label>
+          <label className="w3-text-grey"> Email </label>
           <label className="w3-right w3-text-red"> {this.state.error || ''} </label>
           <input className = {`w3-input w3-border ${this.state.error && this.state.error.length > 0 ? 'w3-border-red' : ''}`}
                 type = "text"
@@ -109,7 +109,7 @@ class Password extends PureComponent {
               <h3> {form.email} </h3>
             </div>
             <p>
-              <label>Password</label>
+              <label className="w3-text-grey">Password</label>
               <label className="w3-right w3-text-red"> {this.state.error || ''} </label>
               <input  className = {`w3-input w3-border ${this.state.error && this.state.error.length > 0 ? 'w3-border-red' : ''}`}
                       type = "password"
