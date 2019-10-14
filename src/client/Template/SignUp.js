@@ -20,6 +20,18 @@ class Email extends PureComponent {
     this.getTypedInput = this.getTypedInput.bind(this)
     this.handleKeyUp = this.handleKeyUp.bind(this)
     this.onConfirm = this.onConfirm.bind(this)
+    this.textInput = React.createRef()
+  }
+  componentDidMount() {
+    this.focusTextInput()
+  }
+  componentDidUpdate() {
+    this.focusTextInput()
+  }
+  focusTextInput() {
+    if (this.props.active) {
+      this.textInput.current.focus()
+    }
   }
   render() {
     return (
@@ -41,6 +53,7 @@ class Email extends PureComponent {
                 onChange = {this.getTypedInput}
                 onKeyUp = {this.handleKeyUp}
                 disabled = {this.state.syncing}
+                ref={this.textInput}
           />
         </p>
         <div style = {{marginBottom: '42px'}}>
@@ -415,6 +428,8 @@ export default class SignUp extends Component {
     this.flow = ['email', 'password', 'profile', 'term', 'welcome']
     const methods = ['navigate', 'next', 'back', 'onConfirm']
     methods.forEach( method => this[method] = this[method].bind(this) )
+    /* blacklist email that contains email found already registerd. It is to reduce number of serve hit */
+    this.blacklist = []
   }
   render() {
     return (
@@ -454,9 +469,19 @@ export default class SignUp extends Component {
     return this[`onConfirm${route.replace(/^\w/, c => c.toUpperCase())}`].bind(this)
   }
   onConfirmEmail(email, done) {
+    if (email === this.state.form.email) {
+      done && done()
+      this.next()
+      return
+    }
+    if (this.blacklist.indexOf(email) !== -1) {
+      done && done("This email has been used")
+      return
+    }
     xhttp.get(`/users?u=${email}`, { timeout: 30000 })
     .then( ({status}) => {
       if (status === 200) {
+        this.blacklist.push(email)
         done && done("This email has been used")
       } else if (status === 404) {
         done && done()

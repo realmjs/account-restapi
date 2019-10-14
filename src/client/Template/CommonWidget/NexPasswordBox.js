@@ -27,6 +27,18 @@ export default class NewPasswordBox extends Component {
     this._renderPasswordBox = this._renderPasswordBox.bind(this)
     this._renderConfirmButton = this._renderConfirmButton.bind(this)
 
+    this.textInput = React.createRef()
+
+  }
+
+  componentDidMount() {
+    this.focusTextInput()
+  }
+  componentDidUpdate() {
+    this.focusTextInput()
+  }
+  focusTextInput() {
+    this.textInput.current.focus()
   }
 
   render() {
@@ -115,6 +127,7 @@ export default class NewPasswordBox extends Component {
                   value = {this.state.password}
                   onChange = {this.getTypedPassword}
                   onKeyUp = {this.handleKeyUpForPassword}
+                  ref = {this.textInput}
           />
           <Message message = {this.state.messageBox1} />
 
