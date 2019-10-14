@@ -236,6 +236,8 @@ export default class SignIn extends Component {
     this.flow = ['email', 'password', 'welcome']
     const methods = ['navigate', 'next', 'back', 'onConfirm']
     methods.forEach( method => this[method] = this[method].bind(this) )
+    /* blacklist email that checked. It is to reduce number of serve hit */
+    this.blacklist = []
   }
   render() {
     return (
@@ -280,6 +282,10 @@ export default class SignIn extends Component {
       this.next()
       return
     }
+    if (this.blacklist.indexOf(email) !== -1) {
+      done && done("Not registered")
+      return
+    }
     xhttp.get(`/users?u=${email}`, { timeout: 30000 })
     .then( ({status}) => {
       if (status === 200) {
@@ -289,6 +295,7 @@ export default class SignIn extends Component {
         this.setState({ form })
         this.next()
       } else if (status === 404) {
+        this.blacklist.push(email)
         done && done(`Not registered`)
       } else {
         done && done(`Error: ${status}`)
