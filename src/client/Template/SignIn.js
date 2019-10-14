@@ -18,6 +18,18 @@ class Email extends PureComponent {
     this.getTypedInput = this.getTypedInput.bind(this)
     this.handleKeyUp = this.handleKeyUp.bind(this)
     this.onConfirm = this.onConfirm.bind(this)
+    this.textInput = React.createRef()
+  }
+  componentDidMount() {
+    this.focusTextInput()
+  }
+  componentDidUpdate() {
+    this.focusTextInput()
+  }
+  focusTextInput() {
+    if (this.props.active) {
+      this.textInput.current.focus()
+    }
   }
   render() {
     return (
@@ -39,6 +51,7 @@ class Email extends PureComponent {
                 onChange = {this.getTypedInput}
                 onKeyUp = {this.handleKeyUp}
                 disabled = {this.state.syncing}
+                ref={this.textInput}
           />
         </p>
         <div style = {{marginBottom: '42px'}}>
@@ -95,6 +108,18 @@ class Password extends PureComponent {
     this.getTypedPassword = this.getTypedPassword.bind(this)
     this.handleKeyUpForPassword = this.handleKeyUpForPassword.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
+    this.textInput = React.createRef()
+  }
+  componentDidMount() {
+    this.focusTextInput()
+  }
+  componentDidUpdate() {
+    this.focusTextInput()
+  }
+  focusTextInput() {
+    if (this.props.active) {
+      this.textInput.current.focus()
+    }
   }
   render() {
     const form = this.props.form
@@ -117,6 +142,7 @@ class Password extends PureComponent {
                       value = {this.state.password}
                       onChange = {this.getTypedPassword}
                       onKeyUp = {this.handleKeyUpForPassword}
+                      ref={this.textInput}
               />
             </p>
             <div style = {{marginBottom: '42px'}}>
@@ -252,6 +278,7 @@ export default class SignIn extends Component {
     if (email === this.state.form.email) {
       done && done()
       this.next()
+      return
     }
     xhttp.get(`/users?u=${email}`, { timeout: 30000 })
     .then( ({status}) => {
