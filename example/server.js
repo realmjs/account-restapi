@@ -15,6 +15,18 @@ const dbh = new DatabaseHelper({ aws })
 dbh.addTable('USERS', {indexes: ['LOGIN']})
 api.helpers({ Database: dbh.drivers})
 
+api.helpers({ sendEmail: ({recipient, template, data}) => {
+  return new Promise( (resolve, reject) => {
+    console.log(`   --> sent email to:`)
+    recipient.forEach( ({name, email}) => {
+      console.log(`           + ${name}[${email}]`)
+    })
+    console.log(`   --> email template: ${template}`)
+    console.log(`   --> data: ${JSON.stringify(data)}`)
+    resolve()
+  })
+}})
+
 api.helpers({ alert : msg => console.log(msg) })
 
 const express = require('express')
