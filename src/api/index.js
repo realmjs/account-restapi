@@ -35,4 +35,11 @@ api.add('/session', {
   delete: require('./session/delete-session'),
 })
 
+
+
+/* error */
+api.add('/error/:code', {
+  get: require('./error/render-error-page')
+})
+
 module.exports = api
