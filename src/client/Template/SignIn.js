@@ -148,7 +148,7 @@ class Password extends PureComponent {
             <div style = {{marginBottom: '42px'}}>
               <div className="w3-cell-row">
                 <div className="w3-cell">
-                <label className="w3-text-orange "><a href={`/form?name=requestresetpassword&app=${__data.app}&email=${form.email}`}> Forgot your password </a></label>
+                <label className="w3-text-orange "><span style={{cursor: 'pointer'}} onClick = {e => this.props.navigate('reset')} > Forgot your password </span></label>
                 </div>
                 <div className="w3-cell" style={{textAlign: 'right'}}>
                   <button className = {`w3-button w3-blue`}
@@ -217,12 +217,34 @@ class Welcome extends PureComponent {
   }
 }
 
+class RequestResetPassword extends Component {
+  constructor(props) {
+    super(props)
+  }
+  render() {
+    const email = this.props.form.email
+    return (
+      <form method="post" action = "/ln/reset">
+        <input type = "hidden" value = {email} name = "email" />
+        <input type = "hidden" value = {__data.app} name = 'app' />
+        <h3 className = "w3-text-blue"> You are requesting to reset password </h3>
+        <p> An email containing link to reset your password will be sent to <span className="w3-text-blue" style={{fontWeight: 'bold'}}> {email} </span> </p>
+        <p> Click the button below to confirm your request </p>
+        <button type = "submit" className = "w3-button w3-blue" > Submit Request <i className = "fa fa-paper-plane" /> </button>
+        {' '}
+        <button type = "button" className = "w3-button" onClick={this.props.close} style={{ display: (window.self === window.top)? 'none': 'inline'}} > Cancel </button>
+      </form>
+    )
+  }
+}
+
 /* Sign-In Page */
 
 const routes = [
   { name: 'email', template: Email },
   { name: 'password', template: Password },
   { name: 'welcome', template: Welcome, animate: 'w3-animate-top' },
+  { name: 'reset', template: RequestResetPassword }
 ]
 
 export default class SignIn extends Component {

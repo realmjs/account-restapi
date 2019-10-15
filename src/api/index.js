@@ -43,6 +43,9 @@ api
 .add('/ln/mailverified', {
   get: require('./link/mail-verified')
 })
+.add('/ln/reset', {
+  post: require('./link/create-reset-link')
+})
 
 /* error */
 api.add('/error/:code', {
