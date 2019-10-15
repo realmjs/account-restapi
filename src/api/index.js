@@ -27,6 +27,9 @@ api.add('/users', {
   get: require('./users/find-users'),
   post: require('./users/create-user')
 })
+api.add('/users/password', {
+  put: require('./users/change-password')
+})
 
 /* session */
 api.add('/session', {

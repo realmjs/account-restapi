@@ -1,5 +1,7 @@
 "use strict"
 
+const jwt = require('jsonwebtoken')
+
 const html = require('../../lib/html')
 
 function render(helpers) {
@@ -11,6 +13,12 @@ function render(helpers) {
     if (!(req.query && req.query.app)) {
       _renderError(req, res, 400, 'Invalid parameters')
       return
+    }
+    if (req.query && req.query.name === 'reset') { // incase form contain token sent via email
+      if (!req.query.t) { res.redirect('/error/404'); return }
+      try {
+        jwt.verify(req.query.t, process.env.EMAIL_SIGN_KEY)
+      } catch (err) { res.redirect('/error/404'); return }
     }
     const app = helpers.Apps.find( app => app.id === req.query.app )
     if (app) {
