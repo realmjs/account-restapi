@@ -35,7 +35,14 @@ api.add('/session', {
   delete: require('./session/delete-session'),
 })
 
-
+/* link */
+api
+.add('/ln/verify', {
+  get: require('./link/verify-email')
+})
+.add('/ln/mailverified', {
+  get: require('./link/mail-verified')
+})
 
 /* error */
 api.add('/error/:code', {
