@@ -64,7 +64,7 @@ function render() {
         <h3> Email Sent </h3>
         <p class="w3-text-red">An email has been sent to <span class="w3-text-blue">${req.body.email}</span>. Please check your inbox and follow the instruction.</p>
         <p class="w3-text-grey"> Thank you. </p>
-        <button class="w3-button w3-blue" onclick="xclose()" > Close </button>
+        ${req.body.app !== 'account'? '<button class="w3-button w3-blue" onclick="xclose()" > Close </button>' : ''}
       </div>
       <script> function xclose(){ window.parent.postMessage({code:'iframe.close'}, __data.targetOrigin) } </script>
     `

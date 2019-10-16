@@ -2,14 +2,13 @@
 
 import React, { Component } from 'react'
 
-import { postMessage } from '../../lib/message'
-
 import Error from './Error'
 import SignUp from './SignUp'
 import SignIn from './SignIn'
 import SignOut from './SignOut'
 import SSO from './SSO'
 import NewPasswordForm from './NewPasswordForm'
+import RequestResetPassword from './RequestResetPassword'
 import MyAccount from './MyAccount'
 
 const routes = {
@@ -19,6 +18,7 @@ const routes = {
   signout: SignOut,
   sso: SSO,
   reset: NewPasswordForm,
+  requestreset: RequestResetPassword,
   myaccount: MyAccount,
 }
 
