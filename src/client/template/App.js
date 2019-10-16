@@ -10,6 +10,7 @@ import SignIn from './SignIn'
 import SignOut from './SignOut'
 import SSO from './SSO'
 import NewPasswordForm from './NewPasswordForm'
+import MyAccount from './MyAccount'
 
 const routes = {
   error: Error,
@@ -18,6 +19,7 @@ const routes = {
   signout: SignOut,
   sso: SSO,
   reset: NewPasswordForm,
+  myaccount: MyAccount,
 }
 
 export default class App extends Component {
