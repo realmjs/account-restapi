@@ -60,7 +60,7 @@ class TabPassword extends PureComponent {
           />
         </div>
         <div style={{ display: this.display('forget-password') }} >
-          <RequestResetPasswordIframe form = {{email: 'dev@team.com'}}
+          <RequestResetPasswordIframe form = {{email: this.props.user.username}}
                                       active = {this.state.display === 'forget-password'}
           />
         </div>
@@ -150,7 +150,6 @@ class Tabs extends PureComponent {
   }
   renderTab(tab) {
     return React.createElement(this.tabs[`Tab${_titleCase(tab)}`], {
-      user: this.props.user,
       ...this.props
     })
   }
@@ -162,13 +161,28 @@ class Tabs extends PureComponent {
 export default class extends Component {
   constructor(props) {
     super(props)
-    this.state = { tab: 'password' }
+    this.state = { tab: 'password', user: null }
     this.tabs = [
       { icon: 'fas fa-key', name: 'password', label: 'change password' },
       { icon: 'far fa-address-card', name: 'profile', label: 'profile' }
     ]
+    xhttp.get('/session?app=account&return=json')
+    .then( ({status, responseText}) => {
+      if (status === 200) {
+        const res = JSON.parse(responseText)
+        const user = res && res.session ? res.session.user : undefined
+        this.setState({ user })
+      } else {
+        console.log(`SSO status: ${status}`)
+        this.setState({ user: undefined })
+      }
+    })
+    .catch(err => console.log(`SSO error: ${err}`))
   }
   render() {
+    const user = this.state.user
+    if (user === null) { return null }
+    if (user === undefined) { return (<div className="w3-container" style={{width: '320px', margin: '64px auto'}}>You need to Login to use this page</div>) }
     return(
       <div className = "">
         <SideBar  tabs = {this.tabs}
@@ -178,7 +192,7 @@ export default class extends Component {
         <Tabs tabs = {this.tabs}
               activeTab = {this.state.tab}
               onSelectTab = { (tab) => this.setState({ tab }) }
-              user = { this.props.user }
+              user = { this.state.user }
               {...this.props}
         />
       </div>
