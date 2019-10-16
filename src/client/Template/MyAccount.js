@@ -6,6 +6,9 @@ import xhttp from '@realmjs/xhttp-request'
 
 import NewPasswordBox from './CommonWidget/NexPasswordBox'
 
+import PasswordInput from './CommonWidget/PasswordInput'
+import RequestResetPasswordIframe from './CommonWidget/RequestResetPasswordIframe'
+
 function _titleCase(str) {
   return str.charAt(0).toUpperCase() + str.substring(1)
 }
@@ -35,87 +38,6 @@ class SideBar extends PureComponent {
   }
 }
 
-class PasswordInput extends PureComponent {
-  constructor(props) {
-    super(props)
-    this.state = {
-      password: '',
-      error: null,
-      syncing: false,
-    }
-    this.textInput = React.createRef()
-    this.getTypedPassword = this.getTypedPassword.bind(this)
-    this.handleKeyUpForPassword = this.handleKeyUpForPassword.bind(this)
-    this.onSubmit = this.onSubmit.bind(this)
-  }
-  componentDidMount() {
-    this.focusTextInput()
-  }
-  componentDidUpdate() {
-    this.focusTextInput()
-  }
-  focusTextInput() {
-    if (this.props.active) {
-      this.textInput.current.focus()
-    }
-  }
-  render() {
-    return (
-      <div>
-        <p>
-          <label className="w3-text-grey">Password</label>
-          <label className="w3-right w3-text-red"> {this.state.error || ''} </label>
-          <input  className = {`w3-input w3-border ${this.state.error && this.state.error.length > 0 ? 'w3-border-red' : ''}`}
-                  type = "password"
-                  placeholder = "password"
-                  value = {this.state.password}
-                  onChange = {this.getTypedPassword}
-                  onKeyUp = {this.handleKeyUpForPassword}
-                  ref={this.textInput}
-          />
-        </p>
-        <div style = {{marginBottom: '42px'}}>
-              <div className="w3-cell-row">
-                <div className="w3-cell">
-                <label className="w3-text-orange "><span style={{cursor: 'pointer'}} onClick = {e => this.props.navigate('reset')} > Forgot your password </span></label>
-                </div>
-                <div className="w3-cell" style={{textAlign: 'right'}}>
-                  <button className = {`w3-button w3-blue`}
-                        onClick = {this.onSubmit} disabled = {this.state.syncing} >
-                    Submit {' '}
-                    {
-                      this.state.syncing ?
-                        <i className ="fa fa-circle-o-notch w3-spin" style = {{marginLeft: '4px'}} />
-                      :
-                      <i className ="fa fa-level-down fa-rotate-90" style = {{marginLeft: '4px'}} />
-                    }
-                  </button>
-                </div>
-              </div>
-            </div>
-      </div>
-    )
-  }
-  getTypedPassword(e) {
-    this.setState({ password: e.target.value, error: '' })
-  }
-
-  handleKeyUpForPassword(e) {
-    if (e.which == 13 || e.keyCode == 13) {
-      this.onSubmit()
-    }
-  }
-  onSubmit() {
-    const password = this.state.password
-    if (password.length === 0) {
-      this.setState({ error: 'Password must not be empty'})
-      return
-    }
-    this.setState({ syncing: true })
-    this.props.onConfirm(password, error => this.setState({ error, syncing: false }))
-  }
-}
-
 class TabPassword extends PureComponent {
   constructor(props) {
     super(props)
@@ -130,11 +52,16 @@ class TabPassword extends PureComponent {
   render() {
     return (
       <div>
-        {/* Display Password Input : User need to enter correct password to unlock Change Password */}
         <div style={{ display: this.display('password') }} >
           <p className="w3-text-blue"> Submit your password to unlock feature</p>
-          <PasswordInput  active = { this.state.display === 'password' }
+          <PasswordInput  active = {this.state.display === 'password'}
                           onConfirm = {this.onConfirmPassword}
+                          onForgetPassword = {e => this.setState({ display: 'forget-password'})}
+          />
+        </div>
+        <div style={{ display: this.display('forget-password') }} >
+          <RequestResetPasswordIframe form = {{email: 'dev@team.com'}}
+                                      active = {this.state.display === 'forget-password'}
           />
         </div>
         <div style={{ display: this.display('new-password') }} >
