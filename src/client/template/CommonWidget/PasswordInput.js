@@ -22,7 +22,7 @@ export default class PasswordInput extends PureComponent {
     this.focusTextInput()
   }
   focusTextInput() {
-    if (this.props.active && this.state.display === 'password') {
+    if (this.props.active) {
       this.textInput.current.focus()
     }
   }
