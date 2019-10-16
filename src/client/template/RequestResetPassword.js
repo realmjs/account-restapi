@@ -17,7 +17,7 @@ export default class RequestResetPassword extends PureComponent {
         <p> Click the button below to confirm your request </p>
         <button type = "submit" className = "w3-button w3-blue" > Submit Request <i className = "fa fa-paper-plane" /> </button>
         {' '}
-        <button type = "button" className = "w3-button" onClick={this.props.close} style={{ display: (window.self === window.top)? 'none': 'inline'}} > Cancel </button>
+        <button type = "button" className = "w3-button" onClick={this.props.close} style={{ display:__data.app === 'account'? 'none': 'inline'}} > Cancel </button>
       </form>
     )
   }
