@@ -6,6 +6,8 @@ import xhttp from '@realmjs/xhttp-request'
 
 import Navigator from './CommonWidget/Navigator'
 import BackButton from './CommonWidget/BackButton'
+import PasswordInput from './CommonWidget/PasswordInput'
+import RequestResetPasswordIframe from './CommonWidget/RequestResetPasswordIframe'
 
 import { isEmail } from '../../lib/form'
 
@@ -101,24 +103,7 @@ class Password extends PureComponent {
   constructor(props) {
     super(props)
     this.state = {
-      password: '',
-      error: null,
-      syncing: false
-    }
-    this.getTypedPassword = this.getTypedPassword.bind(this)
-    this.handleKeyUpForPassword = this.handleKeyUpForPassword.bind(this)
-    this.onSubmit = this.onSubmit.bind(this)
-    this.textInput = React.createRef()
-  }
-  componentDidMount() {
-    this.focusTextInput()
-  }
-  componentDidUpdate() {
-    this.focusTextInput()
-  }
-  focusTextInput() {
-    if (this.props.active) {
-      this.textInput.current.focus()
+      display: 'password',
     }
   }
   render() {
@@ -129,63 +114,26 @@ class Password extends PureComponent {
             <span onClick={this.props.close} className="w3-button w3-right w3-red" style={{ display: (window.self === window.top)? 'none': 'block'}}>&times;</span>
             <BackButton onClick = {this.props.back} />
           </header>
-          <div>
+          <div style={{ display: this.display('password') }} >
             <div className ="w3-text-blue" >
               <h3> {form.email} </h3>
             </div>
-            <p>
-              <label className="w3-text-grey">Password</label>
-              <label className="w3-right w3-text-red"> {this.state.error || ''} </label>
-              <input  className = {`w3-input w3-border ${this.state.error && this.state.error.length > 0 ? 'w3-border-red' : ''}`}
-                      type = "password"
-                      placeholder = "password"
-                      value = {this.state.password}
-                      onChange = {this.getTypedPassword}
-                      onKeyUp = {this.handleKeyUpForPassword}
-                      ref={this.textInput}
-              />
-            </p>
-            <div style = {{marginBottom: '42px'}}>
-              <div className="w3-cell-row">
-                <div className="w3-cell">
-                <label className="w3-text-orange "><span style={{cursor: 'pointer'}} onClick = {e => this.props.navigate('reset')} > Forgot your password </span></label>
-                </div>
-                <div className="w3-cell" style={{textAlign: 'right'}}>
-                  <button className = {`w3-button w3-blue`}
-                        onClick = {this.onSubmit} disabled = {this.state.syncing} >
-                    Submit {' '}
-                    {
-                      this.state.syncing ?
-                        <i className ="fa fa-circle-o-notch w3-spin" style = {{marginLeft: '4px'}} />
-                      :
-                      <i className ="fa fa-level-down fa-rotate-90" style = {{marginLeft: '4px'}} />
-                    }
-                  </button>
-                </div>
-              </div>
-            </div>
+            <PasswordInput  active = {this.state.display === 'password'}
+                            onConfirm = {this.props.onConfirm('password')}
+                            onForgetPassword = {e => this.setState({ display: 'forget-password'})}
+            />
+          </div>
+          <div style={{ display: this.display('forget-password') }} >
+            <RequestResetPasswordIframe active = {this.state.display === 'forget-password'}
+                                        form = {form}
+            />
           </div>
         </div>
 
     )
   }
-  getTypedPassword(e) {
-    this.setState({ password: e.target.value, error: '' })
-  }
-
-  handleKeyUpForPassword(e) {
-    if (e.which == 13 || e.keyCode == 13) {
-      this.onSubmit()
-    }
-  }
-  onSubmit() {
-    const password = this.state.password
-    if (password.length === 0) {
-      this.setState({ error: 'Password must not be empty'})
-      return
-    }
-    this.setState({ syncing: true })
-    this.props.onConfirm('password')(password, error => this.setState({ error, syncing: false }))
+  display(state) {
+    return this.state.display === state ? 'block' : 'none'
   }
 }
 
@@ -217,34 +165,12 @@ class Welcome extends PureComponent {
   }
 }
 
-class RequestResetPassword extends Component {
-  constructor(props) {
-    super(props)
-  }
-  render() {
-    const email = this.props.form.email
-    return (
-      <form method="post" action = "/ln/reset">
-        <input type = "hidden" value = {email} name = "email" />
-        <input type = "hidden" value = {__data.app} name = 'app' />
-        <h3 className = "w3-text-blue"> You are requesting to reset password </h3>
-        <p> An email containing link to reset your password will be sent to <span className="w3-text-blue" style={{fontWeight: 'bold'}}> {email} </span> </p>
-        <p> Click the button below to confirm your request </p>
-        <button type = "submit" className = "w3-button w3-blue" > Submit Request <i className = "fa fa-paper-plane" /> </button>
-        {' '}
-        <button type = "button" className = "w3-button" onClick={this.props.close} style={{ display: (window.self === window.top)? 'none': 'inline'}} > Cancel </button>
-      </form>
-    )
-  }
-}
-
 /* Sign-In Page */
 
 const routes = [
   { name: 'email', template: Email },
   { name: 'password', template: Password },
   { name: 'welcome', template: Welcome, animate: 'w3-animate-top' },
-  { name: 'reset', template: RequestResetPassword }
 ]
 
 export default class SignIn extends Component {
