@@ -82,24 +82,33 @@ class TabPassword extends PureComponent {
     return this.state.display === state ? 'block' : 'none'
   }
   onConfirmPassword(password, done) {
-    setTimeout( _ => {
-      if (password === '123') {
+    const username = this.props.user.username
+    xhttp.post('/session', {username, password})
+    .then( ({status}) => {
+      if (status === 200) {
         this.setState({ password, display: 'new-password' })
         done && done()
       } else {
         done && done('Invalid password')
       }
-    }, 1000)
+    })
+    .catch( error => done && done(error))
   }
   onConfirmNewPassword(password, done) {
-    setTimeout( _ => {
-      if (password === '123') {
+    xhttp.put('/me/password', {
+      username: this.props.user.username,
+      password: this.state.password,
+      newPassword: password
+    })
+    .then( ({status}) => {
+      if (status === 200) {
         this.setState({ newPassword: password, display: 'success' })
         done && done()
       } else {
-        done && done('Error found')
+        done && done(`Error ${status}`)
       }
-    }, 1000)
+    })
+    .catch( error => done && done(error))
   }
 }
 

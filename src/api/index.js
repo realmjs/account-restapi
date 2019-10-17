@@ -55,4 +55,9 @@ api.add('/error/:code', {
   get: require('./error/render-error-page')
 })
 
+/* me */
+api.add('/me/password', {
+  put: require('./me/change-password')
+})
+
 module.exports = api
