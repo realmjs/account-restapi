@@ -8,6 +8,7 @@ import NewPasswordBox from './CommonWidget/NexPasswordBox'
 
 import PasswordInput from './CommonWidget/PasswordInput'
 import RequestResetPasswordIframe from './CommonWidget/RequestResetPasswordIframe'
+import Toast from './CommonWidget/Toast'
 
 function _titleCase(str) {
   return str.charAt(0).toUpperCase() + str.substring(1)
@@ -105,10 +106,14 @@ class TabPassword extends PureComponent {
         this.setState({ newPassword: password, display: 'success' })
         done && done()
       } else {
+        this.props.toast({title: 'Error', message: 'Password changed failed!', color: 'red'})
         done && done(`Error ${status}`)
       }
     })
-    .catch( error => done && done(error))
+    .catch( error => {
+      this.props.toast({title: 'Error', message: 'Password changed failed!', color: 'red'})
+      done && done(error)
+    })
   }
 }
 
@@ -167,14 +172,17 @@ class Tabs extends PureComponent {
   }
 }
 
-export default class extends Component {
+
+/* Default export */
+export default class MyAccount extends Component {
   constructor(props) {
     super(props)
-    this.state = { tab: 'password', user: null }
+    this.state = { tab: 'password', user: null, toast: undefined }
     this.tabs = [
       { icon: 'fas fa-key', name: 'password', label: 'change password' },
       { icon: 'far fa-address-card', name: 'profile', label: 'profile' }
     ]
+    this.toast = this.toast.bind(this)
     xhttp.get('/session?app=account&return=json')
     .then( ({status, responseText}) => {
       if (status === 200) {
@@ -201,10 +209,19 @@ export default class extends Component {
         <Tabs tabs = {this.tabs}
               activeTab = {this.state.tab}
               onSelectTab = { (tab) => this.setState({ tab }) }
+              toast = {this.toast}
               user = { this.state.user }
               {...this.props}
+        />
+        <Toast  display = {this.state.toast !== undefined}
+                toast = {this.state.toast}
+                close = {e => this.setState({toast: undefined})}
         />
       </div>
     )
   }
+  toast({icon, title, message, color}) {
+    this.setState({ toast: {icon, title, message, color} })
+  }
+
 }
