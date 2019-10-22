@@ -272,6 +272,10 @@ class TabProfile extends PureComponent {
     if (/[^0-9]/g.test(str.replace(/\//g,''))) {
       return
     }
+    // skip if not follow format dd/mm/
+    if (/(^\d\d\d+\/|\/\d\d\d+\/)/.test(str)) {
+      return
+    }
     // handle backspace
     const last = this.state.birthday.replace(/.$/, '')
     if (str === last) {
@@ -294,9 +298,9 @@ class TabProfile extends PureComponent {
     this.setState({ birthday: str})
   }
   checkBirthday(bday) {
-    const dd = bday.match(/^\d\d\//)[0].replace(/\//g,'')
-    const mm = bday.match(/\/\d\d\//)[0].replace(/\//g,'')
-    const yyyy = bday.match(/\/\d\d\d\d$/)[0].replace(/\//g,'')
+    const dd = bday.match(/^\d+\//)[0].replace(/\//g,'')
+    const mm = bday.match(/\/\d+\//)[0].replace(/\//g,'')
+    const yyyy = bday.match(/\/\d+$/)[0].replace(/\//g,'')
     // validate year
     if (parseInt(yyyy) < 1900 || parseInt(yyyy) > parseInt((new Date()).getFullYear())) {
       console.error('Invalid Year!')
