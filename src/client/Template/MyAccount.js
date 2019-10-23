@@ -356,6 +356,13 @@ class TabProfile extends PureComponent {
     const changed = {}
     const origin = this.getProfile()
     for (let prop in origin) {
+      if ({}.toString.call(this.state[prop]) === '[object Array]') {
+        changed[prop] = this.state[prop].filter(i => i.length > 0)
+      } else {
+        if ({}.toString.call(this.state[prop]) === '[object String]' && this.state[prop].length === 0) { continue }
+        changed[prop] = this.state[prop]
+      }
+      /* changed: get the full prop from state to write to db
       if (origin[prop] !== this.state[prop]) {
         console.log(prop + ':' + {}.toString.call(this.state[prop]))
         if ({}.toString.call(this.state[prop]) === '[object Array]') {
@@ -366,6 +373,7 @@ class TabProfile extends PureComponent {
           changed[prop] = this.state[prop]
         }
       }
+      */
     }
     return changed
   }
