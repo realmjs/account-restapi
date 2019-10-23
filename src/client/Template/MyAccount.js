@@ -127,6 +127,7 @@ class TabProfile extends PureComponent {
       ...this.getProfile()
     }
     this.resetState = this.resetState.bind(this)
+    this.updateProfile = this.updateProfile.bind(this)
   }
   render() {
     return (
@@ -177,7 +178,8 @@ class TabProfile extends PureComponent {
         <p>
           <span className="w3-mobile" style={{width: '35%', display: 'inline-block'}}>
             <label>Birthday</label>
-            <input  className="w3-input w3-border"
+            <label className="w3-right w3-text-red"> {this.state.error.birthday} </label>
+            <input  className = {`w3-input w3-border ${this.state.error.birthday? 'w3-border-red': ''}`}
                     type="text"
                     placeholder="dd/mm/yyyy"
                     value={this.state.birthday}
@@ -298,6 +300,7 @@ class TabProfile extends PureComponent {
     this.setState({ birthday: str})
   }
   checkBirthday(bday) {
+    if (!bday || bday.length === 0) { return true } // birthday is empty ot not use
     const dd = bday.match(/^\d+\//)[0].replace(/\//g,'')
     const mm = bday.match(/\/\d+\//)[0].replace(/\//g,'')
     const yyyy = bday.match(/\/\d+$/)[0].replace(/\//g,'')
@@ -334,8 +337,7 @@ class TabProfile extends PureComponent {
     return Object.keys(profile).every(key => this.state[key] === profile[key])
   }
   resetState() {
-    this.checkBirthday(this.state.birthday)
-    this.setState({ ...this.getProfile() })
+    this.setState({ ...this.getProfile(), error: {}, syncing: false })
   }
   getProfile() {
     const profile = this.props.user && this.props.user.profile || undefined
@@ -349,6 +351,64 @@ class TabProfile extends PureComponent {
       birthday: profile && profile.birthday || '',
       picture: profile && profile.picture || ''
     }
+  }
+  getChangedProps() {
+    const changed = {}
+    const origin = this.getProfile()
+    for (let prop in origin) {
+      if (origin[prop] !== this.state[prop]) {
+        console.log(prop + ':' + {}.toString.call(this.state[prop]))
+        if ({}.toString.call(this.state[prop]) === '[object Array]') {
+          if (this.isEquivalentArray(origin[prop], this.state[prop])) { continue }
+          changed[prop] = this.state[prop].filter(i => i.length > 0)
+        } else {
+          // if ({}.toString.call(this.state[prop]) === '[object String]' && this.state[prop].length === 0) { continue }
+          changed[prop] = this.state[prop]
+        }
+      }
+    }
+    return changed
+  }
+  isEquivalentArray(a, b) {
+    const _a = a.filter(i => i.length > 0)
+    const _b = b.filter(i => i.length > 0)
+    if (_a.length !== _b.length) { return false }
+    for (let i = 0; i < _a.length; i++) {
+      if (_a[i] !== _b[i]) { return false }
+    }
+    return true
+  }
+  updateProfile() {
+    // validate props
+    const error = {}
+    if (!this.checkBirthday(this.state.birthday)) {
+      error.birthday = 'Invalid birthday'
+    }
+    if (this.state.fullName.length === 0) {
+      error.fullName = 'Must not be blank'
+    }
+    if (this.state.displayName.length === 0) {
+      error.displayName = 'Must not be blank'
+    }
+    if (Object.keys(error).length > 0) {
+      this.setState({ syncing: false, error })
+      return
+    }
+    const profile = this.getChangedProps()
+    console.log(profile)
+    this.setState({ syncing: true, error: {} })
+    xhttp.put('/me/profile', { profile }, { authen: true })
+    .then( ({status, profile}) => {
+      if (status === 200) {
+        this.setState({ ...profile, syncing: false })
+      } else {
+        this.props.toast({title: 'Error', message: `${status} Update failed!`, color: 'red'})
+        this.setState({ syncing: false })
+      }
+    })
+    .catch( error => {
+      this.props.toast({title: 'Error', message: 'Update failed!', color: 'red'})
+    })
   }
 }
 
