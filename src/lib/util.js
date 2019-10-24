@@ -6,6 +6,27 @@ const crypto = require('crypto')
 
 const COOKIE_SESSION = '__r_c_sess_'
 
+function authenUserMiddleware() {
+  return function(req, res, next) {
+    const bearerHeader = req.headers['authorization']
+    if (typeof bearerHeader === 'undefined') {
+      res.status(401).json({ error: 'Unauthorized' })
+      return
+    }
+    const bearer = bearerHeader.split(" ");
+    const token = bearer[1];
+    req.token = token;
+    jwt.verify(token, process.env.REALM_SECRET_KEY, (err, decoded) => {
+      if (err) {
+        res.status(401).json({ error: 'Unauthorized' })
+      } else {
+        req.uid = decoded.uid
+        next()
+      }
+    })
+  }
+}
+
 function generateAuthenTokenMiddleware() {
   return function(req, res, next) {
     const user = req.user
@@ -71,4 +92,4 @@ function hashPassword(password) {
   return hash.digest('hex')
 }
 
-module.exports = { generateAuthenTokenMiddleware, setHttpCookieMiddleware, cleanCookieMiddleware, encodeCookie, decodeCookie, serializeUser, checkPassword, hashPassword }
+module.exports = { authenUserMiddleware, generateAuthenTokenMiddleware, setHttpCookieMiddleware, cleanCookieMiddleware, encodeCookie, decodeCookie, serializeUser, checkPassword, hashPassword }
