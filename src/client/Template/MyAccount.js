@@ -406,10 +406,11 @@ class TabProfile extends PureComponent {
     const profile = this.getChangedProps()
     this.setState({ syncing: true, error: {} })
     xhttp.put('/me/profile', { profile, token: this.props.token })
-    .then( ({status, profile}) => {
+    .then( ({status}) => {
       if (status === 200) {
         this.props.toast({title: 'Success', message: `Profile updated`, color: 'blue'})
         this.setState({ ...profile, syncing: false })
+        this.props.onUserUpdated && this.props.onUserUpdated({ profile })
       } else {
         this.props.toast({title: 'Error', message: `${status} Update failed!`, color: 'red'})
         this.setState({ syncing: false })
@@ -476,6 +477,7 @@ export default class MyAccount extends Component {
       { icon: 'far fa-address-card', name: 'profile', label: 'profile' }
     ]
     this.toast = this.toast.bind(this)
+    this.onUserUpdated = this.onUserUpdated.bind(this)
     xhttp.get('/session?app=account&return=json')
     .then( ({status, responseText}) => {
       if (status === 200) {
@@ -506,6 +508,7 @@ export default class MyAccount extends Component {
               toast = {this.toast}
               user = { this.state.user }
               token = { this.state.token }
+              onUserUpdated = {this.onUserUpdated}
               {...this.props}
         />
         <Toast  display = {this.state.toast !== undefined}
@@ -518,5 +521,13 @@ export default class MyAccount extends Component {
   toast({icon, title, message, color}) {
     this.setState({ toast: {icon, title, message, color} })
   }
-
+  onUserUpdated(props) {
+    console.log('updated user')
+    console.log(props)
+    const user = {...this.state.user}
+    for (let key in props) {
+      user[key] = props[key]
+    }
+    this.setState({ user })
+  }
 }
