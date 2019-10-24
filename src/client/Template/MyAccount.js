@@ -289,12 +289,12 @@ class TabProfile extends PureComponent {
       return
     }
     // auto insert /
-    if (/(^\d\d$|^\d\d\/\d\d$)/.test(str)) {
+    if (/(^\d\d$|^\d+\/\d\d$)/.test(str)) {
       this.setState({ birthday: str + '/' })
       return
     }
     // limit to dd/mm/yyyy
-    if (/(^\d\d\/\d\d\/\d\d\d\d.$)/.test(str)) {
+    if (/(^\d+\/\d+\/\d\d\d\d.$)/.test(str)) {
       return
     }
     this.setState({ birthday: str})
@@ -405,9 +405,10 @@ class TabProfile extends PureComponent {
     const profile = this.getChangedProps()
     console.log(profile)
     this.setState({ syncing: true, error: {} })
-    xhttp.put('/me/profile', { profile }, { authen: true })
+    xhttp.put('/me/profile', { profile, token: this.props.token })
     .then( ({status, profile}) => {
       if (status === 200) {
+        this.props.toast({title: 'Success', message: `Profile updated`, color: 'blue'})
         this.setState({ ...profile, syncing: false })
       } else {
         this.props.toast({title: 'Error', message: `${status} Update failed!`, color: 'red'})
@@ -480,10 +481,11 @@ export default class MyAccount extends Component {
       if (status === 200) {
         const res = JSON.parse(responseText)
         const user = res && res.session ? res.session.user : undefined
-        this.setState({ user })
+        const token = res && res.session ? res.session.token : undefined
+        this.setState({ user, token })
       } else {
         console.log(`SSO status: ${status}`)
-        this.setState({ user: undefined })
+        this.setState({ user: undefined, token: undefined })
       }
     })
     .catch(err => console.log(`SSO error: ${err}`))
@@ -503,6 +505,7 @@ export default class MyAccount extends Component {
               onSelectTab = { (tab) => this.setState({ tab }) }
               toast = {this.toast}
               user = { this.state.user }
+              token = { this.state.token }
               {...this.props}
         />
         <Toast  display = {this.state.toast !== undefined}

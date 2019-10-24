@@ -57,7 +57,10 @@ api.add('/error/:code', {
 
 /* me */
 api.add('/me/password', {
-  put: require('./me/change-password')
+  put: require('./me/change-password'),
+})
+api.add('/me/profile', {
+  put: require('./me/update-profile')
 })
 
 module.exports = api
