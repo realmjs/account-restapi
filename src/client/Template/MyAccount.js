@@ -301,6 +301,7 @@ class TabProfile extends PureComponent {
   }
   checkBirthday(bday) {
     if (!bday || bday.length === 0) { return true } // birthday is empty ot not use
+    if (!(/(^\d+\/\d+\/\d\d\d\d$)/.test(bday))) { console.log('Invalid format!'); return false } // invalid birthday format
     const dd = bday.match(/^\d+\//)[0].replace(/\//g,'')
     const mm = bday.match(/\/\d+\//)[0].replace(/\//g,'')
     const yyyy = bday.match(/\/\d+$/)[0].replace(/\//g,'')
