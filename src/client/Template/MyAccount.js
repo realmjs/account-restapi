@@ -403,7 +403,6 @@ class TabProfile extends PureComponent {
       return
     }
     const profile = this.getChangedProps()
-    console.log(profile)
     this.setState({ syncing: true, error: {} })
     xhttp.put('/me/profile', { profile, token: this.props.token })
     .then( ({status, profile}) => {
