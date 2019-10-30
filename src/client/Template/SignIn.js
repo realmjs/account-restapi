@@ -65,7 +65,7 @@ class Email extends PureComponent {
               <button type="submit" className={`w3-button w3-blue `} onClick={this.onConfirm} disabled = {this.state.syncing} >
                 Next {' '}
                 {
-                  this.state.syncing? <i className ="fa fa-circle-o-notch fa-spin" /> : <i className ="fa fa-chevron-right" />
+                  this.state.syncing? <i className ="fas fa-circle-notch fa-spin" /> : <i className ="fa fa-chevron-right" />
                 }
               </button>
             </div>

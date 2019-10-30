@@ -48,12 +48,26 @@ function createToken() {
 function sendEmail(helpers) {
   return function(req, res, next) {
     const user = req.user
-    helpers.sendEmail({
-      recipient: [{ email: user.profile.email[0], name: user.profile.displayName }],
-      template: 'resetemail',
-      data: { token: req.token }
-    }).catch(err => helpers.alert && helpers.alert(`Failed to send email to ${user.profile.displayName}[${user.profile.email[0]}]`))
-    next()
+    const account = helpers.Apps.find(app => app.id === 'account')
+    if (account) {
+      helpers.sendEmail({
+        recipient: [{ email: user.profile.email[0], name: user.profile.displayName }],
+        template: 'resetemail',
+        data: { customer: user.profile.displayName, endpoint:`${account.url}/form?name=reset`, token: req.token }
+      }).catch(err => helpers.alert && helpers.alert(`Failed to send email to ${user.profile.displayName}[${user.profile.email[0]}]`))
+      next()
+    } else {
+      helpers.alert && helpers.alert('Cannot find account in environment variable APPS')
+      const dom = `
+        <div class="w3-container" style="margin: 32px 0">
+          <h3 class="w3-text-red"> Opps! Something wrong happen </h3>
+          <p class="w3-text-red">The server may be busy or not working</p>
+          <p class="w3-text-grey"> Sorry for inconvenience. Please try again later </p>
+        </div>
+      `
+      res.writeHead( 200, { "Content-Type": "text/html" } )
+      res.end(html({ title: 'Failed', dom, data: {targetOrigin: req.app.url} }))
+    }
   }
 }
 

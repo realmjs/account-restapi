@@ -4,7 +4,7 @@ require('dotenv').config()
 
 const api = require('../src/api')
 
-const aws = { region: process.env.AWS_REGION, endpoint: process.env.AWS_ENDPOINT }
+const aws = { region: process.env.REGION, endpoint: process.env.ENDPOINT }
 if (process.env.PROXY) {
   const proxy = require('proxy-agent')
   aws.httpOptions = { agent: proxy(process.env.PROXY) }

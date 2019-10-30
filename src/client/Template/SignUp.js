@@ -65,7 +65,7 @@ class Email extends PureComponent {
               <button type="submit" className={`w3-button w3-blue `} onClick={this.onConfirm} disabled = {this.state.syncing} >
                 Next {' '}
                 {
-                  this.state.syncing? <i className ="fa fa-circle-o-notch fa-spin" /> : <i className ="fa fa-chevron-right" />
+                  this.state.syncing? <i className ="fas fa-circle-notch fa-spin" /> : <i className ="fa fa-chevron-right" />
                 }
               </button>
             </div>
@@ -120,7 +120,7 @@ class Password extends PureComponent {
                             btnLabel = 'Continue'
                             icon = 'fa fa-chevron-right'
             />
-          </div>          
+          </div>
         </div>
       </div>
     )
@@ -178,7 +178,7 @@ class Profile extends PureComponent {
                         checked = {this.state.gender === 'female'}
                         onChange = { () => this.setState({gender: 'female'}) }
                 />
-                <label>FeMale</label>
+                <label>Female</label>
               </span>
             </p>
             <p>
@@ -379,7 +379,7 @@ class Welcome extends PureComponent {
           </p>
 
           <p className ="w3-text-blue-grey" >
-            We have send an email to your email: <span style={{fontWeight: 'bold'}}> {this.props.form.profile && this.props.form.profile.email[0]} </span> to verify your owner at the last step. 
+            We have send an email to your email: <span style={{fontWeight: 'bold'}}> {this.props.form.profile && this.props.form.profile.email[0]} </span> to verify your owner at the last step.
           </p>
 
           <p className ="w3-text-blue-grey" >
@@ -527,6 +527,6 @@ export default class SignUp extends Component {
     })
     .catch( err => {
       done && done(`Error: Network timeout`)
-    })    
+    })
   }
 }

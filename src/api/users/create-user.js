@@ -65,16 +65,21 @@ function sendEmail(helpers) {
     if (helpers.sendEmail) {
       /* generate token to active email */
       const user = req.user
-      const token = jwt.sign(
-        {uid: user.uid},
-        process.env.EMAIL_SIGN_KEY,
-        { expiresIn: process.env.EXPIRE_RESET_LINK }
-      )
-      helpers.sendEmail({
-        recipient: [{ email: user.profile.email[0], name: user.profile.displayName }],
-        template: 'verifyemail',
-        data: { token }
-      }).catch(err => helpers.alert && helpers.alert(`User ${user.profile.displayName}[${user.profile.email[0]}] is created. But failed to send verification email`))
+      const account = helpers.Apps.find(app => app.id === 'account')
+      if (account) {
+        const token = jwt.sign(
+          {uid: user.uid},
+          process.env.EMAIL_SIGN_KEY,
+          { expiresIn: process.env.EXPIRE_RESET_LINK }
+        )
+        helpers.sendEmail({
+          recipient: [{ email: user.profile.email[0], name: user.profile.displayName }],
+          template: 'verifyemail',
+          data: { customer: user.profile.displayName, endpoint:`${account.url}/ln/verify`, email: user.profile.email[0], token }
+        }).catch(err => helpers.alert && helpers.alert(`User ${user.profile.displayName}[${user.profile.email[0]}] is created. But failed to send verification email`))
+      } else {
+        helpers.alert && helpers.alert('Cannot find account in environment variable APPS')
+      }
     }
     next()
   }
