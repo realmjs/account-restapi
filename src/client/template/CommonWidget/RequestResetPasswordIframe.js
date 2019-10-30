@@ -14,13 +14,17 @@ export default class extends PureComponent {
     this.resize()
   }
   render() {
-    return (
-      <iframe src = {`/form?name=requestreset&app=account&email=${this.props.form.email}`}
-              width = '100%'
-              style = {{border: 0, height: this.state.height}}
-              ref = {this.ref}
-      />
-    )
+    if (this.props.active) {
+      return (
+        <iframe src = {`/form?name=requestreset&app=account&email=${this.props.form.email}`}
+                width = '100%'
+                style = {{border: 0, height: this.state.height}}
+                ref = {this.ref}
+        />
+      )
+    } else {
+      return null
+    }
   }
   resize() {
     const node = this.ref.current

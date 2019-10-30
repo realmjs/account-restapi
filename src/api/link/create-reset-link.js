@@ -51,7 +51,7 @@ function sendEmail(helpers) {
     const account = helpers.Apps.find(app => app.id === 'account')
     if (account) {
       helpers.sendEmail({
-        recipient: [{ email: user.profile.email[0], name: user.profile.displayName }],
+        recipient: [{ address: user.profile.email[0], name: user.profile.displayName }],
         template: 'resetemail',
         data: { customer: user.profile.displayName, endpoint:`${account.url}/form?name=reset`, token: req.token }
       }).catch(err => helpers.alert && helpers.alert(`Failed to send email to ${user.profile.displayName}[${user.profile.email[0]}]`))

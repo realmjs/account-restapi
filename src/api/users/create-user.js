@@ -73,7 +73,7 @@ function sendEmail(helpers) {
           { expiresIn: process.env.EXPIRE_RESET_LINK }
         )
         helpers.sendEmail({
-          recipient: [{ email: user.profile.email[0], name: user.profile.displayName }],
+          recipient: [{ address: user.profile.email[0], name: user.profile.displayName }],
           template: 'verifyemail',
           data: { customer: user.profile.displayName, endpoint:`${account.url}/ln/verify`, email: user.profile.email[0], token }
         }).catch(err => helpers.alert && helpers.alert(`User ${user.profile.displayName}[${user.profile.email[0]}] is created. But failed to send verification email`))
