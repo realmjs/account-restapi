@@ -83,7 +83,7 @@ class Email extends PureComponent {
     }
   }
   onConfirm() {
-    const email = this.state.email
+    const email = this.state.email.toLowerCase()
     if (email.length === 0) {
       const error = "Email is empty"
       this.setState({ error })
