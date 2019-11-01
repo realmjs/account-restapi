@@ -522,8 +522,6 @@ export default class MyAccount extends Component {
     this.setState({ toast: {icon, title, message, color} })
   }
   onUserUpdated(props) {
-    console.log('updated user')
-    console.log(props)
     const user = {...this.state.user}
     for (let key in props) {
       user[key] = props[key]
