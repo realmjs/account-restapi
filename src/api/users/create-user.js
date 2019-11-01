@@ -76,12 +76,17 @@ function sendEmail(helpers) {
           recipient: [{ address: user.profile.email[0], name: user.profile.displayName }],
           template: 'verifyemail',
           data: { customer: user.profile.displayName, endpoint:`${account.url}/ln/verify`, email: user.profile.email[0], token }
-        }).catch(err => helpers.alert && helpers.alert(`User ${user.profile.displayName}[${user.profile.email[0]}] is created. But failed to send verification email`))
+        })
+        .then(next)
+        .catch(err => {
+          helpers.alert && helpers.alert(`User ${user.profile.displayName}[${user.profile.email[0]}] is created. But failed to send verification email`)
+          next()
+        })
       } else {
         helpers.alert && helpers.alert('Cannot find account in environment variable APPS')
+        res.status(500).json({ error: 'App not found!'})
       }
     }
-    next()
   }
 }
 
