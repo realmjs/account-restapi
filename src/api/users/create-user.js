@@ -90,10 +90,20 @@ function sendEmail(helpers) {
   }
 }
 
+function hooker(helpers) {
+  return function(req, res, next) {
+    helpers.onCreatedUser && helpers.onCreatedUser({
+      user: serializeUser(req.user),
+      token: req.authenToken
+    })
+    next()
+  }
+}
+
 function responseSuccess() {
   return function(req, res) {
     res.status(200).json({ user: serializeUser(req.user), token: req.authenToken })
   }
 }
 
-module.exports = [validateParameters, checkUserExistance, createUser, generateAuthenTokenMiddleware, setHttpCookieMiddleware, sendEmail, responseSuccess]
+module.exports = [validateParameters, checkUserExistance, createUser, generateAuthenTokenMiddleware, setHttpCookieMiddleware, sendEmail, hooker, responseSuccess]

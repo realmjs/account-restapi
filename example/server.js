@@ -17,17 +17,45 @@ api.helpers({ Database: dbh.drivers})
 
 api.helpers({ sendEmail: ({recipient, template, data}) => {
   return new Promise( (resolve, reject) => {
-    console.log(`   --> sent email to:`)
+    console.log(`EMAIL: -----------------------------------------------------------`)
+    console.log(`--> sent email to:`)
     recipient.forEach( ({name, email}) => {
       console.log(`           + ${name}[${email}]`)
     })
-    console.log(`   --> email template: ${template}`)
-    console.log(`   --> data: ${JSON.stringify(data)}`)
+    console.log(`--> email template: ${template}`)
+    console.log(`-----------------------------------------------------------------`)
     resolve()
   })
 }})
 
 api.helpers({ alert : msg => console.log(msg) })
+
+api.helpers({
+  onCreatedUser({user, token}) {
+    const http = require('http')
+    const data = JSON.stringify({user, token})
+    const options = {
+      port: process.env.ECOMMERCE_PORT,
+      host: process.env.ECOMMERCE_HOST,
+      method: 'POST',
+      path: '/me',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': data.length
+      }
+    }
+    const req = http.request(options, (res) => {
+      console.log(`statusCode: ${res.statusCode}`)
+      res.on('data', (d) => {
+        process.stdout.write(d)
+      })
+    })
+    req.on('error', (error) => {
+      console.error(error)
+    })
+    req.end(data)
+  }
+})
 
 const express = require('express')
 const app = express()
