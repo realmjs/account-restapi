@@ -234,7 +234,8 @@ export default class SignIn extends Component {
       done && done("Not registered")
       return
     }
-    xhttp.get(`/users?u=${email}`, { timeout: 30000 })
+    const app = __data ? __data.app : undefined;
+    xhttp.get(`/users?u=${email}&app=${app}`, { timeout: 30000 })
     .then( ({status}) => {
       if (status === 200) {
         done && done()
@@ -256,7 +257,7 @@ export default class SignIn extends Component {
   }
   onConfirmPassword(password, done) {
     const form = {...this.state.form}
-    xhttp.post(`/session`, { username: form.email, password }, { timeout: 30000 })
+    xhttp.post(`/session`, { username: form.email, password, app: __data ? __data.app : undefined }, { timeout: 30000 })
     .then( ({status, responseText}) => {
       if (status === 200) {
         done && done()

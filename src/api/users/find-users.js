@@ -6,12 +6,21 @@
    - If it is a token, then the API required authenticated
 */
 
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
 
-const { isEmail } = require('../../lib/form')
+const { isEmail } = require('../../lib/form');
 
 function findUser(helpers) {
   return function (req, res) {
+    if (!req.query.app) {
+      res.status(400).json({error: 'Bad query'});
+      return;
+    }
+    const app = helpers.Apps.find( app => app.id === req.query.app );
+    if (!app) {
+      res.status(404).json({error: 'App not found'});
+      return;
+    }
     if (req.query && req.query.u) {
       if (isEmail(req.query.u)) {
         /*
@@ -21,45 +30,45 @@ function findUser(helpers) {
         helpers.Database.LOGIN.find({ username: `= ${req.query.u}`})
         .then( users => {
           if (users && users.length > 0) {
-            res.status(200).json({ username: req.query.u })
+            res.status(200).json({ username: req.query.u });
           } else {
-            res.status(404).json({ error: 'Not found' })
+            res.status(404).json({ error: 'Not found' });
           }
         })
         .catch( err => {
-          helpers.alert && helpers.alert(err)
-          res.status(403).json({ error: 'Unable to access Database' })
+          helpers.alert && helpers.alert(err);
+          res.status(403).json({ error: 'Unable to access Database' });
         })
       } else {
         /*
           Authentication requred API, return username and profile
           It's usecase is for a server application request user information
         */
-        const token = req.query.u
-        jwt.verify(token, process.env.REALM_SECRET_KEY, (err, decoded) => {
+        const token = req.query.u;
+        jwt.verify(token, app.key, (err, decoded) => {
           if (err) {
-            res.status(401).json({ error: 'Unauthorized' })
+            res.status(401).json({ error: 'Unauthorized' });
             return
           }
           helpers.Database.USERS.find({ uid: `= ${decoded.uid}`})
           .then( users => {
             if (users && users.length > 0) {
-              const user = users[0]
-              res.status(200).json({ username: user.username, profile: user.profile })
+              const user = users[0];
+              res.status(200).json({ username: user.username, profile: user.profile });
             } else {
-              res.status(404).json({ error: 'Not found' })
+              res.status(404).json({ error: 'Not found' });
             }
           })
           .catch( err => {
-            helpers.alert && helpers.alert(err)
-            res.status(403).json({ error: 'Unable to access Database' })
+            helpers.alert && helpers.alert(err);
+            res.status(403).json({ error: 'Unable to access Database' });
           })
         })
       }
     } else {
-      res.status(400).json({ error: 'Bad request' })
+      res.status(400).json({ error: 'Bad request' });
     }
   }
 }
 
-module.exports = [findUser]
+module.exports = [findUser];

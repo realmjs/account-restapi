@@ -478,7 +478,8 @@ export default class SignUp extends Component {
       done && done("This email has been used")
       return
     }
-    xhttp.get(`/users?u=${email}`, { timeout: 30000 })
+    const app = __data ? __data.app : undefined;
+    xhttp.get(`/users?u=${email}&app=${app}`, { timeout: 30000 })
     .then( ({status}) => {
       if (status === 200) {
         this.blacklist.push(email)
@@ -513,7 +514,7 @@ export default class SignUp extends Component {
   onConfirmTerm(done) {
     console.log('Term is accepted')
     const user = {...this.state.form}
-    xhttp.post(`/users`, { user }, { timeout: 30000 })
+    xhttp.post(`/users`, { user, app: __data ? __data.app : undefined }, { timeout: 30000 })
     .then( ({status, responseText}) => {
       if (status === 200) {
         done && done()

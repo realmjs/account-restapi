@@ -9,7 +9,7 @@ export default class extends PureComponent {
     super(props)
   }
   componentDidMount() {
-    xhttp.delete('/session', { app: __data.app }, {authen: true})
+    xhttp.delete('/session', { app: __data ? __data.app : undefined }, {authen: true})
     .then( ({status}) => {
       this.props.done({ status })
     })

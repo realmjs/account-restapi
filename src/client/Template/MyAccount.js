@@ -405,7 +405,7 @@ class TabProfile extends PureComponent {
     }
     const profile = this.getChangedProps()
     this.setState({ syncing: true, error: {} })
-    xhttp.put('/me/profile', { profile, token: this.props.token })
+    xhttp.put('/me/profile', { profile, token: this.props.token, app: __data ? __data.app : undefined })
     .then( ({status}) => {
       if (status === 200) {
         this.props.toast({title: 'Success', message: `Profile updated`, color: 'blue'})

@@ -1,21 +1,21 @@
 "use strict"
 
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
 
-const html = require('../../lib/html')
+const html = require('../../lib/html');
 
 function validateParams(helpers) {
   return function(req, res, next) {
     if (req.body && req.body.email && req.body.app) {
-      const app = helpers.Apps.find( app => app.id === req.body.app )
+      const app = helpers.Apps.find( app => app.id === req.body.app );
       if (app) {
-        req.app = app
-        next()
+        req.app = app;
+        next();
       } else {
-        res.redirect('/error/404')
+        res.redirect('/error/404');
       }
     } else {
-      res.redirect('/error/400')
+      res.redirect('/error/400');
     }
   }
 }
@@ -25,43 +25,43 @@ function findUser(helpers) {
     helpers.Database.LOGIN.find({ username: `= ${req.body.email}`})
       .then( users => {
         if (users && users.length > 0) {
-          req.user = users[0]
-          next()
+          req.user = users[0];
+          next();
         } else {
-          res.redirect('/error/404')
+          res.redirect('/error/404');
         }
       })
       .catch( err => {
-        helpers.alert && helpers.alert(err)
-        res.redirect('/error/500')
+        helpers.alert && helpers.alert(err);
+        res.redirect('/error/500');
       })
   }
 }
 
 function createToken() {
   return function(req, res, next) {
-    req.token = jwt.sign({ uid: req.user.uid }, process.env.EMAIL_SIGN_KEY, { expiresIn: process.env.EXPIRE_RESET_LINK })
-    next()
+    req.token = jwt.sign({ uid: req.user.uid }, process.env.EMAIL_SIGN_KEY, { expiresIn: process.env.EXPIRE_RESET_LINK });
+    next();
   }
 }
 
 function sendEmail(helpers) {
   return function(req, res, next) {
-    const user = req.user
-    const account = helpers.Apps.find(app => app.id === 'account')
+    const user = req.user;
+    const account = helpers.Apps.find(app => app.id === 'account');
     if (account) {
       helpers.sendEmail({
         recipient: [{ address: user.profile.email[0], name: user.profile.displayName }],
         template: 'resetemail',
         data: { customer: user.profile.displayName, endpoint:`${account.url}/form?name=reset&app=account`, token: req.token }
       })
-      .then(next)
+      .then(() => next())
       .catch(err => {
-        helpers.alert && helpers.alert(`Failed to send email to ${user.profile.displayName}[${user.profile.email[0]}]`)
-        next()
+        helpers.alert && helpers.alert(`Failed to send email to ${user.profile.displayName}[${user.profile.email[0]}]`);
+        next();
       })
     } else {
-      helpers.alert && helpers.alert('Cannot find account in environment variable APPS')
+      helpers.alert && helpers.alert('Cannot find account in environment variable APPS');
       const dom = `
         <div class="w3-container" style="margin: 32px 0">
           <h3 class="w3-text-red"> Opps! Something wrong happen </h3>
@@ -69,8 +69,8 @@ function sendEmail(helpers) {
           <p class="w3-text-grey"> Sorry for inconvenience. Please try again later </p>
         </div>
       `
-      res.writeHead( 200, { "Content-Type": "text/html" } )
-      res.end(html({ title: 'Failed', dom, data: {targetOrigin: req.app.url} }))
+      res.writeHead( 200, { "Content-Type": "text/html" } );
+      res.end(html({ title: 'Failed', dom, data: {targetOrigin: req.app.url} }));
     }
   }
 }
@@ -84,9 +84,9 @@ function render() {
         <p class="w3-text-grey"> Thank you. </p>
       </div>
     `
-    res.writeHead( 200, { "Content-Type": "text/html" } )
-    res.end(html({ title: 'Success', dom, data: {targetOrigin: req.app.url} }))
+    res.writeHead( 200, { "Content-Type": "text/html" } );
+    res.end(html({ title: 'Success', dom, data: {targetOrigin: req.app.url} }));
   }
 }
 
-module.exports = [validateParams, findUser, createToken, sendEmail, render]
+module.exports = [validateParams, findUser, createToken, sendEmail, render];

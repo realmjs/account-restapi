@@ -16,7 +16,8 @@ function authenUserMiddleware() {
     const bearer = bearerHeader.split(" ");
     const token = bearer[1];
     req.token = token;
-    jwt.verify(token, process.env.REALM_SECRET_KEY, (err, decoded) => {
+    const secret = req.app.key
+    jwt.verify(token, secret, (err, decoded) => {
       if (err) {
         res.status(401).json({ error: 'Unauthorized' })
       } else {
@@ -27,12 +28,15 @@ function authenUserMiddleware() {
   }
 }
 
-function generateAuthenTokenMiddleware() {
+function generateAuthenTokenMiddleware(helpers) {
   return function(req, res, next) {
-    const user = req.user
-    const secret = process.env.REALM_SECRET_KEY
-    req.authenToken = jwt.sign({ uid: user.uid }, secret)
-    next()
+    const user = req.user;
+    const data = { uid: user.uid };
+    if (user.realms[req.app.realm] && user.realms[req.app.realm].roles) {
+      data.roles = user.realms[req.app.realm].roles;
+    }
+    req.authenToken = jwt.sign(data, req.app.key);
+    next();
   }
 }
 
@@ -77,6 +81,7 @@ function serializeUser(user) {
   const _user = {...user}
   delete _user.uid
   delete _user.credentials
+  delete _user.realms
   return _user
 }
 

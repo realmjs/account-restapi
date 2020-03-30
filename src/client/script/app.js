@@ -9,14 +9,14 @@ import { postMessage } from "../../lib/message"
 import App from '../Template/App'
 
 document.addEventListener("DOMContentLoaded", function(event) {
-  postMessage('iframe.loaded',  {height: __data.height || 615, width: __data.width || 460})
-  render(<App data = {__data} close = {xclose} done = {xdone} />, document.getElementById("root"))
+  postMessage('iframe.loaded',  {height: __data.height || 615, width: __data.width || 460});
+  render(<App data = {__data} close = {xclose} done = {xdone} />, document.getElementById("root"));
 })
 
 function xclose() {
-  postMessage('iframe.close')
+  postMessage('iframe.close');
 }
 
 function xdone(attr) {
-  postMessage('iframe.done', attr)
+  postMessage('iframe.done', attr);
 }

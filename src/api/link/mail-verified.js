@@ -1,6 +1,6 @@
 " use strict"
 
-const html = require('../../lib/html')
+const html = require('../../lib/html');
 
 function render() {
   return function(req, res) {
@@ -12,9 +12,9 @@ function render() {
         </p>
       </div>
     `
-    res.writeHead( 200, { "Content-Type": "text/html" } )
-    res.end(html({title: 'Email Verified', dom}))
+    res.writeHead( 200, { "Content-Type": "text/html" } );
+    res.end(html({title: 'Email Verified', dom}));
   }
 }
 
-module.exports = render
+module.exports = render;
