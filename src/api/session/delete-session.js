@@ -10,6 +10,7 @@ function validateParams(helpers) {
     }
     const app = helpers.Apps.find( app => app.id === req.body.app );
     if (app) {
+      req.app = app;
       next();
     } else {
       res.status(204).json({ message: 'No content' });

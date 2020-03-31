@@ -43,14 +43,14 @@ function generateAuthenTokenMiddleware(helpers) {
 function setHttpCookieMiddleware() {
   return function(req, res, next) {
     const cookie = encodeCookie(req.user)
-    res.cookie(COOKIE_SESSION, cookie, { httpOnly: true })
+    res.cookie(`${COOKIE_SESSION}_${req.app.realm}`, cookie, { httpOnly: true })
     next()
   }
 }
 
 function cleanCookieMiddleware() {
   return function(req, res, next) {
-    res.clearCookie(COOKIE_SESSION)
+    res.clearCookie(`${COOKIE_SESSION}_${req.app.realm}`)
     next()
   }
 }
@@ -62,10 +62,10 @@ function encodeCookie(user) {
   })
 }
 
-function decodeCookie(cookies) {
+function decodeCookie(cookies, app) {
   return new Promise((resolve, reject) => {
-    if (!cookies || !cookies[COOKIE_SESSION]) { reject('no_cookie'); return }
-    const session = JSON.parse(cookies[COOKIE_SESSION])
+    if (!cookies || !cookies[`${COOKIE_SESSION}_${app.realm}`]) { reject('no_cookie'); return }
+    const session = JSON.parse(cookies[`${COOKIE_SESSION}_${app.realm}`])
     if (!session.uid) { reject('invalid_session'); return }
     jwt.verify(session.uid, process.env.COOKIE_SECRET_KEY, (err, decoded) => {
       if (err) {

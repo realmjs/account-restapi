@@ -36,7 +36,7 @@ function getSession() {
   return function(req, res, next) {
     const cookies = req.cookies;
     const app = req.app;
-    decodeCookie(cookies)
+    decodeCookie(cookies, app)
     .then( session => { req.uid = session.uid; next(); })
     .catch( err => {
       if (err === 'no_cookie') {
