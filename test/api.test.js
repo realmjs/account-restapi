@@ -3,15 +3,19 @@
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 
-function promiseFn() {
-  return new Promise(resolve => setTimeout(() => resolve(true), 1000));
-}
+import express from 'express';
+import request from 'supertest';
 
-describe('Test session api', () => {
+const app = express();
 
-  test('Get /session without enough parameter should return 400 Bad request', async () => {
-    const result = await promiseFn();
-    expect(result).toBeTruthy();
+app.get('/user', function(req, res) {
+  res.status(200).json({ name: 'alyx' });
+});
+
+describe('Test GET', () => {
+
+  test('responds with json', async () => {
+    await request(app).get('/user').expect(200).expect('Content-Type', /json/);
   });
 
 });
