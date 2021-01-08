@@ -3,19 +3,56 @@
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 
+require('dotenv').config();
+
+import api from '../src/api';
+
+const helpers = {
+  Apps: [{ id: 'test', url: 'localhost', realm: 'test', key: 'test-key' }],
+  alert: jest.fn(msg => msg),
+};
+
+api.helpers(helpers);
+
 import express from 'express';
 import request from 'supertest';
 
 const app = express();
+app.use('/', api.generate());
 
-app.get('/user', function(req, res) {
-  res.status(200).json({ name: 'alyx' });
-});
+beforeEach(() => jest.clearAllMocks() );
 
-describe('Test GET', () => {
+describe('test sso api', () => {
 
-  test('responds with json', async () => {
-    await request(app).get('/user').expect(200).expect('Content-Type', /json/);
+  test('sso with missing parameters', async () => {
+    await request(app).get('/session?r=json')
+                      .expect(400)
+                      .expect('Content-Type', /json/);
+    await request(app).get('/session?r=json&app=')
+                      .expect(400)
+                      .expect('Content-Type', /json/);
+    await request(app).get('/session')
+                      .expect(200)
+                      .expect('Content-Type', /text\/html/)
+                      .then( res => expect(res.text).toMatch(/Error 400/) );
+    await request(app).get('/session?app=')
+                      .expect(200)
+                      .expect('Content-Type', /text\/html/)
+                      .then( res => expect(res.text).toMatch(/Error 400/) );
+
+  });
+
+  test('sso with invalid app', async () => {
+    await request(app).get('/session?r=json&app=true')
+                      .expect(400)
+                      .expect('Content-Type', /json/);
+    await request(app).get('/session?app=true')
+                      .expect(200)
+                      .expect('Content-Type', /text\/html/)
+                      .then( res => expect(res.text).toMatch(/Error 400/) );
+
   });
 
 });
+
+
