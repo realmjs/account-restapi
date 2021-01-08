@@ -3,8 +3,6 @@
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 
-require('dotenv').config();
-
 import api from '../src/api';
 
 const helpers = {
