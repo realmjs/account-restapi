@@ -15,7 +15,7 @@ beforeEach( () => jest.clearAllMocks() );
 beforeAll( () => process.env.COOKIE_SECRET_KEY = 'test-cookie-enc-secret' );
 afterAll( () =>process.env.COOKIE_SECRET_KEY = undefined );
 
-test('sso with missing parameters', async () => {
+test('GET /session with missing parameters', async () => {
   await request(app).get('/session?r=json')
                     .expect(400)
                     .expect('Content-Type', /json/)
@@ -37,7 +37,7 @@ test('sso with missing parameters', async () => {
 });
 
 
-test('sso with invalid app', async () => {
+test('GET /session with invalid app', async () => {
   await request(app).get('/session?r=json&app=true')
                     .expect(400)
                     .expect('Content-Type', /json/)
@@ -51,7 +51,7 @@ test('sso with invalid app', async () => {
 });
 
 
-test('sso with no cookie', async () => {
+test('GET /session with no cookie', async () => {
   await request(app).get('/session?r=json&app=test')
                     .expect(200)
                     .expect('Content-Type', /json/)
@@ -74,7 +74,7 @@ test('sso with no cookie', async () => {
 });
 
 
-test('sso with invalid cookie', async () => {
+test('GET /session with invalid cookie', async () => {
 
   await request(app).get('/session?r=json&app=test')
                     .expect(400)
@@ -98,7 +98,7 @@ test('sso with invalid cookie', async () => {
 });
 
 
-test('sso with invalid users', async () => {
+test('GET /session with invalid users', async () => {
 
   await request(app).get('/session?r=json&app=test')
                     .expect(404)
@@ -134,7 +134,7 @@ test('sso with invalid users', async () => {
 });
 
 
-test('sso with error while accessing USERS table', async () => {
+test('GET /session with error while accessing USERS table', async () => {
 
   await request(app).get('/session?r=json&app=test')
                     .expect(403)
@@ -155,7 +155,7 @@ test('sso with error while accessing USERS table', async () => {
                     });
 });
 
-test('sso responses success', async () => {
+test('GET /session responses success', async () => {
 
   await request(app).get('/session?r=json&app=test')
                     .expect(200)
