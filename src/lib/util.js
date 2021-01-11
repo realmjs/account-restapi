@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken')
 
 const crypto = require('crypto')
 
-const COOKIE_SESSION = '__r_c_sess_'
+const COOKIE_SESSION = '__r_c_sess_';
 
 function authenUserMiddleware() {
   return function(req, res, next) {
@@ -64,25 +64,31 @@ function encodeCookie(user) {
 
 function decodeCookie(cookies, app) {
   return new Promise((resolve, reject) => {
-    if (!cookies || !cookies[`${COOKIE_SESSION}_${app.realm}`]) { reject('no_cookie'); return }
-    const session = JSON.parse(cookies[`${COOKIE_SESSION}_${app.realm}`])
-    if (!session.uid) { reject('invalid_session'); return }
+    if (!cookies || !cookies[`${COOKIE_SESSION}_${app.realm}`]) { resolve(null); return; }
+    let session = {};
+    try {
+      session = JSON.parse(cookies[`${COOKIE_SESSION}_${app.realm}`]);
+    } catch (err) {
+      reject(`Error when parsing JSON: ${cookies[`${COOKIE_SESSION}_${app.realm}`]}`);
+      return;
+    }
+    if (!session.uid) { resolve(null); return; }
     jwt.verify(session.uid, process.env.COOKIE_SECRET_KEY, (err, decoded) => {
       if (err) {
-        reject(err)
+        reject(err);
       } else {
-        resolve({ uid: decoded.uid, clientId: session.clientId })
+        resolve({ uid: decoded.uid, clientId: session.clientId });
       }
     })
   })
 }
 
 function serializeUser(user) {
-  const _user = {...user}
-  delete _user.uid
-  delete _user.credentials
-  delete _user.realms
-  return _user
+  const _user = {...user};
+  delete _user.uid;
+  delete _user.credentials;
+  delete _user.realms;
+  return _user;
 }
 
 function checkPassword(user, password) {

@@ -3,19 +3,34 @@
 const { generateAuthenTokenMiddleware, serializeUser, decodeCookie } = require('../../lib/util');
 const html = require('../../lib/html');
 
-function _sendErrorHTML(res, code, detail) {
-  const data = { route: 'error', error: { code, detail } };
+function _sendErrorHTML(res, code, detail, target) {
+  const data = { route: 'error', error: { code, detail }, target };
   res.writeHead( 200, { "Content-Type": "text/html" } );
-  res.end(html({title: `Error ${400}`, data, script: process.env.SCRIPT, style: false}));
+  res.end(html({title: `Error ${code}`, data, script: process.env.SCRIPT, style: false}));
 }
 
-function _responseError(responseType, res, code, detail ) {
+function _responseError(responseType, res, code, detail, target ) {
   if (responseType === 'json') {
     res.status(code).json({ error: detail });
   } else {
-    _sendErrorHTML(res, code, detail);
+    _sendErrorHTML(res, code, detail, target);
   }
 }
+
+function _sendSuccessHTML(res, session, target) {
+  const data = { route: 'sso', target, status: 200, session };
+  res.writeHead( 200, { "Content-Type": "text/html" } );
+  res.end(html({title: 'SSO', data, script: process.env.SCRIPT, style: false}));
+}
+
+function _responseSuccess(responseType, res, session, target) {
+  if (responseType === 'json') {
+    res.status(200).json({ session });
+  } else {
+    _sendSuccessHTML(res, session, target);
+  }
+}
+
 
 function validateParameters(helpers) {
   return function(req, res, next) {
@@ -42,30 +57,22 @@ function validateParameters(helpers) {
   }
 }
 
-function getSession() {
+function getSession(helpers) {
   return function(req, res, next) {
     const cookies = req.cookies;
     const app = req.app;
     decodeCookie(cookies, app)
-    .then( session => { req.uid = session.uid; next(); })
-    .catch( err => {
-      if (err === 'no_cookie') {
-        if (req.query && req.query.r && req.query.r === 'json') {
-          res.status(200).json({session: null});
-        } else {
-          const data = { route: 'sso', targetOrigin: app.url, status: 200, session: null };
-          res.writeHead( 200, { "Content-Type": "text/html" } );
-          res.end(html({title: 'SSO', data, script: process.env.SCRIPT, style: false}));
-        }
+    .then( session => {
+      if (session) {
+        req.uid = session.uid;
+        next();
       } else {
-        if (req.query && req.query.r && req.query.r === 'json') {
-          res.status(400).json({ error: 'Bad request' });
-        } else {
-          const data = { route: 'error', targetOrigin: app.url, error: {code: 400, detail: 'Bad request'} };
-          res.writeHead( 200, { "Content-Type": "text/html" } );
-          res.end(html({title: 'Error', data, script: process.env.SCRIPT, style: false}));
-        }
+        _responseSuccess(req.query.r, res, null, app.url);
       }
+    })
+    .catch( err => {
+      helpers.alert && helpers.alert(`Error in SSO: getSession: ${err}`);
+      _responseError(req.query.r, res, 400, 'Bad Request', app.url);
     });
   }
 }
@@ -79,39 +86,22 @@ function findUser(helpers) {
         req.user = users[0];
         next();
       } else {
-        if (req.query && req.query.r && req.query.r === 'json') {
-          res.status(404).json({ error: 'No user' });
-        } else {
-          const data = { route: 'error', targetOrigin: app.url, error: {code: 404, detail: 'No user'} };
-          res.writeHead( 200, { "Content-Type": "text/html" } );
-          res.end(html({title: 'Error', data, script: process.env.SCRIPT, style: false}));
-        }
+        _responseError(req.query.r, res, 404, 'Not Found');
       }
     })
     .catch( err => {
-      helpers.alert && helpers.alert(err)
-      if (req.query && req.query.r && req.query.r === 'json') {
-        res.status(403).json({ error: 'Unable to access Database' });
-      } else {
-        const data = { route: 'error', targetOrigin: app.url, error: {code: 403, detail: 'Unable to access Database'} };
-        res.writeHead( 200, { "Content-Type": "text/html" } );
-        res.end(html({title: 'Error', data, script: process.env.SCRIPT, style: false}));
-      }
+      helpers.alert && helpers.alert(`Error in SSO: findUser: ${err}`);
+      _responseError(req.query.r, res, 403, 'Access Denied');
     });
   }
 }
 
-function responseSuccess() {
+function final() {
   return function(req, res) {
-    if (req.query && req.query.r && req.query.r === 'json') {
-      res.status(200).json({session: { user: serializeUser(req.user), token: req.authenToken }});
-    } else {
-      const app = req.app;
-      const data = { route: 'sso', targetOrigin: app.url, status: 200, session: { user: serializeUser(req.user), token: req.authenToken } };
-      res.writeHead( 200, { "Content-Type": "text/html" } );
-      res.end(html({title: 'SSO', data, script: process.env.SCRIPT, style: false}));
-    }
+    const session = { user: serializeUser(req.user), token: req.authenToken };
+    const app = req.app;
+    _responseSuccess(req.query.r, res, session, app.url);
   }
 }
 
-module.exports = [validateParameters, getSession, findUser, generateAuthenTokenMiddleware, responseSuccess]
+module.exports = [validateParameters, getSession, findUser, generateAuthenTokenMiddleware, final];
