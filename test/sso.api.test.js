@@ -174,6 +174,6 @@ test('GET /session responses success', async () => {
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=${encodeCookie({uid: 'tester'})}`])
                     .expect('Content-Type', /text\/html/)
                     .then( res => {
-                      expect(res.text).toMatch(/\"user\":{},\"token\":\".*\"/);
+                      expect(res.text).toMatch(/{\"user\":{\"username\":\"tester\"},\"token\":\".*\"/);
                     });
 });
