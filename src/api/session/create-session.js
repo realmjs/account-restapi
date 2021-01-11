@@ -7,7 +7,7 @@ function validateParameters() {
     if (req.body.username && req.body.password && req.body.app) {
       next();
     } else {
-      res.status(400).send({ error: 'Bad request'});
+      res.status(400).json({ error: 'Bad request'});
     }
   }
 }
@@ -19,7 +19,7 @@ function verifyApp(helpers) {
       req.app = app;
       next();
     } else {
-      res.status(404).send({ error: 'Not found'});
+      res.status(404).json({ error: 'Not found'});
     }
   }
 }
