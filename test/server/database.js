@@ -1,6 +1,7 @@
 "use strict"
 
 import { realm } from './env';
+import { hashPassword } from '../../src/lib/util';
 
 export default {
   USERS: {
@@ -22,7 +23,7 @@ function createFindFunc(prop) {
       if (usr === 'tester') {
         const realms = {};
         realms[realm] = true;
-        resolve([ {uid: 'tester', username: 'tester', realms, credentials: { password: 'secret-pwd' } } ]);
+        resolve([ {uid: 'tester', username: 'tester', realms, credentials: { password: hashPassword('secret-pwd') } } ]);
       } else if (usr === 'norealm') {
         resolve([ {uid: 'norealm'} ]);
       } else if (usr === 'outsider') {

@@ -7,7 +7,7 @@ function validateParameters() {
     if (req.body.username && req.body.password && req.body.app) {
       next();
     } else {
-      res.status(400).json({ error: 'Bad request'});
+      res.status(400).json({ error: 'Bad Request'});
     }
   }
 }
@@ -19,7 +19,7 @@ function verifyApp(helpers) {
       req.app = app;
       next();
     } else {
-      res.status(404).json({ error: 'Not found'});
+      res.status(400).json({ error: 'Bad Request'});
     }
   }
 }
@@ -32,10 +32,13 @@ function findUser(helpers) {
         req.user = users[0];
         next();
       } else {
-        res.status(404).send({ error: 'User is not exist' });
+        res.status(404).send({ error: 'Not Found' });
       }
     })
-    .catch( err => res.status(403).json({ error: '[1] Unable to access Database' }));
+    .catch( err => {
+      helpers.alert && helpers.alert(`Error in creating new session: findUser: ${err}`);
+      res.status(403).json({ error: 'Access Denied' });
+    });
   }
 }
 
@@ -44,14 +47,15 @@ function verifyPassword() {
     if (checkPassword(req.user, req.body.password)) {
       next();
     } else {
-      res.status(401).send({ error: 'Invalid credential' });
+      res.status(401).send({ error: 'Unauthorized' });
     }
   }
 }
 
 function responseSuccess() {
   return function(req, res) {
-    res.status(200).json({ user: serializeUser(req.user), token: req.authenToken });
+    const session = { user: serializeUser(req.user), token: req.authenToken };
+    res.status(200).json({ session });
   }
 }
 
