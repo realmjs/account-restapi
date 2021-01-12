@@ -32,6 +32,15 @@ test('POST /session with invalid app', async () => {
   await request(app).post('/session')
                     .send({username: 'tester', password: 'secret-pwd', app: 'notapplicable'})
                     .set('Accept', 'application/json')
+                    .expect(400)
+                    .expect('Content-Type', /json/)
+                    .then( res => expect(res.body.error).not.toBeNull());
+});
+
+test('POST /session with not registered user', async () => {
+  await request(app).post('/session')
+                    .send({username: 'anoy', password: 'secret-pwd', app: 'test'})
+                    .set('Accept', 'application/json')
                     .expect(404)
                     .expect('Content-Type', /json/)
                     .then( res => expect(res.body.error).not.toBeNull());
