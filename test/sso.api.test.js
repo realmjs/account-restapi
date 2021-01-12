@@ -13,7 +13,7 @@ import request from 'supertest';
 
 beforeEach( () => jest.clearAllMocks() );
 beforeAll( () => process.env.COOKIE_SECRET_KEY = 'test-cookie-enc-secret' );
-afterAll( () =>process.env.COOKIE_SECRET_KEY = undefined );
+afterAll( () => process.env.COOKIE_SECRET_KEY = undefined );
 
 test('GET /session with missing parameters', async () => {
   await request(app).get('/session?r=json')
@@ -83,6 +83,7 @@ test('GET /session with invalid cookie', async () => {
                     .then( res => {
                       expect(res.body.error).not.toBeNull();
                       expect(helpers.alert).toHaveBeenCalledTimes(1);
+                      expect(helpers.alert.mock.results[0].value).toMatch(/Error in SSO: getSession:/);
                     });
   await request(app).get('/session?r=json&app=test')
                     .expect(400)
@@ -143,6 +144,7 @@ test('GET /session with error while accessing USERS table', async () => {
                     .then( res => {
                       expect(res.body.error).not.toBeNull();
                       expect(helpers.alert).toHaveBeenCalledTimes(1);
+                      expect(helpers.alert.mock.results[0].value).toMatch(/Error in SSO: findUser:/);
                     });
 
   await request(app).get('/session?app=test')
@@ -152,6 +154,7 @@ test('GET /session with error while accessing USERS table', async () => {
                     .then( res => {
                       expect(res.text).toMatch(/Error 403/);
                       expect(helpers.alert).toHaveBeenCalledTimes(2);
+                      expect(helpers.alert.mock.results[1].value).toMatch(/Error in SSO: findUser:/);
                     });
 });
 
