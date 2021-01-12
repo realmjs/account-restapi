@@ -54,7 +54,7 @@ function verifyPassword() {
 
 function responseSuccess() {
   return function(req, res) {
-    const session = { user: serializeUser(req.user), token: req.authenToken };
+    const session = { user: serializeUser(req.user), token: req.authenToken, sid: req.sid };
     res.status(200).json({ session });
   }
 }

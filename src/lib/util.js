@@ -44,6 +44,7 @@ function setHttpCookieMiddleware() {
   return function(req, res, next) {
     const cookie = encodeCookie(req.user);
     res.cookie(`${COOKIE_SESSION}_${req.app.realm}`, cookie, { httpOnly: true });
+    req.sid = JSON.parse(cookie).sessionId;
     next();
   }
 }

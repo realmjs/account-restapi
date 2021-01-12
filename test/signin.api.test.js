@@ -103,5 +103,6 @@ test('POST /session with correct password should response success', async () => 
                       expect(res.body.session.user).not.toHaveProperty('credentials');
                       expect(res.body.session.user).not.toHaveProperty('realms');
                       expect(res.body.session).toHaveProperty('token');
+                      expect(res.body.session).toHaveProperty('sid');
                     });
 });
