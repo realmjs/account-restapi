@@ -75,18 +75,13 @@ test('GET /session with no cookie', async () => {
 
 
 test('GET /session with invalid cookie', async () => {
-
   await request(app).get('/session?r=json&app=test')
-                    .expect(400)
+                    .expect(403)
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=uid:bare-test`])
                     .expect('Content-Type', /json/)
-                    .then( res => {
-                      expect(res.body.error).not.toBeNull();
-                      expect(helpers.alert).toHaveBeenCalledTimes(1);
-                      expect(helpers.alert.mock.results[0].value).toMatch(/Error in SSO: getSession:/);
-                    });
+                    .then( res => expect(res.body.error).not.toBeNull());
   await request(app).get('/session?r=json&app=test')
-                    .expect(400)
+                    .expect(403)
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}="{"uid":"bare-test"}"`])
                     .expect('Content-Type', /json/)
                     .then( res => expect(res.body.error).not.toBeNull());
@@ -95,12 +90,11 @@ test('GET /session with invalid cookie', async () => {
                     .expect(200)
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}="{"uid":"bare-test"}"`])
                     .expect('Content-Type', /text\/html/)
-                    .then( res => expect(res.text).toMatch(/Error 400/) );
+                    .then( res => expect(res.text).toMatch(/Error 403/) );
 });
 
 
 test('GET /session with invalid users', async () => {
-
   await request(app).get('/session?r=json&app=test')
                     .expect(404)
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=${encodeCookie({uid: 'nouser'})}`])
@@ -136,7 +130,6 @@ test('GET /session with invalid users', async () => {
 
 
 test('GET /session with error while accessing USERS table', async () => {
-
   await request(app).get('/session?r=json&app=test')
                     .expect(403)
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=${encodeCookie({uid: 'error'})}`])
@@ -159,7 +152,6 @@ test('GET /session with error while accessing USERS table', async () => {
 });
 
 test('GET /session responses success', async () => {
-
   await request(app).get('/session?r=json&app=test')
                     .expect(200)
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=${encodeCookie({uid: 'tester'})}`])
@@ -170,6 +162,7 @@ test('GET /session responses success', async () => {
                       expect(res.body.session.user).not.toHaveProperty('credentials');
                       expect(res.body.session.user).not.toHaveProperty('realms');
                       expect(res.body.session).toHaveProperty('token');
+                      expect(res.body.session).toHaveProperty('sid');
                     });
 
   await request(app).get('/session?app=test')
@@ -177,6 +170,6 @@ test('GET /session responses success', async () => {
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=${encodeCookie({uid: 'tester'})}`])
                     .expect('Content-Type', /text\/html/)
                     .then( res => {
-                      expect(res.text).toMatch(/{\"user\":{\"username\":\"tester\"},\"token\":\".*\"/);
+                      expect(res.text).toMatch(/{\"user\":{\"username\":\"tester\"},\"token\":\".*\",\"sid\":/);
                     });
 });

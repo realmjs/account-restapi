@@ -58,7 +58,7 @@ function cleanCookieMiddleware() {
 function encodeCookie(user) {
   return JSON.stringify({
     uid: jwt.sign({uid: user.uid}, process.env.COOKIE_SECRET_KEY),
-    clientId: Math.random().toString(36).substr(2,9)
+    sessionId: Math.random().toString(36).substr(2,9),
   });
 }
 
@@ -77,7 +77,7 @@ function decodeCookie(cookies, app) {
       if (err) {
         reject(err);
       } else {
-        resolve({ uid: decoded.uid, clientId: session.clientId });
+        resolve({ uid: decoded.uid, sessionId: session.sessionId });
       }
     })
   })

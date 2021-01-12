@@ -65,6 +65,7 @@ function getSession(helpers) {
     .then( session => {
       if (session) {
         req.uid = session.uid;
+        req.sid = session.sessionId;
         next();
       } else {
         _responseSuccess(req.query.r, res, null, app.url);
@@ -72,7 +73,7 @@ function getSession(helpers) {
     })
     .catch( err => {
       helpers.alert && helpers.alert(`Error in SSO: getSession: ${err}`);
-      _responseError(req.query.r, res, 400, 'Bad Request', app.url);
+      _responseError(req.query.r, res, 403, 'Access Denie', app.url);
     });
   }
 }
@@ -98,7 +99,7 @@ function findUser(helpers) {
 
 function final() {
   return function(req, res) {
-    const session = { user: serializeUser(req.user), token: req.authenToken };
+    const session = { user: serializeUser(req.user), token: req.authenToken, sid: req.sid };
     const app = req.app;
     _responseSuccess(req.query.r, res, session, app.url);
   }
