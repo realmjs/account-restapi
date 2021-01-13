@@ -7,6 +7,8 @@ import app from './server/app';
 import helpers from './server/helpers';
 import request from 'supertest';
 
+import { COOKIE_SESSION, realm } from './server/env';
+
 beforeEach( () => jest.clearAllMocks() );
 beforeAll( () => {
   process.env.COOKIE_SECRET_KEY = 'test-cookie-enc-secret';
@@ -23,19 +25,31 @@ test('POST /session with missing parameters', async () => {
   await request(app).post('/session')
                     .expect(400)
                     .expect('Content-Type', /json/)
-                    .then( res => expect(res.body.error).not.toBeNull());
+                    .then( res => {
+                      expect(res.body.error).not.toBeNull();
+                      expect(res.body.session).toBeUndefined();
+                      expect(res.headers['set-cookie']).toBeUndefined();
+                    });
   await request(app).post('/session')
                     .send({username: 'tester'})
                     .set('Accept', 'application/json')
                     .expect(400)
                     .expect('Content-Type', /json/)
-                    .then( res => expect(res.body.error).not.toBeNull());
+                    .then( res => {
+                      expect(res.body.error).not.toBeNull();
+                      expect(res.body.session).toBeUndefined();
+                      expect(res.headers['set-cookie']).toBeUndefined();
+                    });
   await request(app).post('/session')
                     .send({username: 'tester', password: 'secret-pwd'})
                     .set('Accept', 'application/json')
                     .expect(400)
                     .expect('Content-Type', /json/)
-                    .then( res => expect(res.body.error).not.toBeNull());
+                    .then( res => {
+                      expect(res.body.error).not.toBeNull();
+                      expect(res.body.session).toBeUndefined();
+                      expect(res.headers['set-cookie']).toBeUndefined();
+                    });
 });
 
 test('POST /session with invalid app', async () => {
@@ -44,7 +58,11 @@ test('POST /session with invalid app', async () => {
                     .set('Accept', 'application/json')
                     .expect(400)
                     .expect('Content-Type', /json/)
-                    .then( res => expect(res.body.error).not.toBeNull());
+                    .then( res => {
+                      expect(res.body.error).not.toBeNull();
+                      expect(res.body.session).toBeUndefined();
+                      expect(res.headers['set-cookie']).toBeUndefined();
+                    });
 });
 
 
@@ -54,19 +72,31 @@ test('POST /session with not registered user', async () => {
                     .set('Accept', 'application/json')
                     .expect(404)
                     .expect('Content-Type', /json/)
-                    .then( res => expect(res.body.error).not.toBeNull());
+                    .then( res => {
+                      expect(res.body.error).not.toBeNull();
+                      expect(res.body.session).toBeUndefined();
+                      expect(res.headers['set-cookie']).toBeUndefined();
+                    });
   await request(app).post('/session')
                     .send({username: 'norealm', password: 'secret-pwd', app: 'test'})
                     .set('Accept', 'application/json')
                     .expect(404)
                     .expect('Content-Type', /json/)
-                    .then( res => expect(res.body.error).not.toBeNull());
+                    .then( res => {
+                      expect(res.body.error).not.toBeNull();
+                      expect(res.body.session).toBeUndefined();
+                      expect(res.headers['set-cookie']).toBeUndefined();
+                    });
   await request(app).post('/session')
                     .send({username: 'outsider', password: 'secret-pwd', app: 'test'})
                     .set('Accept', 'application/json')
                     .expect(404)
                     .expect('Content-Type', /json/)
-                    .then( res => expect(res.body.error).not.toBeNull());
+                    .then( res => {
+                      expect(res.body.error).not.toBeNull();
+                      expect(res.body.session).toBeUndefined();
+                      expect(res.headers['set-cookie']).toBeUndefined();
+                    });
 });
 
 test('POST /session with error accessing LOGIN Table', async () => {
@@ -77,6 +107,8 @@ test('POST /session with error accessing LOGIN Table', async () => {
                     .expect('Content-Type', /json/)
                     .then( res => {
                       expect(res.body.error).not.toBeNull();
+                      expect(res.body.session).toBeUndefined();
+                      expect(res.headers['set-cookie']).toBeUndefined();
                       expect(helpers.alert).toHaveBeenCalledTimes(1);
                       expect(helpers.alert.mock.results[0].value).toMatch(/Error in creating new session: findUser:/);
                     });
@@ -88,7 +120,11 @@ test('POST /session with incorrect password', async () => {
                     .set('Accept', 'application/json')
                     .expect(401)
                     .expect('Content-Type', /json/)
-                    .then( res => expect(res.body.error).not.toBeNull());
+                    .then( res => {
+                      expect(res.body.error).not.toBeNull();
+                      expect(res.body.session).toBeUndefined();
+                      expect(res.headers['set-cookie']).toBeUndefined();
+                    });
 });
 
 test('POST /session with correct password should response success', async () => {
@@ -97,6 +133,7 @@ test('POST /session with correct password should response success', async () => 
                     .set('Accept', 'application/json')
                     .expect(200)
                     .expect('Content-Type', /json/)
+                    .expect('set-cookie', new RegExp(`${COOKIE_SESSION}_${realm}=.+; Path=/; HttpOnly`))
                     .then( res => {
                       expect(res.body.session).toHaveProperty('user');
                       expect(res.body.session.user).not.toHaveProperty('uid');
