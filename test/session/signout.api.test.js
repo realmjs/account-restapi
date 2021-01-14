@@ -3,11 +3,11 @@
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 
-import app from './server/app';
+import app from '../server/app';
 import request from 'supertest';
 
-import { encodeCookie } from '../src/lib/util';
-import { COOKIE_SESSION, realm } from "./server/env";
+import { encodeCookie } from '../../src/lib/util';
+import { COOKIE_SESSION, realm } from "../server/env";
 
 beforeAll( () => process.env.COOKIE_SECRET_KEY = 'test-cookie-enc-secret' );
 afterAll( () => process.env.COOKIE_SECRET_KEY = undefined );

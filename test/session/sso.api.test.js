@@ -3,12 +3,12 @@
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 
-import { encodeCookie } from '../src/lib/util';
-import { COOKIE_SESSION, realm } from './server/env';
-import { expectLoginSession } from './util';
+import { encodeCookie } from '../../src/lib/util';
+import { COOKIE_SESSION, realm } from '../server/env';
+import { expectLoginSession } from '../util';
 
-import app from './server/app';
-import helpers from './server/helpers';
+import app from '../server/app';
+import helpers from '../server/helpers';
 import request from 'supertest';
 
 beforeEach( () => jest.clearAllMocks() );
