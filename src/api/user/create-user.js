@@ -40,7 +40,7 @@ function checkUserExistance(helpers) {
       }
     })
     .catch( err => {
-      helpers.alert && helpers.alert(`Error in creating new user: checkUserExistance: ${err}`);
+      helpers.alert && helpers.alert(`POST /user: Error in checkUserExistance: ${err}`);
       res.status(403).json({ error: 'Forbidden' });
     });
   }
@@ -82,7 +82,7 @@ function createUser(helpers) {
     helpers.Database.USER.insert(user)
     .then( user => { req.user = user; next(); })
     .catch( err => {
-      helpers.alert && helpers.alert(`Error in creating new user: createUser: ${err}`);
+      helpers.alert && helpers.alert(`POST /user: Error in createUser: ${err}`);
       res.status(403).json({ error: 'Forbidden' });
     });
 
@@ -106,7 +106,7 @@ function sendEmail(helpers) {
                   { expiresIn: process.env.EMAIL_EXPIRE_RESET_LINK }
                 );
         } catch (err) {
-          helpers.alert && helpers.alert(`Error in creating new user: sendEmail: ${err}`);
+          helpers.alert && helpers.alert(`POST /user: Error in sendEmail: ${err}`);
         }
 
         helpers.sendEmail({
@@ -121,8 +121,8 @@ function sendEmail(helpers) {
         });
 
       } else {
-        helpers.alert && helpers.alert(`Error in creating new user: sendEmail: App account is not configured`);
-        res.status(500).json({ error: 'Server configuration'});
+        helpers.alert && helpers.alert(`POST /user: Error in sendEmail: App account is not configured`);
+        res.status(500).json({ error: 'Server configuration' });
       }
     }
   }
@@ -137,7 +137,7 @@ function hook(helpers) {
       })))
       .then(() => next())
       .catch(err => {
-        helpers.alert && helpers.alert(`Error in creating new user: hook: ${err}`);
+        helpers.alert && helpers.alert(`POST /user: Error in hook: ${err}`);
         next();
       });
     }

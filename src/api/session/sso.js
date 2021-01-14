@@ -72,7 +72,7 @@ function getSession(helpers) {
       }
     })
     .catch( err => {
-      helpers.alert && helpers.alert(`Error in SSO: getSession: ${err}`);
+      helpers.alert && helpers.alert(`GET /session: Error in getSession: ${err}`);
       _responseError(req.query.r, res, 403, 'Access Denie', app.url);
     });
   }
@@ -91,7 +91,7 @@ function findUser(helpers) {
       }
     })
     .catch( err => {
-      helpers.alert && helpers.alert(`Error in SSO: findUser: ${err}`);
+      helpers.alert && helpers.alert(`GET /session: Error in findUser: ${err}`);
       _responseError(req.query.r, res, 403, 'Access Denied');
     });
   }

@@ -19,7 +19,7 @@ afterAll( () => {
   process.env.EMAIL_SIGN_KEY = undefined;
 });
 
-test('[PUT /user/password] with missing all parameters', async () => {
+test('[PUT /user/password] with missing all parameters, should response 400', async () => {
   await request(app).put('/user/password')
                     .expect(400)
                     .expect('Content-Type', /json/)
@@ -30,7 +30,7 @@ test('[PUT /user/password] with missing all parameters', async () => {
 });
 
 
-test('[PUT /user/password] with missing parameter t (token)', async () => {
+test('[PUT /user/password] with missing parameter t (token), should response 400', async () => {
   await request(app).put('/user/password')
                     .send({ password: 'secret'})
                     .set('Accept', 'application/json')
@@ -43,7 +43,7 @@ test('[PUT /user/password] with missing parameter t (token)', async () => {
 });
 
 
-test('[PUT /user/password] with invalid token', async () => {
+test('[PUT /user/password] with invalid token, should response 403', async () => {
   await request(app).put('/user/password')
                     .send({ password: 'secret', t: 'invalid' })
                     .set('Accept', 'application/json')
@@ -55,7 +55,7 @@ test('[PUT /user/password] with invalid token', async () => {
                     });
 });
 
-test('[PUT /user/password] with expired token', async () => {
+test('[PUT /user/password] with expired token, should response 403', async () => {
   const token = jwt.sign({uid:'error-updater'}, process.env.EMAIL_SIGN_KEY, { expiresIn: '1s' });
   await delay(2000);
   await request(app).put('/user/password')
@@ -70,7 +70,7 @@ test('[PUT /user/password] with expired token', async () => {
 });
 
 
-test('[PUT /user/password] should alert when encounter database error', async () => {
+test('[PUT /user/password] should alert when encounter database error, should response 403', async () => {
   await request(app).put('/user/password')
                     .send({ password: 'secret', t: jwt.sign({uid:'error-updater'}, process.env.EMAIL_SIGN_KEY) })
                     .set('Accept', 'application/json')

@@ -15,12 +15,12 @@ beforeEach( () => jest.clearAllMocks() );
 beforeAll( () => process.env.COOKIE_SECRET_KEY = 'test-cookie-enc-secret' );
 afterAll( () => process.env.COOKIE_SECRET_KEY = undefined );
 
-test('GET /session with missing parameters', async () => {
+test('[GET /session ]with missing all parameters, should response 400', async () => {
   await request(app).get('/session?r=json')
                     .expect(400)
                     .expect('Content-Type', /json/)
                     .then( res => {
-                      expect(res.body.error).not.toBeNull();
+                      expect(res.body.error).toBeDefined();
                       expect(res.body.session).toBeUndefined();
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
@@ -28,7 +28,7 @@ test('GET /session with missing parameters', async () => {
                     .expect(400)
                     .expect('Content-Type', /json/)
                     .then( res => {
-                      expect(res.body.error).not.toBeNull();
+                      expect(res.body.error).toBeDefined();
                       expect(res.body.session).toBeUndefined();
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
@@ -51,12 +51,12 @@ test('GET /session with missing parameters', async () => {
 });
 
 
-test('GET /session with invalid app', async () => {
+test('[GET /session ]with invalid app', async () => {
   await request(app).get('/session?r=json&app=true')
                     .expect(400)
                     .expect('Content-Type', /json/)
                     .then( res => {
-                      expect(res.body.error).not.toBeNull();
+                      expect(res.body.error).toBeDefined();
                       expect(res.body.session).toBeUndefined();
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
@@ -68,11 +68,10 @@ test('GET /session with invalid app', async () => {
                       expect(res.text).toMatch(/Error 400/);
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
-
 });
 
 
-test('GET /session with no cookie', async () => {
+test('[GET /session ]with no cookie', async () => {
   await request(app).get('/session?r=json&app=test')
                     .expect(200)
                     .expect('Content-Type', /json/)
@@ -107,13 +106,13 @@ test('GET /session with no cookie', async () => {
 });
 
 
-test('GET /session with invalid cookie', async () => {
+test('[GET /session ]with invalid cookie', async () => {
   await request(app).get('/session?r=json&app=test')
                     .expect(403)
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=uid:bare-test`])
                     .expect('Content-Type', /json/)
                     .then( res => {
-                      expect(res.body.error).not.toBeNull();
+                      expect(res.body.error).toBeDefined();
                       expect(res.body.session).toBeUndefined();
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
@@ -122,7 +121,7 @@ test('GET /session with invalid cookie', async () => {
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}="{"uid":"bare-test"}"`])
                     .expect('Content-Type', /json/)
                     .then( res => {
-                      expect(res.body.error).not.toBeNull();
+                      expect(res.body.error).toBeDefined();
                       expect(res.body.session).toBeUndefined();
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
@@ -138,13 +137,13 @@ test('GET /session with invalid cookie', async () => {
 });
 
 
-test('GET /session with invalid users', async () => {
+test('[GET /session ]with invalid users', async () => {
   await request(app).get('/session?r=json&app=test')
                     .expect(404)
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=${encodeCookie({uid: 'nouser'})}`])
                     .expect('Content-Type', /json/)
                     .then( res => {
-                      expect(res.body.error).not.toBeNull();
+                      expect(res.body.error).toBeDefined();
                       expect(res.body.session).toBeUndefined();
                     });
   await request(app).get('/session?r=json&app=test')
@@ -152,7 +151,7 @@ test('GET /session with invalid users', async () => {
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=${encodeCookie({uid: 'norealm'})}`])
                     .expect('Content-Type', /json/)
                     .then( res => {
-                      expect(res.body.error).not.toBeNull();
+                      expect(res.body.error).toBeDefined();
                       expect(res.body.session).toBeUndefined();
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
@@ -161,7 +160,7 @@ test('GET /session with invalid users', async () => {
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=${encodeCookie({uid: 'outsider'})}`])
                     .expect('Content-Type', /json/)
                     .then( res => {
-                      expect(res.body.error).not.toBeNull();
+                      expect(res.body.error).toBeDefined();
                       expect(res.body.session).toBeUndefined();
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
@@ -192,16 +191,16 @@ test('GET /session with invalid users', async () => {
 });
 
 
-test('GET /session with error while accessing USERS table', async () => {
+test('[GET /session ]with error while accessing USERS table', async () => {
   await request(app).get('/session?r=json&app=test')
                     .expect(403)
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=${encodeCookie({uid: 'error'})}`])
                     .expect('Content-Type', /json/)
                     .then( res => {
-                      expect(res.body.error).not.toBeNull();
+                      expect(res.body.error).toBeDefined();
                       expect(res.body.session).toBeUndefined();
                       expect(helpers.alert).toHaveBeenCalledTimes(1);
-                      expect(helpers.alert.mock.results[0].value).toMatch(/Error in SSO: findUser:/);
+                      expect(helpers.alert.mock.results[0].value).toMatch(/GET \/session: Error in findUser:/);
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
 
@@ -212,12 +211,12 @@ test('GET /session with error while accessing USERS table', async () => {
                     .then( res => {
                       expect(res.text).toMatch(/Error 403/);
                       expect(helpers.alert).toHaveBeenCalledTimes(2);
-                      expect(helpers.alert.mock.results[1].value).toMatch(/Error in SSO: findUser:/);
+                      expect(helpers.alert.mock.results[1].value).toMatch(/GET \/session: Error in findUser:/);
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
 });
 
-test('GET /session responses success', async () => {
+test('[GET /session ]responses success', async () => {
   await request(app).get('/session?r=json&app=test')
                     .expect(200)
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=${encodeCookie({uid: 'tester'})}`])

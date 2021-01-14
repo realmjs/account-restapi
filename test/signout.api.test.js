@@ -13,29 +13,51 @@ beforeAll( () => process.env.COOKIE_SECRET_KEY = 'test-cookie-enc-secret' );
 afterAll( () => process.env.COOKIE_SECRET_KEY = undefined );
 
 
-test('DELETE /session with invalid params' , async () => {
+test('[DELETE /session] with missing all parameters, should response 400' , async () => {
   await request(app).delete('/session')
                     .expect(400)
                     .expect('Content-Type', /json/)
-                    .then( res => expect(res.body.error).not.toBeNull());
+                    .then( res => expect(res.body.error).toBeDefined());
+});
+
+
+test('[DELETE /session] with missing parameter sid, should response 400' , async () => {
   await request(app).delete('/session')
                     .send({app: 'notapplicable'})
                     .expect(400)
                     .expect('Content-Type', /json/)
-                    .then( res => expect(res.body.error).not.toBeNull());
+                    .then( res => expect(res.body.error).toBeDefined());
 });
 
 
-test('DELETE /session without cookie' , async () => {
+test('[DELETE /session] with missing parameter app, should response 400' , async () => {
+  await request(app).delete('/session')
+                    .send({sid: 'any'})
+                    .expect(400)
+                    .expect('Content-Type', /json/)
+                    .then( res => expect(res.body.error).toBeDefined());
+});
+
+
+test('[DELETE /session] with invalid parameter app, should response 400' , async () => {
+  await request(app).delete('/session')
+                    .send({app: 'notapplicable', sid: 'any'})
+                    .expect(400)
+                    .expect('Content-Type', /json/)
+                    .then( res => expect(res.body.error).toBeDefined());
+});
+
+
+test('[DELETE /session] without cookie, should response 403' , async () => {
   await request(app).delete('/session')
                     .send({app: 'test', sid: 'any'})
                     .expect(403)
                     .expect('Content-Type', /json/)
-                    .then( res => expect(res.body.error).not.toBeNull());
+                    .then( res => expect(res.body.error).toBeDefined());
 });
 
 
-test('DELETE /session invalid cookie session' , async () => {
+test('[DELETE /session] invalid cookie session, should response 403' , async () => {
   const cookie = encodeCookie({uid: 'tester'});
   const sid = JSON.parse(cookie).sessionId;
   await request(app).delete('/session')
@@ -43,11 +65,11 @@ test('DELETE /session invalid cookie session' , async () => {
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=${cookie}`])
                     .expect(403)
                     .expect('Content-Type', /json/)
-                    .then( res => expect(res.body.error).not.toBeNull());
+                    .then( res => expect(res.body.error).toBeDefined());
 });
 
 
-test('DELETE /session should response success' , async () => {
+test('[DELETE /session] should response success (200)' , async () => {
   const cookie = encodeCookie({uid: 'tester'});
   const sid = JSON.parse(cookie).sessionId;
   await request(app).delete('/session')

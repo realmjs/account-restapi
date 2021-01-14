@@ -4,7 +4,7 @@ const { checkPassword, generateAuthenTokenMiddleware, setHttpCookieMiddleware, s
 
 function validateParameters() {
   return function(req, res, next) {
-    if (req.body.username && req.body.password && req.body.app) {
+    if (req.body.username && req.body.password && req.body.password.length > 0 && req.body.app) {
       next();
     } else {
       res.status(400).json({ error: 'Bad Request'});
@@ -36,7 +36,7 @@ function findUser(helpers) {
       }
     })
     .catch( err => {
-      helpers.alert && helpers.alert(`Error in creating new session: findUser: ${err}`);
+      helpers.alert && helpers.alert(`POST /session: Error in findUser: ${err}`);
       res.status(403).json({ error: 'Access Denied' });
     });
   }

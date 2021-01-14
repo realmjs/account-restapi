@@ -29,117 +29,131 @@ afterAll( () => {
 });
 
 
-test('POST /user with missing parameters', async () => {
+test('[POST /user] with missing all parameters, should response 400', async () => {
   await request(app).post('/user')
                     .expect(400)
                     .expect('Content-Type', /json/)
                     .then( res => {
-                      expect(res.body.error).not.toBeNull();
+                      expect(res.body.error).toBeDefined();
                       expect(res.body.session).toBeUndefined();
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
+});
+
+
+test('[POST /user] with missing all parameters except user.uid, should response 400', async () => {
   await request(app).post('/user')
                     .send({ user: { uid: 'tester' } })
                     .set('Accept', 'application/json')
                     .expect(400)
                     .expect('Content-Type', /json/)
                     .then( res => {
-                      expect(res.body.error).not.toBeNull();
+                      expect(res.body.error).toBeDefined();
                       expect(res.body.session).toBeUndefined();
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
+});
+
+test('[POST /user] with missing all parameters except user.email, should response 400', async () => {
   await request(app).post('/user')
                     .send({ user: { email: 'tester@team.io' } })
                     .set('Accept', 'application/json')
                     .expect(400)
                     .expect('Content-Type', /json/)
                     .then( res => {
-                      expect(res.body.error).not.toBeNull();
+                      expect(res.body.error).toBeDefined();
                       expect(res.body.session).toBeUndefined();
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
+});
+
+
+test('[POST /user] with missing parameter user.password, should response 400', async () => {
   await request(app).post('/user')
                     .send({ app: 'test', user: { email: 'tester@team.io' } })
                     .set('Accept', 'application/json')
                     .expect(400)
                     .expect('Content-Type', /json/)
                     .then( res => {
-                      expect(res.body.error).not.toBeNull();
+                      expect(res.body.error).toBeDefined();
                       expect(res.body.session).toBeUndefined();
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
+});
+
+test('[POST /user] with missing parameter app, should response 400', async () => {
   await request(app).post('/user')
                     .send({ user: { email: 'tester@team.io', password: 'secret' } })
                     .set('Accept', 'application/json')
                     .expect(400)
                     .expect('Content-Type', /json/)
                     .then( res => {
-                      expect(res.body.error).not.toBeNull();
+                      expect(res.body.error).toBeDefined();
                       expect(res.body.session).toBeUndefined();
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
 });
 
 
-test('POST /user with invalid app', async () => {
+test('[POST /user] with invalid app, should response 400', async () => {
   await request(app).post('/user')
                     .send({ app: 'notapplicable', user: { email: 'tester@team.io', password: 'secret' } })
                     .set('Accept', 'application/json')
                     .expect(400)
                     .expect('Content-Type', /json/)
                     .then( res => {
-                      expect(res.body.error).not.toBeNull();
+                      expect(res.body.error).toBeDefined();
                       expect(res.body.session).toBeUndefined();
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
 });
 
-test('POST /user with user already exist', async () => {
+test('[POST /user] with user already exist, should response 403', async () => {
   await request(app).post('/user')
                     .send({ app: 'test', user: { email: 'tester', password: 'secret' } })
                     .set('Accept', 'application/json')
                     .expect(403)
                     .expect('Content-Type', /json/)
                     .then( res => {
-                      expect(res.body.error).not.toBeNull();
+                      expect(res.body.error).toBeDefined();
                       expect(res.body.session).toBeUndefined();
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
 });
 
-test('POST /user with error accessing LOGIN Table', async () => {
+test('[POST /user] with error accessing LOGIN Table, shound response 403', async () => {
   await request(app).post('/user')
                     .send({ app: 'test', user: { email: 'error', password: 'secret' } })
                     .set('Accept', 'application/json')
                     .expect(403)
                     .expect('Content-Type', /json/)
                     .then( res => {
-                      expect(res.body.error).not.toBeNull();
+                      expect(res.body.error).toBeDefined();
                       expect(res.body.session).toBeUndefined();
                       expect(res.headers['set-cookie']).toBeUndefined();
                       expect(helpers.alert).toHaveBeenCalledTimes(1);
-                      expect(helpers.alert.mock.results[0].value).toMatch(/Error in creating new user: checkUserExistance:/);
+                      expect(helpers.alert.mock.results[0].value).toMatch(/POST \/user: Error in checkUserExistance:/);
                     });
 });
 
 
-test('POST /user with error accessing USER Table', async () => {
+test('[POST /user] with error accessing USER Table, shound response 403', async () => {
   await request(app).post('/user')
                     .send({ app: 'test', user: { email: 'error-inserter', password: 'secret' } })
                     .set('Accept', 'application/json')
                     .expect(403)
                     .expect('Content-Type', /json/)
                     .then( res => {
-                      expect(res.body.error).not.toBeNull();
+                      expect(res.body.error).toBeDefined();
                       expect(res.body.session).toBeUndefined();
                       expect(res.headers['set-cookie']).toBeUndefined();
                       expect(helpers.alert).toHaveBeenCalledTimes(1);
-                      expect(helpers.alert.mock.results[0].value).toMatch(/Error in creating new user: createUser:/);
+                      expect(helpers.alert.mock.results[0].value).toMatch(/POST \/user: Error in createUser:/);
                     });
 });
 
 
-test('POST /user should send email, call hooks and response 200 after created a new user success', async () => {
+test('[POST /user] should send email, call hooks and response 200 after created a new user success', async () => {
   await request(app).post('/user')
                     .send({ app: 'test', user: { email: 'tester@localhost', password: 'secret' } })
                     .set('Accept', 'application/json')
@@ -168,7 +182,7 @@ test('POST /user should send email, call hooks and response 200 after created a 
 });
 
 
-test('POST /user should alert when failed to send email after created a new user success', async () => {
+test('[POST /user] should alert when failed to send email after created a new user success', async () => {
   await request(app).post('/user')
                     .send({ app: 'test', user: { email: 'error@localhost', password: 'secret' } })
                     .set('Accept', 'application/json')
@@ -183,7 +197,7 @@ test('POST /user should alert when failed to send email after created a new user
 });
 
 
-test('POST /user should alert when failed to hook after created a new user success', async () => {
+test('[POST /user] should alert when failed to hook after created a new user success', async () => {
   await request(app).post('/user')
                     .send({ app: 'test', user: { email: 'error@localhost', password: 'secret' } })
                     .set('Accept', 'application/json')

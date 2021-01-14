@@ -27,11 +27,11 @@ function getSession() {
       if (session && session.sessionId === req.body.sid) {
         next();
       } else {
-        res.status(403).json({ error: 'Access Denied' });
+        res.status(403).json({ error: 'Forbidden' });
       }
     })
     .catch( err => {
-      res.status(403).json({ error: 'Access Denied' });
+      res.status(403).json({ error: 'Forbidden' });
     });
   }
 }
