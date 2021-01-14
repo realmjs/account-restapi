@@ -58,12 +58,32 @@ test('POST /user with missing parameters', async () => {
                       expect(res.body.session).toBeUndefined();
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
+  await request(app).post('/user')
+                    .send({ app: 'test', user: { email: 'tester@team.io' } })
+                    .set('Accept', 'application/json')
+                    .expect(400)
+                    .expect('Content-Type', /json/)
+                    .then( res => {
+                      expect(res.body.error).not.toBeNull();
+                      expect(res.body.session).toBeUndefined();
+                      expect(res.headers['set-cookie']).toBeUndefined();
+                    });
+  await request(app).post('/user')
+                    .send({ user: { email: 'tester@team.io', password: 'secret' } })
+                    .set('Accept', 'application/json')
+                    .expect(400)
+                    .expect('Content-Type', /json/)
+                    .then( res => {
+                      expect(res.body.error).not.toBeNull();
+                      expect(res.body.session).toBeUndefined();
+                      expect(res.headers['set-cookie']).toBeUndefined();
+                    });
 });
 
 
 test('POST /user with invalid app', async () => {
   await request(app).post('/user')
-                    .send({ app: 'notapplicable', user: { email: 'tester@team.io' } })
+                    .send({ app: 'notapplicable', user: { email: 'tester@team.io', password: 'secret' } })
                     .set('Accept', 'application/json')
                     .expect(400)
                     .expect('Content-Type', /json/)
@@ -76,7 +96,7 @@ test('POST /user with invalid app', async () => {
 
 test('POST /user with user already exist', async () => {
   await request(app).post('/user')
-                    .send({ app: 'test', user: { email: 'tester' } })
+                    .send({ app: 'test', user: { email: 'tester', password: 'secret' } })
                     .set('Accept', 'application/json')
                     .expect(403)
                     .expect('Content-Type', /json/)
@@ -89,7 +109,7 @@ test('POST /user with user already exist', async () => {
 
 test('POST /user with error accessing LOGIN Table', async () => {
   await request(app).post('/user')
-                    .send({ app: 'test', user: { email: 'error' } })
+                    .send({ app: 'test', user: { email: 'error', password: 'secret' } })
                     .set('Accept', 'application/json')
                     .expect(403)
                     .expect('Content-Type', /json/)
@@ -105,7 +125,7 @@ test('POST /user with error accessing LOGIN Table', async () => {
 
 test('POST /user with error accessing USER Table', async () => {
   await request(app).post('/user')
-                    .send({ app: 'test', user: { email: 'error-inserter' } })
+                    .send({ app: 'test', user: { email: 'error-inserter', password: 'secret' } })
                     .set('Accept', 'application/json')
                     .expect(403)
                     .expect('Content-Type', /json/)
@@ -125,6 +145,7 @@ test('POST /user should send email, call hooks and response 200 after created a 
                     .set('Accept', 'application/json')
                     .expect(200)
                     .expect('Content-Type', /json/)
+                    .expect('set-cookie', new RegExp(`${COOKIE_SESSION}_${realm}=.+; Path=/; HttpOnly`))
                     .then( res => {
                       expectSendEmailOK();
                       expectHooksAreCall();
@@ -147,28 +168,30 @@ test('POST /user should send email, call hooks and response 200 after created a 
 });
 
 
-test.only('POST /user should alert when failed to send email after created a new user success', async () => {
+test('POST /user should alert when failed to send email after created a new user success', async () => {
   await request(app).post('/user')
                     .send({ app: 'test', user: { email: 'error@localhost', password: 'secret' } })
                     .set('Accept', 'application/json')
                     .expect(200)
                     .expect('Content-Type', /json/)
+                    .expect('set-cookie', new RegExp(`${COOKIE_SESSION}_${realm}=.+; Path=/; HttpOnly`))
                     .then( res => {
-                      expect(helpers.sendEmail).toHaveBeenCalledTimes(1);
-                      expect(helpers.alert).toHaveBeenCalledTimes(1);
-                      expect(helpers.alert.mock.results[0].value).toMatch(/User error\[error@localhost\] is created. But failed to send verification email/);
+                      expect(helpers.sendEmail).toHaveBeenCalled();
+                      expect(helpers.alert).toHaveBeenCalled();
+                      expect(helpers.alert.mock.results[0].value).toMatch(/User error\[.*\] is created. But failed to send verification email/);
                     });
 });
 
 
-test.only('POST /user should alert when failed to hook after created a new user success', async () => {
+test('POST /user should alert when failed to hook after created a new user success', async () => {
   await request(app).post('/user')
                     .send({ app: 'test', user: { email: 'error@localhost', password: 'secret' } })
                     .set('Accept', 'application/json')
                     .expect(200)
                     .expect('Content-Type', /json/)
+                    .expect('set-cookie', new RegExp(`${COOKIE_SESSION}_${realm}=.+; Path=/; HttpOnly`))
                     .then( async res => {
-                      expect(helpers.hooks[0]).toHaveBeenCalledTimes(1);
+                      expect(helpers.hooks[0]).toHaveBeenCalled();
                       await expect(helpers.hooks[0].mock.results[0].value).rejects.toBeFalsy();
                     });
 });
