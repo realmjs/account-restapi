@@ -13,12 +13,12 @@ const { isEmail } = require('../../lib/form');
 function findUser(helpers) {
   return function (req, res) {
     if (!req.query.app) {
-      res.status(400).json({error: 'Bad query'});
+      res.status(400).json({ error: 'Bad Request' });
       return;
     }
     const app = helpers.Apps.find( app => app.id === req.query.app );
     if (!app) {
-      res.status(404).json({error: 'App not found'});
+      res.status(400).json({ error: 'Bad Request' });
       return;
     }
     if (req.query && req.query.u) {
@@ -50,18 +50,18 @@ function findUser(helpers) {
             res.status(401).json({ error: 'Unauthorized' });
             return
           }
-          helpers.Database.USERS.find({ uid: `= ${decoded.uid}`})
+          helpers.Database.USER.find({ uid: `= ${decoded.uid}`})
           .then( users => {
             if (users && users.length > 0) {
               const user = users[0];
               res.status(200).json({ username: user.username, profile: user.profile });
             } else {
-              res.status(404).json({ error: 'Not found' });
+              res.status(404).json({ error: 'Not Found' });
             }
           })
           .catch( err => {
-            helpers.alert && helpers.alert(err);
-            res.status(403).json({ error: 'Unable to access Database' });
+            helpers.alert && helpers.alert(`GET /user: Error in findUser: ${err}`);
+            res.status(403).json({ error: 'Forbidden' });
           })
         })
       }

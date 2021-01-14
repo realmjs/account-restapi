@@ -24,7 +24,7 @@ function createFindFunc(prop) {
       }
       if (usr === 'tester') {
         const realms = {};
-        realms[realm] = true;
+        realms[realm] = { roles: ['member'] };
         resolve([{
           uid: 'tester',
           username: 'tester',

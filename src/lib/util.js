@@ -30,14 +30,17 @@ function authenUserMiddleware() {
 
 function generateAuthenTokenMiddleware(helpers) {
   return function(req, res, next) {
-    const user = req.user;
-    const data = { uid: user.uid };
-    if (user.realms[req.app.realm] && user.realms[req.app.realm].roles) {
-      data.roles = user.realms[req.app.realm].roles;
-    }
-    req.authenToken = jwt.sign(data, req.app.key);
+    req.authenToken = createSessionToken(req.user, req.app);
     next();
   }
+}
+
+function createSessionToken(user, app) {
+  const data = { uid: user.uid };
+  if (user.realms[app.realm] && user.realms[app.realm].roles) {
+    data.roles = user.realms[app.realm].roles;
+  }
+  return jwt.sign(data, app.key);
 }
 
 function setHttpCookieMiddleware() {
@@ -104,4 +107,4 @@ function hashPassword(password) {
   return hash.digest('hex');
 }
 
-module.exports = { authenUserMiddleware, generateAuthenTokenMiddleware, setHttpCookieMiddleware, cleanCookieMiddleware, encodeCookie, decodeCookie, serializeUser, checkPassword, hashPassword }
+module.exports = { authenUserMiddleware, generateAuthenTokenMiddleware, setHttpCookieMiddleware, cleanCookieMiddleware, encodeCookie, decodeCookie, serializeUser, checkPassword, hashPassword, createSessionToken }
