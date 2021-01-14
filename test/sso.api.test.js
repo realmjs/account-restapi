@@ -5,6 +5,7 @@ import "regenerator-runtime/runtime";
 
 import { encodeCookie } from '../src/lib/util';
 import { COOKIE_SESSION, realm } from './server/env';
+import { expectLoginSession } from './util';
 
 import app from './server/app';
 import helpers from './server/helpers';
@@ -222,12 +223,7 @@ test('GET /session responses success', async () => {
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=${encodeCookie({uid: 'tester'})}`])
                     .expect('Content-Type', /json/)
                     .then( res => {
-                      expect(res.body.session).toHaveProperty('user');
-                      expect(res.body.session.user).not.toHaveProperty('uid');
-                      expect(res.body.session.user).not.toHaveProperty('credentials');
-                      expect(res.body.session.user).not.toHaveProperty('realms');
-                      expect(res.body.session).toHaveProperty('token');
-                      expect(res.body.session).toHaveProperty('sid');
+                      expectLoginSession(res.body.session);
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
 

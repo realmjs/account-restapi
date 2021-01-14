@@ -1,6 +1,6 @@
 "use strict"
 
-export function expectUserSerialized(user) {
+export function expectUserIsSerialized(user) {
   expect(user).not.toHaveProperty('uid');
   expect(user).not.toHaveProperty('credentials');
   expect(user).not.toHaveProperty('realms');

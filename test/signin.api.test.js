@@ -8,6 +8,7 @@ import helpers from './server/helpers';
 import request from 'supertest';
 
 import { COOKIE_SESSION, realm } from './server/env';
+import { expectLoginSession } from './util';
 
 beforeEach( () => jest.clearAllMocks() );
 beforeAll( () => {
@@ -135,11 +136,6 @@ test('POST /session with correct password should response success', async () => 
                     .expect('Content-Type', /json/)
                     .expect('set-cookie', new RegExp(`${COOKIE_SESSION}_${realm}=.+; Path=/; HttpOnly`))
                     .then( res => {
-                      expect(res.body.session).toHaveProperty('user');
-                      expect(res.body.session.user).not.toHaveProperty('uid');
-                      expect(res.body.session.user).not.toHaveProperty('credentials');
-                      expect(res.body.session.user).not.toHaveProperty('realms');
-                      expect(res.body.session).toHaveProperty('token');
-                      expect(res.body.session).toHaveProperty('sid');
+                      expectLoginSession(res.body.session);
                     });
 });

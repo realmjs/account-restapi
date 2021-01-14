@@ -8,7 +8,7 @@ import helpers from './server/helpers';
 import request from 'supertest';
 
 import { COOKIE_SESSION, realm } from './server/env';
-import { expectUserSerialized, expectLoginSession } from './util';
+import { expectUserIsSerialized, expectLoginSession } from './util';
 
 beforeEach( () => jest.clearAllMocks() );
 beforeAll( () => {
@@ -162,7 +162,7 @@ test('POST /user should send email, call hooks and response 200 after created a 
   function expectHooksAreCall() {
     expect(helpers.hooks[0]).toHaveBeenCalledTimes(1);
     expect(helpers.hooks[0].mock.calls[0][0]).toHaveProperty('user');
-    expectUserSerialized(helpers.hooks[0].mock.calls[0][0].user);
+    expectUserIsSerialized(helpers.hooks[0].mock.calls[0][0].user);
     expect(helpers.hooks[0].mock.calls[0][0]).toHaveProperty('token');
   }
 });
