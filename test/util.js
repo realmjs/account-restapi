@@ -14,3 +14,5 @@ export function expectLoginSession(session) {
   expect(session).toHaveProperty('token');
   expect(session).toHaveProperty('sid');
 }
+
+export const delay = ms => new Promise(res => setTimeout(res, ms));

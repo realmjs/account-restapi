@@ -9,7 +9,7 @@ function validateParams() {
     if (req.body && req.body.password && req.body.t) {
       next();
     } else {
-      res.status(400).send('Bad request');
+      res.status(400).json({ error: 'Bad Request' });
     }
   }
 }
@@ -18,7 +18,7 @@ function decodeToken() {
   return function(req, res, next) {
     jwt.verify(req.body.t, process.env.EMAIL_SIGN_KEY, (err, decoded) => {
       if (err) {
-        res.status(404).send('Resouce not found');
+        res.status(403).json({ error: 'Forbidden' });
       } else {
         req.uid = decoded.uid;
         next();
@@ -29,11 +29,11 @@ function decodeToken() {
 
 function updatePassword(helpers) {
   return function(req, res, next) {
-    helpers.Database.USERS.update({ uid: req.uid }, { credentials: { password: hashPassword(req.body.password) } })
-    .then( _ => res.status(200).send('Success') )
+    helpers.Database.USER.update({ uid: req.uid }, { credentials: { password: hashPassword(req.body.password) } })
+    .then( _ => res.status(200).json({ message: 'Success' }) )
     .catch( err => {
-      helpers.alert && helpers.alert(err);
-      res.status(500).send('Internal Error');
+      helpers.alert && helpers.alert(`PUT /user/password: Error in updatePassword: ${err}`);
+      res.status(403).json({ error: 'Forbidden' });
     });
   }
 }

@@ -6,14 +6,11 @@ const { checkPassword } = require('.././../lib/util')
 
 function validateParameters() {
   return function(req, res, next) {
-    if (!(req.body &&
-          req.body.app &&
-          req.body.username &&
-          req.body.password && req.body.password.length > 0 &&
-          req.body.newPassword && req.body.newPassword.length > 0)) {
-      res.status(400).send({ error: 'Bad request'});
-    } else {
+    if (req.body && req.body.app && req.body.username && req.body.password && req.body.password.length > 0 &&
+        req.body.newPassword && req.body.newPassword.length > 0) {
       next();
+    } else {
+      res.status(400).json({ error: 'Bad Request'});
     }
   }
 }
@@ -25,7 +22,7 @@ function verifyApp(helpers) {
       req.app = app;
       next();
     } else {
-      res.status(404).send({ error: 'App Not found'});
+      res.status(400).json({ error: 'Bad Request'});
     }
   }
 }
@@ -50,7 +47,7 @@ function verifyPassword() {
     if (checkPassword(req.user, req.body.password)) {
       next();
     } else {
-      res.status(401).send({ error: 'Invalid credential' });
+      res.status(402).send({ error: 'Invalid credential' });
     }
   }
 }
