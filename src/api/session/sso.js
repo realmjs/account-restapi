@@ -81,7 +81,7 @@ function getSession(helpers) {
 function findUser(helpers) {
   return function(req, res, next) {
     const app = req.app;
-    helpers.Database.USERS.find({ uid: `= ${req.uid}`})
+    helpers.Database.USER.find({ uid: `= ${req.uid}`})
     .then( users => {
       if (users && users.length > 0 && users[0].realms && users[0].realms[app.realm]) {
         req.user = users[0];
