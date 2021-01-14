@@ -11,13 +11,13 @@ api.add('/form', {
   get: require('./form/render-form')
 });
 
-/* users */
-api.add('/users', {
-  get: require('./users/find-users'),
-  post: require('./users/create-user')
+/* user */
+api.add('/user', {
+  get: require('./user/find-users'),
+  post: require('./user/create-user')
 });
-api.add('/users/password', {
-  put: require('./users/change-password')
+api.add('/user/password', {
+  put: require('./user/change-password')
 });
 
 /* session */

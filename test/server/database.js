@@ -4,8 +4,9 @@ import { realm } from './env';
 import { hashPassword } from '../../src/lib/util';
 
 export default {
-  USERS: {
+  USER: {
     find: createFindFunc('uid'),
+    insert: insertUser,
   },
   LOGIN: {
     find: createFindFunc('username'),
@@ -23,7 +24,13 @@ function createFindFunc(prop) {
       if (usr === 'tester') {
         const realms = {};
         realms[realm] = true;
-        resolve([ {uid: 'tester', username: 'tester', realms, credentials: { password: hashPassword('secret-pwd') } } ]);
+        resolve([{
+          uid: 'tester',
+          username: 'tester',
+          email: 'tester',
+          realms,
+          credentials: { password: hashPassword('secret-pwd') }
+        }]);
       } else if (usr === 'norealm') {
         resolve([ {uid: 'norealm'} ]);
       } else if (usr === 'outsider') {
@@ -33,4 +40,14 @@ function createFindFunc(prop) {
       }
     });
   }
+}
+
+function insertUser(user) {
+  return new Promise((resolve, reject) => {
+    if (user.username === 'error-inserter') {
+      reject('err');
+      return;
+    }
+    resolve(user);
+  });
 }

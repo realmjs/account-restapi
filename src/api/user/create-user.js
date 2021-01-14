@@ -8,10 +8,10 @@ const { hashPassword, generateAuthenTokenMiddleware, setHttpCookieMiddleware, se
 function validateParameters() {
   return function(req, res, next) {
     const user = req.body.user;
-    if (user && user.email && req.body.app) {
+    if (user && user.email && user.password && req.body.app) {
       next();
     } else {
-      res.status(400).send({ error: 'Bad request'});
+      res.status(400).send({ error: 'Bad Request'});
     }
   }
 }
@@ -23,7 +23,7 @@ function verifyApp(helpers) {
       req.app = app;
       next();
     } else {
-      res.status(404).send({ error: 'Not found'});
+      res.status(400).send({ error: 'Bad Request'});
     }
   }
 }
@@ -31,16 +31,18 @@ function verifyApp(helpers) {
 function checkUserExistance(helpers) {
   return function(req, res, next) {
     const user = req.body.user;
-    const app = req.app;
     helpers.Database.LOGIN.find({ username: `= ${user.email}`})
     .then( users => {
       if (users && users.length > 0) {
-        res.status(403).send({ error: 'email is already used' });
+        res.status(403).send({ error: 'Forbidden' });
       } else {
         next();
       }
     })
-    .catch( err => res.status(403).json({ error: '[1] Unable to access Database' }))
+    .catch( err => {
+      helpers.alert && helpers.alert(`Error in creating new user: checkUserExistance: ${err}`);
+      res.status(403).json({ error: 'Forbidden' });
+    });
   }
 }
 
@@ -53,12 +55,16 @@ function createUser(helpers) {
         profile[prop]  = 'N/A';
       }
     }
-    // set default picture
-    if (profile.gender && profile.gender === 'female') {
-      profile.picture = process.env.DEFAULT_FEMALE_PICTURE;
-    } else {
-      profile.picture = process.env.DEFAULT_MALE_PICTURE;
+    profile.picture = process.env.DEFAULT_PROFILE_PICTURE;
+
+    if (!profile.email || profile.email.length === 0) {
+      profile.email = [req.body.user.email];
     }
+
+    if (!profile.displayName) {
+      profile.displayName = req.body.user.email.split('@')[0];
+    }
+
     const realms = {};
     realms[req.app.realm] = {
       roles: ['member']
@@ -72,9 +78,14 @@ function createUser(helpers) {
       createdAt: (new Date()).getTime(),
       realms,
     };
-    helpers.Database.USERS.insert(user)
+
+    helpers.Database.USER.insert(user)
     .then( user => { req.user = user; next(); })
-    .catch( err => res.status(403).json({ error: '[2] Unable to access Database' }));
+    .catch( err => {
+      helpers.alert && helpers.alert(`Error in creating new user: createUser: ${err}`);
+      res.status(403).json({ error: 'Forbidden' });
+    });
+
   }
 }
 
@@ -84,12 +95,20 @@ function sendEmail(helpers) {
       /* generate token to active email */
       const user = req.user;
       const account = helpers.Apps.find(app => app.id === 'account');
+
       if (account) {
-        const token = jwt.sign(
-          {uid: user.uid},
-          process.env.EMAIL_SIGN_KEY,
-          { expiresIn: process.env.EXPIRE_RESET_LINK }
-        );
+
+        let token;
+        try {
+        token = jwt.sign(
+                  {uid: user.uid},
+                  process.env.EMAIL_SIGN_KEY,
+                  { expiresIn: process.env.EMAIL_EXPIRE_RESET_LINK }
+                );
+        } catch (err) {
+          helpers.alert && helpers.alert(`Error in creating new user: sendEmail: ${err}`);
+        }
+
         helpers.sendEmail({
           recipient: [{ address: user.profile.email[0], name: user.profile.displayName }],
           template: 'verifyemail',
@@ -100,28 +119,36 @@ function sendEmail(helpers) {
           helpers.alert && helpers.alert(`User ${user.profile.displayName}[${user.profile.email[0]}] is created. But failed to send verification email`)
           next()
         });
+
       } else {
-        helpers.alert && helpers.alert('Cannot find account in environment variable APPS');
-        res.status(500).json({ error: 'App not found!'});
+        helpers.alert && helpers.alert(`Error in creating new user: sendEmail: App account is not configured`);
+        res.status(500).json({ error: 'Server configuration'});
       }
     }
   }
 }
 
-function hooker(helpers) {
+function hook(helpers) {
   return function(req, res, next) {
-    helpers.onCreatedUser && helpers.onCreatedUser({
-      user: serializeUser(req.user),
-      token: req.authenToken
-    });
-    next();
+    if (helpers.hooks) {
+      Promise.all(helpers.hooks.map(hook => hook({
+        user: serializeUser(req.user),
+        token: req.authenToken
+      })))
+      .then(() => next())
+      .catch(err => {
+        helpers.alert && helpers.alert(`Error in creating new user: hook: ${err}`);
+        next();
+      });
+    }
   }
 }
 
 function responseSuccess() {
   return function(req, res) {
-    res.status(200).json({ user: serializeUser(req.user), token: req.authenToken });
+    const session = { user: serializeUser(req.user), token: req.authenToken, sid: req.sid };
+    res.status(200).json({ session });
   }
 }
 
-module.exports = [validateParameters, verifyApp, checkUserExistance, createUser, generateAuthenTokenMiddleware, setHttpCookieMiddleware, sendEmail, hooker, responseSuccess]
+module.exports = [validateParameters, verifyApp, checkUserExistance, createUser, generateAuthenTokenMiddleware, setHttpCookieMiddleware, sendEmail, hook, responseSuccess]
