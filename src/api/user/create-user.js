@@ -8,10 +8,10 @@ const { hashPassword, generateAuthenTokenMiddleware, setHttpCookieMiddleware, se
 function validateParameters() {
   return function(req, res, next) {
     const user = req.body.user;
-    if (user && user.email && user.password && req.body.app) {
+    if (user && user.email && user.password && user.password.length > 0 && req.body.app) {
       next();
     } else {
-      res.status(400).send({ error: 'Bad Request'});
+      res.status(400).json({ error: 'Bad Request'});
     }
   }
 }
@@ -23,7 +23,7 @@ function verifyApp(helpers) {
       req.app = app;
       next();
     } else {
-      res.status(400).send({ error: 'Bad Request'});
+      res.status(400).json({ error: 'Bad Request'});
     }
   }
 }
@@ -48,27 +48,8 @@ function checkUserExistance(helpers) {
 
 function createUser(helpers) {
   return function(req, res, next) {
-    const profile = { ...req.body.user.profile };
-    // mark empty field as N/A if any
-    for (let prop in profile) {
-      if (typeof profile[prop] === 'string' && profile[prop].length === 0) {
-        profile[prop]  = 'N/A';
-      }
-    }
-    profile.picture = process.env.DEFAULT_PROFILE_PICTURE;
-
-    if (!profile.email || profile.email.length === 0) {
-      profile.email = [req.body.user.email];
-    }
-
-    if (!profile.displayName) {
-      profile.displayName = req.body.user.email.split('@')[0];
-    }
-
-    const realms = {};
-    realms[req.app.realm] = {
-      roles: ['member']
-    };
+    const profile = prepareUserProfile(req.body.user);
+    const realms = prepareUserRealms(req.app.realm);
     const user = {
       username: req.body.user.email.toLowerCase().trim(),
       uid: uuid(),
@@ -87,6 +68,39 @@ function createUser(helpers) {
     });
 
   }
+}
+
+function prepareUserProfile(user) {
+  const profile = { ...user.profile };
+
+  // mark empty field as N/A if any
+  for (let prop in profile) {
+    if (typeof profile[prop] === 'string' && profile[prop].length === 0) {
+      profile[prop]  = 'N/A';
+    }
+  }
+
+  if (!profile.picture) {
+    profile.picture = process.env.DEFAULT_PROFILE_PICTURE;
+  }
+
+  if (!profile.email || profile.email.length === 0) {
+    profile.email = [user.email];
+  }
+
+  if (!profile.displayName) {
+    profile.displayName = user.email.split('@')[0];
+  }
+
+  return profile;
+}
+
+function prepareUserRealms(realm) {
+  const realms = {};
+  realms[realm] = {
+    roles: ['member']
+  };
+  return realms;
 }
 
 function sendEmail(helpers) {
