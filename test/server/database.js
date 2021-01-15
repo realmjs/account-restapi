@@ -8,6 +8,7 @@ export default {
     find: createFindFunc('uid'),
     insert: insertUser,
     update: updateUser,
+    set: setUserProp,
   },
   LOGIN: {
     find: createFindFunc('username'),
@@ -61,6 +62,13 @@ function insertUser(user) {
 }
 
 function updateUser({uid}) {
+  return new Promise((resolve, reject) => {
+    if (uid === 'error-updater') reject(false)
+    else resolve(true);
+  });
+}
+
+function setUserProp({uid}) {
   return new Promise((resolve, reject) => {
     if (uid === 'error-updater') reject(false)
     else resolve(true);

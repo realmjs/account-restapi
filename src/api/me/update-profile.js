@@ -12,20 +12,28 @@ function validateParams() {
   }
 }
 
-function authen(helpers) {
+function verifyApp(helpers) {
   return function(req, res, next) {
     const app = helpers.Apps.find( app => app.id === req.body.app );
-    if (!app) {
-      res.status(404).json({ error: 'App Not found' });
-      return
+    if (app) {
+      req.app = app;
+      next();
+    } else {
+      res.status(400).json({ error: 'Bad Request'});
     }
-    const token = req.body.token
+  }
+}
+
+function authen() {
+  return function(req, res, next) {
+    const app = req.app;
+    const token = req.body.token;
     jwt.verify(token, app.key, (err, decoded) => {
       if (err) {
         res.status(401).json({ error: 'Unauthorized' });
       } else {
         req.uid = decoded.uid;
-        next()
+        next();
       }
     })
   }
@@ -34,15 +42,15 @@ function authen(helpers) {
 function update(helpers) {
   return function(req, res) {
     const profile = req.body.profile;
-    helpers.Database.USERS.set({ uid: req.uid }, { profile })
+    helpers.Database.USER.set({ uid: req.uid }, { profile })
     .then( update => {
       res.status(200).json({ update });
     })
     .catch(err => {
-      helpers.alert && helpers.alert(err);
-      res.status(500).json({ error: 'Database access failed!'});
+      helpers.alert && helpers.alert(`PUT /me/profile: Error in update: ${err}`);
+      res.status(403).json({ error: 'Forbidden' });
     });
   }
 }
 
-module.exports = [validateParams, authen, update];
+module.exports = [validateParams, verifyApp, authen, update];
