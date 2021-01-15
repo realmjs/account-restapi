@@ -15,8 +15,10 @@ beforeEach( () => jest.clearAllMocks() );
 beforeAll( () => setupEnvironmentVariables() );
 afterAll( () => clearEnvironmentVariables() );
 
-test('[PUT /user/password] with missing all parameters, should response 400', async () => {
-  await request(app).put('/user/password')
+const url = '/user/password';
+
+test(`[PUT ${url}] should response 400 if missing all parameters`, async () => {
+  await request(app).put(url)
                     .expect(400)
                     .expect('Content-Type', /json/)
                     .then( res => {
@@ -26,8 +28,8 @@ test('[PUT /user/password] with missing all parameters, should response 400', as
 });
 
 
-test('[PUT /user/password] with missing parameter t (token), should response 400', async () => {
-  await request(app).put('/user/password')
+test(`[PUT ${url}] should response 400 if missing parameter t (token)`, async () => {
+  await request(app).put(url)
                     .send({ password: 'secret'})
                     .set('Accept', 'application/json')
                     .expect(400)
@@ -39,8 +41,8 @@ test('[PUT /user/password] with missing parameter t (token), should response 400
 });
 
 
-test('[PUT /user/password] with invalid token, should response 403', async () => {
-  await request(app).put('/user/password')
+test(`[PUT ${url}] should response 403 for invalid token`, async () => {
+  await request(app).put(url)
                     .send({ password: 'secret', t: 'invalid' })
                     .set('Accept', 'application/json')
                     .expect(403)
@@ -51,10 +53,10 @@ test('[PUT /user/password] with invalid token, should response 403', async () =>
                     });
 });
 
-test('[PUT /user/password] with expired token, should response 403', async () => {
+test(`[PUT ${url}] should response 403 for expired token`, async () => {
   const token = jwt.sign({uid:'error-updater'}, process.env.EMAIL_SIGN_KEY, { expiresIn: '1s' });
   await delay(2000);
-  await request(app).put('/user/password')
+  await request(app).put(url)
                     .send({ password: 'secret', t: token })
                     .set('Accept', 'application/json')
                     .expect(403)
@@ -66,8 +68,8 @@ test('[PUT /user/password] with expired token, should response 403', async () =>
 });
 
 
-test('[PUT /user/password] should alert when encounter database error, should response 403', async () => {
-  await request(app).put('/user/password')
+test(`[PUT ${url}] should response 400 and alert when accessing USER Table encounter an error`, async () => {
+  await request(app).put(url)
                     .send({ password: 'secret', t: jwt.sign({uid:'error-updater'}, process.env.EMAIL_SIGN_KEY) })
                     .set('Accept', 'application/json')
                     .expect(403)
@@ -80,8 +82,8 @@ test('[PUT /user/password] should alert when encounter database error, should re
                     });
 });
 
-test('[PUT /user/password] response 200 if success', async () => {
-  await request(app).put('/user/password')
+test(`[PUT ${url}] should response 200 if request with all valid parameters`, async () => {
+  await request(app).put(url)
                     .send({ password: 'secret', t: jwt.sign({uid:'tester'}, process.env.EMAIL_SIGN_KEY) })
                     .set('Accept', 'application/json')
                     .expect(200)

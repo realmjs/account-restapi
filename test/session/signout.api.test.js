@@ -13,17 +13,18 @@ import { setupEnvironmentVariables, clearEnvironmentVariables } from '../util';
 beforeAll( () => setupEnvironmentVariables() );
 afterAll( () => clearEnvironmentVariables() );
 
+const url = '/session';
 
-test('[DELETE /session] with missing all parameters, should response 400' , async () => {
-  await request(app).delete('/session')
+test(`[DELETE ${url}] should response 400 if missing all parameters` , async () => {
+  await request(app).delete(url)
                     .expect(400)
                     .expect('Content-Type', /json/)
                     .then( res => expect(res.body.error).toBeDefined());
 });
 
 
-test('[DELETE /session] with missing parameter sid, should response 400' , async () => {
-  await request(app).delete('/session')
+test(`[DELETE ${url}] should response 400 if missing parameter sid` , async () => {
+  await request(app).delete(url)
                     .send({app: 'notapplicable'})
                     .expect(400)
                     .expect('Content-Type', /json/)
@@ -31,8 +32,8 @@ test('[DELETE /session] with missing parameter sid, should response 400' , async
 });
 
 
-test('[DELETE /session] with missing parameter app, should response 400' , async () => {
-  await request(app).delete('/session')
+test(`[DELETE ${url}] should response 400 if missing parameter app` , async () => {
+  await request(app).delete(url)
                     .send({sid: 'any'})
                     .expect(400)
                     .expect('Content-Type', /json/)
@@ -40,8 +41,8 @@ test('[DELETE /session] with missing parameter app, should response 400' , async
 });
 
 
-test('[DELETE /session] with invalid parameter app, should response 400' , async () => {
-  await request(app).delete('/session')
+test(`[DELETE ${url}] should response 400 for invalid app` , async () => {
+  await request(app).delete(url)
                     .send({app: 'notapplicable', sid: 'any'})
                     .expect(400)
                     .expect('Content-Type', /json/)
@@ -49,8 +50,8 @@ test('[DELETE /session] with invalid parameter app, should response 400' , async
 });
 
 
-test('[DELETE /session] without cookie, should response 403' , async () => {
-  await request(app).delete('/session')
+test(`[DELETE ${url}] should response 403 if request without a cookie` , async () => {
+  await request(app).delete(url)
                     .send({app: 'test', sid: 'any'})
                     .expect(403)
                     .expect('Content-Type', /json/)
@@ -58,10 +59,10 @@ test('[DELETE /session] without cookie, should response 403' , async () => {
 });
 
 
-test('[DELETE /session] invalid cookie session, should response 403' , async () => {
+test(`[DELETE ${url}] should response 403 if request with invalid cookie session` , async () => {
   const cookie = encodeCookie({uid: 'tester'});
   const sid = JSON.parse(cookie).sessionId;
-  await request(app).delete('/session')
+  await request(app).delete(url)
                     .send({app: 'test', sid: 'ivalid'})
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=${cookie}`])
                     .expect(403)
@@ -70,10 +71,10 @@ test('[DELETE /session] invalid cookie session, should response 403' , async () 
 });
 
 
-test('[DELETE /session] should response success (200)' , async () => {
+test(`[DELETE ${url}] should response 200 if request with a valid cookie session` , async () => {
   const cookie = encodeCookie({uid: 'tester'});
   const sid = JSON.parse(cookie).sessionId;
-  await request(app).delete('/session')
+  await request(app).delete(url)
                     .send({app: 'test', sid: sid})
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=${cookie}`])
                     .expect(200)

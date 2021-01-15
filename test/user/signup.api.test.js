@@ -14,9 +14,10 @@ beforeEach( () => jest.clearAllMocks() );
 beforeAll( () => setupEnvironmentVariables() );
 afterAll( () => clearEnvironmentVariables() );
 
+const url = '/user';
 
-test('[POST /user] with missing all parameters, should response 400', async () => {
-  await request(app).post('/user')
+test(`[POST ${url}] should response 400 if missing all parameters`, async () => {
+  await request(app).post(url)
                     .expect(400)
                     .expect('Content-Type', /json/)
                     .then( res => {
@@ -27,8 +28,8 @@ test('[POST /user] with missing all parameters, should response 400', async () =
 });
 
 
-test('[POST /user] with missing all parameters except user.uid, should response 400', async () => {
-  await request(app).post('/user')
+test(`[POST ${url}] should response 400 missing all parameters except user.uid`, async () => {
+  await request(app).post(url)
                     .send({ user: { uid: 'tester' } })
                     .set('Accept', 'application/json')
                     .expect(400)
@@ -40,8 +41,8 @@ test('[POST /user] with missing all parameters except user.uid, should response 
                     });
 });
 
-test('[POST /user] with missing all parameters except user.email, should response 400', async () => {
-  await request(app).post('/user')
+test(`[POST ${url}] should response 400 missing all parameters except user.email`, async () => {
+  await request(app).post(url)
                     .send({ user: { email: 'tester@team.io' } })
                     .set('Accept', 'application/json')
                     .expect(400)
@@ -54,8 +55,8 @@ test('[POST /user] with missing all parameters except user.email, should respons
 });
 
 
-test('[POST /user] with missing parameter user.password, should response 400', async () => {
-  await request(app).post('/user')
+test(`[POST ${url}] should response 400 if missing parameter user.password`, async () => {
+  await request(app).post(url)
                     .send({ app: 'test', user: { email: 'tester@team.io' } })
                     .set('Accept', 'application/json')
                     .expect(400)
@@ -67,8 +68,8 @@ test('[POST /user] with missing parameter user.password, should response 400', a
                     });
 });
 
-test('[POST /user] with missing parameter app, should response 400', async () => {
-  await request(app).post('/user')
+test(`[POST ${url}] should response 400 if missing parameter app`, async () => {
+  await request(app).post(url)
                     .send({ user: { email: 'tester@team.io', password: 'secret' } })
                     .set('Accept', 'application/json')
                     .expect(400)
@@ -81,8 +82,8 @@ test('[POST /user] with missing parameter app, should response 400', async () =>
 });
 
 
-test('[POST /user] with invalid app, should response 400', async () => {
-  await request(app).post('/user')
+test(`[POST ${url}] should response 400 for invalid app`, async () => {
+  await request(app).post(url)
                     .send({ app: 'notapplicable', user: { email: 'tester@team.io', password: 'secret' } })
                     .set('Accept', 'application/json')
                     .expect(400)
@@ -94,8 +95,8 @@ test('[POST /user] with invalid app, should response 400', async () => {
                     });
 });
 
-test('[POST /user] with user already exist, should response 403', async () => {
-  await request(app).post('/user')
+test(`[POST ${url}] should response 403 if user has registerred already`, async () => {
+  await request(app).post(url)
                     .send({ app: 'test', user: { email: 'tester', password: 'secret' } })
                     .set('Accept', 'application/json')
                     .expect(403)
@@ -107,8 +108,8 @@ test('[POST /user] with user already exist, should response 403', async () => {
                     });
 });
 
-test('[POST /user] with error accessing LOGIN Table, shound response 403', async () => {
-  await request(app).post('/user')
+test(`[POST ${url}] should response 403 and alert if accessing LOGIN Table encounter an error`, async () => {
+  await request(app).post(url)
                     .send({ app: 'test', user: { email: 'error', password: 'secret' } })
                     .set('Accept', 'application/json')
                     .expect(403)
@@ -123,8 +124,8 @@ test('[POST /user] with error accessing LOGIN Table, shound response 403', async
 });
 
 
-test('[POST /user] with error accessing USER Table, shound response 403', async () => {
-  await request(app).post('/user')
+test(`[POST ${url}] should response 403 and alert if accessing USER Table encounter an error`, async () => {
+  await request(app).post(url)
                     .send({ app: 'test', user: { email: 'error-inserter', password: 'secret' } })
                     .set('Accept', 'application/json')
                     .expect(403)
@@ -139,8 +140,8 @@ test('[POST /user] with error accessing USER Table, shound response 403', async 
 });
 
 
-test('[POST /user] should send email, call hooks and response 200 after created a new user success', async () => {
-  await request(app).post('/user')
+test(`[POST ${url}] should response 200, send email and call hooks after created a new user success`, async () => {
+  await request(app).post(url)
                     .send({ app: 'test', user: { email: 'tester@localhost', password: 'secret' } })
                     .set('Accept', 'application/json')
                     .expect(200)
@@ -168,8 +169,8 @@ test('[POST /user] should send email, call hooks and response 200 after created 
 });
 
 
-test('[POST /user] should alert when failed to send email after created a new user success', async () => {
-  await request(app).post('/user')
+test(`[POST ${url}] should response 200 and alert when failed to send email after created a new user success`, async () => {
+  await request(app).post(url)
                     .send({ app: 'test', user: { email: 'error@localhost', password: 'secret' } })
                     .set('Accept', 'application/json')
                     .expect(200)
@@ -183,8 +184,8 @@ test('[POST /user] should alert when failed to send email after created a new us
 });
 
 
-test('[POST /user] should alert when failed to hook after created a new user success', async () => {
-  await request(app).post('/user')
+test(`[POST ${url}] should response 200 and alert when failed to hook after created a new user success`, async () => {
+  await request(app).post(url)
                     .send({ app: 'test', user: { email: 'error@localhost', password: 'secret' } })
                     .set('Accept', 'application/json')
                     .expect(200)

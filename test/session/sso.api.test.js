@@ -15,8 +15,10 @@ beforeEach( () => jest.clearAllMocks() );
 beforeAll( () => setupEnvironmentVariables() );
 afterAll( () => clearEnvironmentVariables() );
 
-test('[GET /session ] with missing all parameters, should response 400', async () => {
-  await request(app).get('/session?r=json')
+const url = '/session';
+
+test(`[GET ${url}] should response 400 if missing all parameters`, async () => {
+  await request(app).get(`${url}?r=json`)
                     .expect(400)
                     .expect('Content-Type', /json/)
                     .then( res => {
@@ -24,7 +26,7 @@ test('[GET /session ] with missing all parameters, should response 400', async (
                       expect(res.body.session).toBeUndefined();
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
-  await request(app).get('/session?r=json&app=')
+  await request(app).get(`${url}?r=json&app=`)
                     .expect(400)
                     .expect('Content-Type', /json/)
                     .then( res => {
@@ -33,14 +35,14 @@ test('[GET /session ] with missing all parameters, should response 400', async (
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
 
-  await request(app).get('/session')
+  await request(app).get(`${url}`)
                     .expect(200)
                     .expect('Content-Type', /text\/html/)
                     .then( res => {
                       expect(res.text).toMatch(/Error 400/);
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
-  await request(app).get('/session?app=')
+  await request(app).get(`${url}?app=`)
                     .expect(200)
                     .expect('Content-Type', /text\/html/)
                     .then( res => {
@@ -51,8 +53,8 @@ test('[GET /session ] with missing all parameters, should response 400', async (
 });
 
 
-test('[GET /session ] with invalid app', async () => {
-  await request(app).get('/session?r=json&app=true')
+test(`[GET ${url}] should response 400 for invalid app`, async () => {
+  await request(app).get(`${url}?r=json&app=true`)
                     .expect(400)
                     .expect('Content-Type', /json/)
                     .then( res => {
@@ -61,7 +63,7 @@ test('[GET /session ] with invalid app', async () => {
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
 
-  await request(app).get('/session?app=true')
+  await request(app).get(`${url}?app=true`)
                     .expect(200)
                     .expect('Content-Type', /text\/html/)
                     .then( res => {
@@ -71,32 +73,15 @@ test('[GET /session ] with invalid app', async () => {
 });
 
 
-test('[GET /session ] with no cookie', async () => {
-  await request(app).get('/session?r=json&app=test')
+test(`[GET ${url}] should response 200 with null session if request without a session cookie`, async () => {
+  await request(app).get(`${url}?r=json&app=test`)
                     .expect(200)
                     .expect('Content-Type', /json/)
                     .then( res => {
                       expect(res.body.session).toBeNull();
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
-  await request(app).get('/session?app=test')
-                    .expect(200)
-                    .expect('Content-Type', /text\/html/)
-                    .then( res => {
-                      expect(res.text).toMatch(/\"session\":null/);
-                      expect(res.headers['set-cookie']).toBeUndefined();
-                    });
-
-  await request(app).get('/session?r=json&app=test')
-                    .expect(200)
-                    .set('Cookie', [`${COOKIE_SESSION}_${realm}={"nouid":true}`])
-                    .expect('Content-Type', /json/)
-                    .then( res => {
-                      expect(res.body.session).toBeNull()
-                      expect(res.headers['set-cookie']).toBeUndefined();
-                    });
-  await request(app).get('/session?app=test')
-                    .set('Cookie', [`${COOKIE_SESSION}_${realm}={"nouid":true}`])
+  await request(app).get(`${url}?app=test`)
                     .expect(200)
                     .expect('Content-Type', /text\/html/)
                     .then( res => {
@@ -106,8 +91,8 @@ test('[GET /session ] with no cookie', async () => {
 });
 
 
-test('[GET /session ] with invalid cookie', async () => {
-  await request(app).get('/session?r=json&app=test')
+test(`[GET ${url}] should response 403 if request with invalid session cookie`, async () => {
+  await request(app).get(`${url}?r=json&app=test`)
                     .expect(403)
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=uid:bare-test`])
                     .expect('Content-Type', /json/)
@@ -116,7 +101,7 @@ test('[GET /session ] with invalid cookie', async () => {
                       expect(res.body.session).toBeUndefined();
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
-  await request(app).get('/session?r=json&app=test')
+  await request(app).get(`${url}?r=json&app=test`)
                     .expect(403)
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}="{"uid":"bare-test"}"`])
                     .expect('Content-Type', /json/)
@@ -126,7 +111,7 @@ test('[GET /session ] with invalid cookie', async () => {
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
 
-  await request(app).get('/session?app=test')
+  await request(app).get(`${url}?app=test`)
                     .expect(200)
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}="{"uid":"bare-test"}"`])
                     .expect('Content-Type', /text\/html/)
@@ -137,8 +122,8 @@ test('[GET /session ] with invalid cookie', async () => {
 });
 
 
-test('[GET /session ] with invalid users', async () => {
-  await request(app).get('/session?r=json&app=test')
+test(`[GET ${url}] should response 404 for invalid users`, async () => {
+  await request(app).get(`${url}?r=json&app=test`)
                     .expect(404)
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=${encodeCookie({uid: 'nouser'})}`])
                     .expect('Content-Type', /json/)
@@ -146,7 +131,7 @@ test('[GET /session ] with invalid users', async () => {
                       expect(res.body.error).toBeDefined();
                       expect(res.body.session).toBeUndefined();
                     });
-  await request(app).get('/session?r=json&app=test')
+  await request(app).get(`${url}?r=json&app=test`)
                     .expect(404)
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=${encodeCookie({uid: 'norealm'})}`])
                     .expect('Content-Type', /json/)
@@ -155,7 +140,7 @@ test('[GET /session ] with invalid users', async () => {
                       expect(res.body.session).toBeUndefined();
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
-  await request(app).get('/session?r=json&app=test')
+  await request(app).get(`${url}?r=json&app=test`)
                     .expect(404)
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=${encodeCookie({uid: 'outsider'})}`])
                     .expect('Content-Type', /json/)
@@ -165,7 +150,7 @@ test('[GET /session ] with invalid users', async () => {
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
 
-  await request(app).get('/session?app=test')
+  await request(app).get(`${url}?app=test`)
                     .expect(200)
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=${encodeCookie({uid: 'nouser'})}`])
                     .expect('Content-Type', /text\/html/)
@@ -173,7 +158,7 @@ test('[GET /session ] with invalid users', async () => {
                       expect(res.text).toMatch(/Error 404/);
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
-  await request(app).get('/session?app=test')
+  await request(app).get(`${url}?app=test`)
                     .expect(200)
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=${encodeCookie({uid: 'norealm'})}`])
                     .expect('Content-Type', /text\/html/)
@@ -181,7 +166,7 @@ test('[GET /session ] with invalid users', async () => {
                       expect(res.text).toMatch(/Error 404/);
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
-  await request(app).get('/session?app=test')
+  await request(app).get(`${url}?app=test`)
                     .expect(200)
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=${encodeCookie({uid: 'outsider'})}`])
                     .expect('Content-Type', /text\/html/)
@@ -191,8 +176,8 @@ test('[GET /session ] with invalid users', async () => {
 });
 
 
-test('[GET /session ] with error while accessing USERS table', async () => {
-  await request(app).get('/session?r=json&app=test')
+test(`[GET ${url}] should response 403 and alert if accessing USERS table encounter an error`, async () => {
+  await request(app).get(`${url}?r=json&app=test`)
                     .expect(403)
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=${encodeCookie({uid: 'error'})}`])
                     .expect('Content-Type', /json/)
@@ -204,7 +189,7 @@ test('[GET /session ] with error while accessing USERS table', async () => {
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
 
-  await request(app).get('/session?app=test')
+  await request(app).get(`${url}?app=test`)
                     .expect(200)
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=${encodeCookie({uid: 'error'})}`])
                     .expect('Content-Type', /text\/html/)
@@ -216,8 +201,8 @@ test('[GET /session ] with error while accessing USERS table', async () => {
                     });
 });
 
-test('[GET /session ] should responses success', async () => {
-  await request(app).get('/session?r=json&app=test')
+test(`[GET ${url}] should responses 200 if request with a valid session cookie`, async () => {
+  await request(app).get(`${url}?r=json&app=test`)
                     .expect(200)
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=${encodeCookie({uid: 'tester'})}`])
                     .expect('Content-Type', /json/)
@@ -226,7 +211,7 @@ test('[GET /session ] should responses success', async () => {
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
 
-  await request(app).get('/session?app=test')
+  await request(app).get(`${url}?app=test`)
                     .expect(200)
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=${encodeCookie({uid: 'tester'})}`])
                     .expect('Content-Type', /text\/html/)

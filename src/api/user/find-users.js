@@ -52,7 +52,7 @@ function findUserByEmail(req, res, helpers) {
     }
   })
   .catch( err => {
-    helpers.alert && helpers.alert(`GET /user: Error in findUser: ${err}`);
+    helpers.alert && helpers.alert(`GET /user: Error in findUserByEmail: ${err}`);
     res.status(403).json({ error: 'Forbidden' });
   });
 }
@@ -80,7 +80,7 @@ function findUserByToken(req, res, helpers) {
       }
     })
     .catch( err => {
-      helpers.alert && helpers.alert(`GET /user: Error in findUser: ${err}`);
+      helpers.alert && helpers.alert(`GET /user: Error in findUserByToken: ${err}`);
       res.status(403).json({ error: 'Forbidden' });
     });
   });

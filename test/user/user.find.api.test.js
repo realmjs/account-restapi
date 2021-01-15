@@ -11,9 +11,10 @@ import { createSessionToken } from '../../src/lib/util';
 
 beforeEach( () => jest.clearAllMocks() );
 
+const url = '/user';
 
-test('[Get /user] with missing all parameters, should response 400', async () => {
-  await request(app).get('/user')
+test(`[Get ${url}] should response 400 if missing all parameters`, async () => {
+  await request(app).get(url)
                     .expect(400)
                     .expect('Content-Type', /json/)
                     .then( res => {
@@ -23,8 +24,8 @@ test('[Get /user] with missing all parameters, should response 400', async () =>
 });
 
 
-test('[Get /user] with missing parameter u, should response 400', async () => {
-  await request(app).get('/user?app=test')
+test(`[Get ${url}] should response 400 if missing parameter u`, async () => {
+  await request(app).get(`${url}?app=test`)
                     .expect(400)
                     .expect('Content-Type', /json/)
                     .then( res => {
@@ -34,8 +35,8 @@ test('[Get /user] with missing parameter u, should response 400', async () => {
 });
 
 
-test('[Get /user] with missing parameter app, should response 400', async () => {
-  await request(app).get('/user?u=tester')
+test(`[Get ${url}] should response 400 if missing parameter app`, async () => {
+  await request(app).get(`${url}?u=tester`)
                     .expect(400)
                     .expect('Content-Type', /json/)
                     .then( res => {
@@ -45,8 +46,8 @@ test('[Get /user] with missing parameter app, should response 400', async () => 
 });
 
 
-test('[Get /user] with invalid parameter app, should response 400', async () => {
-  await request(app).get('/user?app=true')
+test(`[Get ${url}] should response 400 for invalid app`, async () => {
+  await request(app).get(`${url}?app=true`)
                     .expect(400)
                     .expect('Content-Type', /json/)
                     .then( res => {
@@ -56,8 +57,8 @@ test('[Get /user] with invalid parameter app, should response 400', async () => 
 });
 
 
-test('[Get /user] query by uid should response 401 if decode uid failed', async () => {
-  await request(app).get(`/user?app=test&u=bare-tester`)
+test(`[Get ${url}] should response 401 if decoded uid failed (query by token) `, async () => {
+  await request(app).get(`${url}?app=test&u=bare-tester`)
                     .expect(401)
                     .expect('Content-Type', /json/)
                     .then( res => {
@@ -67,25 +68,25 @@ test('[Get /user] query by uid should response 401 if decode uid failed', async 
 });
 
 
-test('[Get /user] query by uid should alert and response 403 if access database failed', async () => {
+test(`[Get ${url}] should response 403 and alert if accessing USER Table encounter an error (query by token)`, async () => {
   const user = { uid: 'error', realms: { test: {roles: ['member']} } };
   const userToken = createSessionToken(user, helpers.Apps.find(a => a.id === 'test'));
-  await request(app).get(`/user?app=test&u=${userToken}`)
+  await request(app).get(`${url}?app=test&u=${userToken}`)
                     .expect(403)
                     .expect('Content-Type', /json/)
                     .then( res => {
                       expect(res.body.error).toBeDefined();
                       expect(res.headers['set-cookie']).toBeUndefined();
                       expect(helpers.alert).toHaveBeenCalled();
-                      expect(helpers.alert.mock.results[0].value).toMatch(/GET \/user: Error in findUser:/);
+                      expect(helpers.alert.mock.results[0].value).toMatch(/GET \/user: Error in findUserByToken:/);
                     });
 });
 
 
-test('[Get /user] query by uid should response 404 if user not found', async () => {
+test(`[Get ${url}] should response 404 if user not found (query by token)`, async () => {
   const user = { uid: 'anonymous', realms: { test: {roles: ['member']} } };
   const userToken = createSessionToken(user, helpers.Apps.find(a => a.id === 'test'));
-  await request(app).get(`/user?app=test&u=${userToken}`)
+  await request(app).get(`${url}?app=test&u=${userToken}`)
                     .expect(404)
                     .expect('Content-Type', /json/)
                     .then( res => {
@@ -95,10 +96,10 @@ test('[Get /user] query by uid should response 404 if user not found', async () 
 });
 
 
-test('[Get /user] query by uid should response 200 if user found', async () => {
+test(`[Get ${url}] should response 200 if user found (query by token)`, async () => {
   const user = { uid: 'tester', realms: { test: {roles: ['member']} } };
   const userToken = createSessionToken(user, helpers.Apps.find(a => a.id === 'test'));
-  await request(app).get(`/user?app=test&u=${userToken}`)
+  await request(app).get(`${url}?app=test&u=${userToken}`)
                     .expect(200)
                     .expect('Content-Type', /json/)
                     .then( res => {
@@ -108,21 +109,21 @@ test('[Get /user] query by uid should response 200 if user found', async () => {
 });
 
 
-test('[Get /user] query by email should alert and response 403 if access database failed', async () => {
-  await request(app).get(`/user?app=test&u=error@localhost.io`)
+test(`[Get ${url}] should response 403 and alert if accessing LOGIN Table encounter an error (query by email)`, async () => {
+  await request(app).get(`${url}?app=test&u=error@localhost.io`)
                     .expect(403)
                     .expect('Content-Type', /json/)
                     .then( res => {
                       expect(res.body.error).toBeDefined();
                       expect(res.headers['set-cookie']).toBeUndefined();
                       expect(helpers.alert).toHaveBeenCalled();
-                      expect(helpers.alert.mock.results[0].value).toMatch(/GET \/user: Error in findUser:/);
+                      expect(helpers.alert.mock.results[0].value).toMatch(/GET \/user: Error in findUserByEmail:/);
                     });
 });
 
 
-test('[Get /user] query by email should response 404 if user not found', async () => {
-  await request(app).get(`/user?app=test&u=anonymous@localhost.io`)
+test(`[Get ${url}] should response 404 if user not found (query by email)`, async () => {
+  await request(app).get(`${url}?app=test&u=anonymous@localhost.io`)
                     .expect(404)
                     .expect('Content-Type', /json/)
                     .then( res => {
@@ -132,8 +133,8 @@ test('[Get /user] query by email should response 404 if user not found', async (
 });
 
 
-test('[Get /user] query by email should response 200 if user found', async () => {
-  await request(app).get(`/user?app=test&u=tester@localhost.io`)
+test(`[Get ${url}] should response 200 if user found  (query by email)`, async () => {
+  await request(app).get(`${url}?app=test&u=tester@localhost.io`)
                     .expect(200)
                     .expect('Content-Type', /json/)
                     .then( res => {

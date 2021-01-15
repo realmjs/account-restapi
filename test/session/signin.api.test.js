@@ -14,9 +14,10 @@ beforeEach( () => jest.clearAllMocks() );
 beforeAll( () => setupEnvironmentVariables() );
 afterAll( () => clearEnvironmentVariables() );
 
+const url = '/session';
 
-test('[POST /session] with missing all parameters, should response 400', async () => {
-  await request(app).post('/session')
+test(`[POST ${url}] should response 400 if missing all parameters`, async () => {
+  await request(app).post(url)
                     .expect(400)
                     .expect('Content-Type', /json/)
                     .then( res => {
@@ -27,8 +28,8 @@ test('[POST /session] with missing all parameters, should response 400', async (
 });
 
 
-test('[POST /session] with missing parameter password and app, should response 400', async () => {
-  await request(app).post('/session')
+test(`[POST ${url}] should response 400 if missing parameters password and app`, async () => {
+  await request(app).post(url)
                     .send({username: 'tester'})
                     .set('Accept', 'application/json')
                     .expect(400)
@@ -41,8 +42,8 @@ test('[POST /session] with missing parameter password and app, should response 4
 });
 
 
-test('[POST /session] with missing parameter app, should response 400', async () => {
-  await request(app).post('/session')
+test(`[POST ${url}] should response 400 if missing parameter app`, async () => {
+  await request(app).post(url)
                     .send({username: 'tester', password: 'secret-pwd'})
                     .set('Accept', 'application/json')
                     .expect(400)
@@ -55,8 +56,8 @@ test('[POST /session] with missing parameter app, should response 400', async ()
 });
 
 
-test('[POST /session] with empty password, should response 400', async () => {
-  await request(app).post('/session')
+test(`[POST ${url}] should response 400 for empty password`, async () => {
+  await request(app).post(url)
                     .send({username: 'tester', password: '', app: 'test'})
                     .set('Accept', 'application/json')
                     .expect(400)
@@ -69,8 +70,8 @@ test('[POST /session] with empty password, should response 400', async () => {
 });
 
 
-test('[POST /session] with invalid app, should response 400', async () => {
-  await request(app).post('/session')
+test(`[POST ${url}] should response 400 for invalid app`, async () => {
+  await request(app).post(url)
                     .send({username: 'tester', password: 'secret-pwd', app: 'notapplicable'})
                     .set('Accept', 'application/json')
                     .expect(400)
@@ -83,8 +84,8 @@ test('[POST /session] with invalid app, should response 400', async () => {
 });
 
 
-test('[POST /session] with not registered user, should response 400', async () => {
-  await request(app).post('/session')
+test(`[POST ${url}] should response 404 if user has not registered`, async () => {
+  await request(app).post(url)
                     .send({username: 'anoy', password: 'secret-pwd', app: 'test'})
                     .set('Accept', 'application/json')
                     .expect(404)
@@ -96,8 +97,8 @@ test('[POST /session] with not registered user, should response 400', async () =
                     });
 });
 
-test('[POST /session] with user has no realm, should response 400', async () => {
-  await request(app).post('/session')
+test(`[POST ${url}] should response 404 if user has no realm`, async () => {
+  await request(app).post(url)
                     .send({username: 'norealm', password: 'secret-pwd', app: 'test'})
                     .set('Accept', 'application/json')
                     .expect(404)
@@ -110,8 +111,8 @@ test('[POST /session] with user has no realm, should response 400', async () => 
 });
 
 
-test('[POST /session] with user from other realm, should response 400', async () => {
-  await request(app).post('/session')
+test(`[POST ${url}] should response 404 if user has not joined realm`, async () => {
+  await request(app).post(url)
                     .send({username: 'outsider', password: 'secret-pwd', app: 'test'})
                     .set('Accept', 'application/json')
                     .expect(404)
@@ -123,8 +124,8 @@ test('[POST /session] with user from other realm, should response 400', async ()
                     });
 });
 
-test('[POST /session] with error accessing LOGIN Table, should response 403', async () => {
-  await request(app).post('/session')
+test(`[POST ${url}] should response 403 and alert if accessing LOGIN Table encounter an error`, async () => {
+  await request(app).post(url)
                     .send({username: 'error', password: 'secret-pwd', app: 'test'})
                     .set('Accept', 'application/json')
                     .expect(403)
@@ -138,8 +139,8 @@ test('[POST /session] with error accessing LOGIN Table, should response 403', as
                     });
 });
 
-test('[POST /session] with incorrect password, should response 401', async () => {
-  await request(app).post('/session')
+test(`[POST ${url}] should response 401 if password mismatch`, async () => {
+  await request(app).post(url)
                     .send({username: 'tester', password: 'incorrect-pwd', app: 'test'})
                     .set('Accept', 'application/json')
                     .expect(401)
@@ -151,8 +152,8 @@ test('[POST /session] with incorrect password, should response 401', async () =>
                     });
 });
 
-test('[POST /session] with correct password should response success (200)', async () => {
-  await request(app).post('/session')
+test(`[POST ${url}] should response 200 if login with correct credential`, async () => {
+  await request(app).post(url)
                     .send({username: 'tester', password: 'secret-pwd', app: 'test'})
                     .set('Accept', 'application/json')
                     .expect(200)
