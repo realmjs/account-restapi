@@ -35,10 +35,13 @@ function findUser(helpers) {
         req.user = users[0];
         next();
       } else {
-        res.status(404).send({ error: 'User is not exist' });
+        res.status(403).json({ error: 'Forbidden' }); // for security, return 403 instead of 404
       }
     })
-    .catch( err => res.status(403).json({ error: '[1] Unable to access Database' }));
+    .catch( err => {
+      helpers.alert && helpers.alert(`PUT /me/password: Error in findUser: ${err}`);
+      res.status(403).json({ error: 'Forbidden' });
+    });
   }
 }
 
@@ -47,19 +50,19 @@ function verifyPassword() {
     if (checkPassword(req.user, req.body.password)) {
       next();
     } else {
-      res.status(402).send({ error: 'Invalid credential' });
+      res.status(403).json({ error: 'Forbidden' });
     }
   }
 }
 
 
 function updatePassword(helpers) {
-  return function(req, res, next) {
-    helpers.Database.USERS.update({ uid: req.user.uid }, { credentials: { password: hashPassword(req.body.newPassword) } })
-    .then( _ => res.status(200).send('Success') )
+  return function(req, res) {
+    helpers.Database.USER.update({ uid: req.user.uid }, { credentials: { password: hashPassword(req.body.newPassword) } })
+    .then( _ => res.status(200).json({ message: 'Success' }) )
     .catch( err => {
-      helpers.alert && helpers.alert(err);
-      res.status(500).send('Internal Error');
+      helpers.alert && helpers.alert(`PUT /me/password: Error in updatePassword: ${err}`);
+      res.status(403).json({ error: 'Forbidden' });
     });
   }
 }
