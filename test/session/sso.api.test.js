@@ -5,15 +5,15 @@ import "regenerator-runtime/runtime";
 
 import { encodeCookie } from '../../src/lib/util';
 import { COOKIE_SESSION, realm } from '../server/env';
-import { expectLoginSession } from '../util';
+import { expectLoginSession, setupEnvironmentVariables, clearEnvironmentVariables } from '../util';
 
 import app from '../server/app';
 import helpers from '../server/helpers';
 import request from 'supertest';
 
 beforeEach( () => jest.clearAllMocks() );
-beforeAll( () => process.env.COOKIE_SECRET_KEY = 'test-cookie-enc-secret' );
-afterAll( () => process.env.COOKIE_SECRET_KEY = undefined );
+beforeAll( () => setupEnvironmentVariables() );
+afterAll( () => clearEnvironmentVariables() );
 
 test('[GET /session ] with missing all parameters, should response 400', async () => {
   await request(app).get('/session?r=json')

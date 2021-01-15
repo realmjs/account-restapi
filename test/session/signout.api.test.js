@@ -9,8 +9,9 @@ import request from 'supertest';
 import { encodeCookie } from '../../src/lib/util';
 import { COOKIE_SESSION, realm } from "../server/env";
 
-beforeAll( () => process.env.COOKIE_SECRET_KEY = 'test-cookie-enc-secret' );
-afterAll( () => process.env.COOKIE_SECRET_KEY = undefined );
+import { setupEnvironmentVariables, clearEnvironmentVariables } from '../util';
+beforeAll( () => setupEnvironmentVariables() );
+afterAll( () => clearEnvironmentVariables() );
 
 
 test('[DELETE /session] with missing all parameters, should response 400' , async () => {

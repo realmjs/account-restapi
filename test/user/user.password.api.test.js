@@ -8,16 +8,12 @@ import jwt from 'jsonwebtoken';
 import app from '../server/app';
 import helpers from '../server/helpers';
 import request from 'supertest';
-import { delay } from "../util";
+import { delay, setupEnvironmentVariables, clearEnvironmentVariables } from "../util";
 
 
 beforeEach( () => jest.clearAllMocks() );
-beforeAll( () => {
-  process.env.EMAIL_SIGN_KEY = 'email-sign-key';
-});
-afterAll( () => {
-  process.env.EMAIL_SIGN_KEY = undefined;
-});
+beforeAll( () => setupEnvironmentVariables() );
+afterAll( () => clearEnvironmentVariables() );
 
 test('[PUT /user/password] with missing all parameters, should response 400', async () => {
   await request(app).put('/user/password')

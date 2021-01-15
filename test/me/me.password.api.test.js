@@ -10,14 +10,10 @@ import request from 'supertest';
 const url = '/me/password';
 
 beforeEach( () => jest.clearAllMocks() );
-beforeAll( () => {
-  process.env.PWD_PREFIX = 'head';
-  process.env.PWD_SUFFIX = 'tail';
-});
-afterAll( () => {
-  process.env.PWD_PREFIX = undefined;
-  process.env.PWD_SUFFIX = undefined;
-});
+
+import { setupEnvironmentVariables, clearEnvironmentVariables } from '../util';
+beforeAll( () => setupEnvironmentVariables() );
+afterAll( () => clearEnvironmentVariables() );
 
 
 test(`[PUT ${url}] should response 400 when missing all parameters`, async () => {

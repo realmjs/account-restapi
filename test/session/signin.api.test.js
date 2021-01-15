@@ -8,19 +8,11 @@ import helpers from '../server/helpers';
 import request from 'supertest';
 
 import { COOKIE_SESSION, realm } from '../server/env';
-import { expectLoginSession } from '../util';
+import { expectLoginSession, setupEnvironmentVariables, clearEnvironmentVariables } from '../util';
 
 beforeEach( () => jest.clearAllMocks() );
-beforeAll( () => {
-  process.env.COOKIE_SECRET_KEY = 'test-cookie-enc-secret';
-  process.env.PWD_PREFIX = 'head';
-  process.env.PWD_SUFFIX = 'tail';
-});
-afterAll( () => {
-  process.env.COOKIE_SECRET_KEY = undefined;
-  process.env.PWD_PREFIX = undefined;
-  process.env.PWD_SUFFIX = undefined;
-});
+beforeAll( () => setupEnvironmentVariables() );
+afterAll( () => clearEnvironmentVariables() );
 
 
 test('[POST /session] with missing all parameters, should response 400', async () => {
