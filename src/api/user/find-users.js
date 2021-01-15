@@ -1,74 +1,89 @@
 "use strict"
 
-/* 01 Dec 2019: Updated API
-   depending on the query u in GET methos.
-   - If it is an email, then the API is public. API will return back email to indicate user exist
-   - If it is a token, then the API required authenticated
-*/
-
 const jwt = require('jsonwebtoken');
 
 const { isEmail } = require('../../lib/form');
 
-function findUser(helpers) {
-  return function (req, res) {
-    if (!req.query.app) {
-      res.status(400).json({ error: 'Bad Request' });
-      return;
-    }
-    const app = helpers.Apps.find( app => app.id === req.query.app );
-    if (!app) {
-      res.status(400).json({ error: 'Bad Request' });
-      return;
-    }
-    if (req.query && req.query.u) {
-      if (isEmail(req.query.u)) {
-        /*
-          Public API return user email
-          Its usecase is for testing whether email is registered
-        */
-        helpers.Database.LOGIN.find({ username: `= ${req.query.u}`})
-        .then( users => {
-          if (users && users.length > 0) {
-            res.status(200).json({ username: req.query.u });
-          } else {
-            res.status(404).json({ error: 'Not found' });
-          }
-        })
-        .catch( err => {
-          helpers.alert && helpers.alert(err);
-          res.status(403).json({ error: 'Unable to access Database' });
-        })
-      } else {
-        /*
-          Authentication requred API, return username and profile
-          It's usecase is for a server application request user information
-        */
-        const token = req.query.u;
-        jwt.verify(token, app.key, (err, decoded) => {
-          if (err) {
-            res.status(401).json({ error: 'Unauthorized' });
-            return
-          }
-          helpers.Database.USER.find({ uid: `= ${decoded.uid}`})
-          .then( users => {
-            if (users && users.length > 0) {
-              const user = users[0];
-              res.status(200).json({ username: user.username, profile: user.profile });
-            } else {
-              res.status(404).json({ error: 'Not Found' });
-            }
-          })
-          .catch( err => {
-            helpers.alert && helpers.alert(`GET /user: Error in findUser: ${err}`);
-            res.status(403).json({ error: 'Forbidden' });
-          })
-        })
-      }
+function validateParameters() {
+  return function(req, res, next) {
+    if (req.query.app && req.query.u) {
+      next();
     } else {
-      res.status(400).json({ error: 'Bad request' });
+      res.status(400).json({ error: 'Bad Request' });
+      return;
     }
   }
 }
 
-module.exports = [findUser];
+function verifyApp(helpers) {
+  return function(req, res, next) {
+    const app = helpers.Apps.find( app => app.id === req.query.app );
+    if (app) {
+      req.app = app;
+      next();
+    } else {
+      res.status(400).json({ error: 'Bad Request' });
+    }
+  }
+}
+function findUser(helpers) {
+  return function (req, res) {
+    if (isEmail(req.query.u)) {
+      findUserByEmail(req, res, helpers);
+    } else {
+      findUserByToken(req, res, helpers);
+    }
+  }
+}
+
+
+/*
+  Public API return user email
+  Its usecase is for testing whether email is registered
+*/
+function findUserByEmail(req, res, helpers) {
+  const email = req.query.u;
+  helpers.Database.LOGIN.find({ username: `= ${email}`})
+  .then( users => {
+    if (users && users.length > 0) {
+      res.status(200).json({ username: email });
+    } else {
+      res.status(404).json({ error: 'Not Found' });
+    }
+  })
+  .catch( err => {
+    helpers.alert && helpers.alert(`GET /user: Error in findUser: ${err}`);
+    res.status(403).json({ error: 'Forbidden' });
+  });
+}
+
+
+/*
+  Authentication requred API, return username and profile
+  It's usecase is for a server application request user information
+*/
+function findUserByToken(req, res, helpers) {
+  const token = req.query.u;
+  const app = req.app;
+  jwt.verify(token, app.key, (err, decoded) => {
+    if (err) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return
+    }
+    helpers.Database.USER.find({ uid: `= ${decoded.uid}`})
+    .then( users => {
+      if (users && users.length > 0) {
+        const user = users[0];
+        res.status(200).json({ username: user.username, profile: user.profile });
+      } else {
+        res.status(404).json({ error: 'Not Found' });
+      }
+    })
+    .catch( err => {
+      helpers.alert && helpers.alert(`GET /user: Error in findUser: ${err}`);
+      res.status(403).json({ error: 'Forbidden' });
+    });
+  });
+}
+
+module.exports = [validateParameters, verifyApp, findUser];

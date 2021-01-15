@@ -18,17 +18,17 @@ function createFindFunc(prop) {
   return function (expr) {
     return new Promise((resolve, reject) => {
       const usr = expr[prop].split('=')[1].trim();
-      if (usr === 'error') {
+      if (usr === 'error' || usr === 'error@localhost.io') {
         reject('err');
         return;
       }
-      if (usr === 'tester') {
+      if (usr === 'tester' || usr === 'tester@localhost.io') {
         const realms = {};
         realms[realm] = { roles: ['member'] };
         resolve([{
           uid: 'tester',
-          username: 'tester',
-          email: 'tester',
+          username: 'tester@localhost.io',
+          email: ['tester@localhost.io'],
           realms,
           credentials: { password: hashPassword('secret-pwd') }
         }]);

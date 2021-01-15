@@ -15,7 +15,7 @@ beforeEach( () => jest.clearAllMocks() );
 beforeAll( () => process.env.COOKIE_SECRET_KEY = 'test-cookie-enc-secret' );
 afterAll( () => process.env.COOKIE_SECRET_KEY = undefined );
 
-test('[GET /session ]with missing all parameters, should response 400', async () => {
+test('[GET /session ] with missing all parameters, should response 400', async () => {
   await request(app).get('/session?r=json')
                     .expect(400)
                     .expect('Content-Type', /json/)
@@ -51,7 +51,7 @@ test('[GET /session ]with missing all parameters, should response 400', async ()
 });
 
 
-test('[GET /session ]with invalid app', async () => {
+test('[GET /session ] with invalid app', async () => {
   await request(app).get('/session?r=json&app=true')
                     .expect(400)
                     .expect('Content-Type', /json/)
@@ -71,7 +71,7 @@ test('[GET /session ]with invalid app', async () => {
 });
 
 
-test('[GET /session ]with no cookie', async () => {
+test('[GET /session ] with no cookie', async () => {
   await request(app).get('/session?r=json&app=test')
                     .expect(200)
                     .expect('Content-Type', /json/)
@@ -106,7 +106,7 @@ test('[GET /session ]with no cookie', async () => {
 });
 
 
-test('[GET /session ]with invalid cookie', async () => {
+test('[GET /session ] with invalid cookie', async () => {
   await request(app).get('/session?r=json&app=test')
                     .expect(403)
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=uid:bare-test`])
@@ -137,7 +137,7 @@ test('[GET /session ]with invalid cookie', async () => {
 });
 
 
-test('[GET /session ]with invalid users', async () => {
+test('[GET /session ] with invalid users', async () => {
   await request(app).get('/session?r=json&app=test')
                     .expect(404)
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=${encodeCookie({uid: 'nouser'})}`])
@@ -191,7 +191,7 @@ test('[GET /session ]with invalid users', async () => {
 });
 
 
-test('[GET /session ]with error while accessing USERS table', async () => {
+test('[GET /session ] with error while accessing USERS table', async () => {
   await request(app).get('/session?r=json&app=test')
                     .expect(403)
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=${encodeCookie({uid: 'error'})}`])
@@ -216,7 +216,7 @@ test('[GET /session ]with error while accessing USERS table', async () => {
                     });
 });
 
-test('[GET /session ]responses success', async () => {
+test('[GET /session ] should responses success', async () => {
   await request(app).get('/session?r=json&app=test')
                     .expect(200)
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=${encodeCookie({uid: 'tester'})}`])
@@ -231,7 +231,7 @@ test('[GET /session ]responses success', async () => {
                     .set('Cookie', [`${COOKIE_SESSION}_${realm}=${encodeCookie({uid: 'tester'})}`])
                     .expect('Content-Type', /text\/html/)
                     .then( res => {
-                      expect(res.text).toMatch(/{\"user\":{\"username\":\"tester\".*},\"token\":\".*\",\"sid\":/);
+                      expect(res.text).toMatch(/{\"user\":{\"username\":\"tester.*\".*},\"token\":\".*\",\"sid\":/);
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
 });
