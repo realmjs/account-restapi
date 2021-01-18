@@ -5,13 +5,13 @@ import { hashPassword } from '../../src/lib/util';
 
 export default {
   USER: {
-    find: createFindFunc('uid'),
-    insert: insertUser,
-    update: updateUser,
-    set: setUserProp,
+    find: jest.fn(createFindFunc('uid')),
+    insert: jest.fn(insertUser),
+    update: jest.fn(updateUser),
+    set: jest.fn(setUserProp),
   },
   LOGIN: {
-    find: createFindFunc('username'),
+    find: jest.fn(createFindFunc('username')),
   }
 };
 
@@ -32,6 +32,17 @@ function createFindFunc(prop) {
           email: ['tester@localhost.io'],
           realms,
           credentials: { password: hashPassword('secret-pwd') }
+        }]);
+      } else if (usr === 'verifiedtester' || usr === 'verifiedtester@localhost.io') {
+        const realms = {};
+        realms[realm] = { roles: ['member'] };
+        resolve([{
+          uid: 'verifiedtester',
+          username: 'verifiedtester@localhost.io',
+          email: ['verifiedtester@localhost.io'],
+          realms,
+          credentials: { password: hashPassword('secret-pwd') },
+          verify: true,
         }]);
       } else if (usr === 'error-updater' || usr === 'error-updater@localhost.io') {
         const realms = {};

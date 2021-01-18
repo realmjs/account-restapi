@@ -19,7 +19,7 @@ function decodeToken() {
   return function(req, res, next) {
     jwt.verify(req.query.t, process.env.EMAIL_SIGN_KEY, (err, decoded) => {
       if (err) {
-        res.redirect('/error/404');
+        res.redirect('/error/403');
       } else {
         req.uid = decoded.uid;
         next();
@@ -30,31 +30,31 @@ function decodeToken() {
 
 function checkVerifiedEmail(helpers) {
   return function(req, res, next) {
-    helpers.Database.USERS.find({ uid: `= ${req.uid}` })
+    helpers.Database.USER.find({ uid: `= ${req.uid}` })
     .then( users => {
       if (users && users.length > 0) {
         const user = users[0];
         if (user.username !== req.query.email) { res.redirect('/error/403'); return }
-        if (user.verified) { res.redirect('/ln/mailverified'); return }
+        if (user.verify) { res.redirect(`/ln/mailverified?t=${req.query.t}`); return }
         next();
       } else {
-        res.redirect('/error/404');
+        res.redirect('/error/403');
       }
     })
     .catch( err => {
-      helpers.alert && helpers.alert(err);
-      res.redirect('/error/500');
+      helpers.alert && helpers.alert(`GET /ln/email: Error in checkVerifiedEmail: ${err}`);
+      res.redirect('/error/403');
     });
   }
 }
 
 function setEmailVerified(helpers) {
   return function(req, res, next) {
-    helpers.Database.USERS.update({ uid: req.uid }, { verified: true })
-    .then( _ => res.redirect('/ln/mailverified') )
+    helpers.Database.USER.update({ uid: req.uid }, { verified: true })
+    .then( _ => res.redirect(`/ln/mailverified?t=${req.query.t}`) )
     .catch( err => {
-      helpers.alert && helpers.alert(err);
-      res.redirect('/error/500');
+      helpers.alert && helpers.alert(`GET /ln/email: Error in setEmailVerified: ${err}`);
+      res.redirect('/error/403');
     });
   }
 }
