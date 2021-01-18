@@ -4,16 +4,23 @@ const jwt = require('jsonwebtoken');
 
 const html = require('../../lib/html');
 
-function validateParams(helpers) {
+
+function validateParams() {
   return function(req, res, next) {
-    if (req.body && req.body.email && req.body.app) {
-      const app = helpers.Apps.find( app => app.id === req.body.app );
-      if (app) {
-        req.app = app;
-        next();
-      } else {
-        res.redirect('/error/404');
-      }
+    if (req.body && req.body.app && req.body.email) {
+      next();
+    } else {
+      res.redirect('/error/400');
+    }
+  }
+}
+
+function verifyApp(helpers) {
+  return function(req, res, next) {
+    const app = helpers.Apps.find( app => app.id === req.body.app );
+    if (app) {
+      req.app = app;
+      next();
     } else {
       res.redirect('/error/400');
     }
@@ -22,18 +29,18 @@ function validateParams(helpers) {
 
 function findUser(helpers) {
   return function(req, res, next) {
-    helpers.Database.LOGIN.find({ username: `= ${req.body.email}`})
+    helpers.Database.LOGIN.find({ username: `= ${req.body.email}` })
       .then( users => {
         if (users && users.length > 0) {
           req.user = users[0];
           next();
         } else {
-          res.redirect('/error/404');
+          res.redirect('/error/403');
         }
       })
       .catch( err => {
-        helpers.alert && helpers.alert(err);
-        res.redirect('/error/500');
+        helpers.alert && helpers.alert(`POST /ln/reset: Error in findUser: ${err}`);
+        res.redirect('/error/403');
       })
   }
 }
@@ -57,8 +64,8 @@ function sendEmail(helpers) {
       })
       .then(() => next())
       .catch(err => {
-        helpers.alert && helpers.alert(`Failed to send email to ${user.profile.displayName}[${user.profile.email[0]}]`);
-        next();
+        helpers.alert && helpers.alert(`POST /ln/reset: Error in sendEmail to ${user.profile.displayName}[${user.profile.email[0]}]: ${err}`);
+        res.redirect('/error/403');
       })
     } else {
       helpers.alert && helpers.alert('Cannot find account in environment variable APPS');
@@ -89,4 +96,4 @@ function render() {
   }
 }
 
-module.exports = [validateParams, findUser, createToken, sendEmail, render];
+module.exports = [validateParams, verifyApp, findUser, createToken, sendEmail, render];

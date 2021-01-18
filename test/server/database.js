@@ -54,6 +54,16 @@ function createFindFunc(prop) {
           realms,
           credentials: { password: hashPassword('secret-pwd') }
         }]);
+      } else if (usr === 'error-sender' || usr === 'error-sender@localhost.io') {
+        const realms = {};
+        realms[realm] = { roles: ['member'] };
+        resolve([{
+          uid: 'error-sender',
+          username: 'eerror-sender@localhost.io',
+          email: ['error-sender@localhost.io'],
+          realms,
+          credentials: { password: hashPassword('secret-pwd') }
+        }]);
       } else if (usr === 'norealm') {
         resolve([ {uid: 'norealm'} ]);
       } else if (usr === 'outsider') {

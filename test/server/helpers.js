@@ -12,7 +12,7 @@ export default {
   alert: jest.fn(msg => msg),
   sendEmail: jest.fn( ({recipient, template, data}) => {
     return new Promise((resolve, reject) => {
-      if (recipient[0].address === 'error@localhost') {
+      if (recipient[0].address === 'error@localhost' || recipient[0].address === 'error-sender@localhost.io') {
         reject();
       }
       resolve();
