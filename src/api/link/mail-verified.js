@@ -1,8 +1,37 @@
 " use strict"
 
+/*
+  API: GET /ln/mailverified?t=token
+*/
+
 const html = require('../../lib/html');
 
-function render() {
+const jwt = require('jsonwebtoken');
+
+function validateParams() {
+  return function(req, res, next) {
+    if (req.query && req.query.t) {
+      next();
+    } else {
+      res.redirect('/error/400');
+    }
+  }
+}
+
+function decodeToken() {
+  return function(req, res, next) {
+    jwt.verify(req.query.t, process.env.EMAIL_SIGN_KEY, (err, decoded) => {
+      if (err) {
+        res.redirect('/error/403');
+      } else {
+        req.uid = decoded.uid;
+        next();
+      }
+    })
+  }
+}
+
+function response() {
   return function(req, res) {
     const dom = `
       <div class="w3-container w3-large">
@@ -17,4 +46,4 @@ function render() {
   }
 }
 
-module.exports = render;
+module.exports = [validateParams, decodeToken, response];
