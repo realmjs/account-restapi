@@ -29,8 +29,8 @@ function createFindFunc(prop) {
         resolve([{
           uid: 'tester',
           username: 'tester@localhost.io',
-          email: ['tester@localhost.io'],
           realms,
+          profile: { displayName: 'tester', email: ['tester@localhost.io'],},
           credentials: { password: hashPassword('secret-pwd') }
         }]);
       } else if (usr === 'verifiedtester' || usr === 'verifiedtester@localhost.io') {
@@ -39,7 +39,6 @@ function createFindFunc(prop) {
         resolve([{
           uid: 'verifiedtester',
           username: 'verifiedtester@localhost.io',
-          email: ['verifiedtester@localhost.io'],
           realms,
           credentials: { password: hashPassword('secret-pwd') },
           verify: true,
@@ -50,7 +49,6 @@ function createFindFunc(prop) {
         resolve([{
           uid: 'error-updater',
           username: 'error-updater@localhost.io',
-          email: ['error-updater@localhost.io'],
           realms,
           credentials: { password: hashPassword('secret-pwd') }
         }]);
@@ -59,9 +57,9 @@ function createFindFunc(prop) {
         realms[realm] = { roles: ['member'] };
         resolve([{
           uid: 'error-sender',
-          username: 'eerror-sender@localhost.io',
-          email: ['error-sender@localhost.io'],
+          username: 'error-sender@localhost.io',
           realms,
+          profile: { displayName: 'error-sender', email: ['error-sender@localhost.io'],},
           credentials: { password: hashPassword('secret-pwd') }
         }]);
       } else if (usr === 'norealm') {

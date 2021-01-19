@@ -45,10 +45,15 @@ function findUser(helpers) {
   }
 }
 
-function createToken() {
+function createToken(helpers) {
   return function(req, res, next) {
-    req.token = jwt.sign({ uid: req.user.uid }, process.env.EMAIL_SIGN_KEY, { expiresIn: process.env.EXPIRE_RESET_LINK });
-    next();
+    try {
+      req.token = jwt.sign({ uid: req.user.uid }, process.env.EMAIL_SIGN_KEY, { expiresIn: process.env.EMAIL_EXPIRE_RESET_LINK });
+      next();
+    } catch(err) {
+      helpers.alert && helpers.alert(`POST /ln/reset: Error in createToken: ${err}`);
+      res.redirect('/error/403');
+    }
   }
 }
 
@@ -69,20 +74,12 @@ function sendEmail(helpers) {
       })
     } else {
       helpers.alert && helpers.alert('Cannot find account in environment variable APPS');
-      const dom = `
-        <div class="w3-container" style="margin: 32px 0">
-          <h3 class="w3-text-red"> Opps! Something wrong happen </h3>
-          <p class="w3-text-red">The server may be busy or not working</p>
-          <p class="w3-text-grey"> Sorry for inconvenience. Please try again later </p>
-        </div>
-      `
-      res.writeHead( 200, { "Content-Type": "text/html" } );
-      res.end(html({ title: 'Failed', dom, data: {targetOrigin: req.app.url} }));
+      res.redirect('/error/403');
     }
   }
 }
 
-function render() {
+function responseSuccessPage() {
   return function(req, res) {
     const dom = `
       <div class="w3-container" style="margin: 32px 0">
@@ -96,4 +93,4 @@ function render() {
   }
 }
 
-module.exports = [validateParams, verifyApp, findUser, createToken, sendEmail, render];
+module.exports = [validateParams, verifyApp, findUser, createToken, sendEmail, responseSuccessPage];

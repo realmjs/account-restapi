@@ -48,7 +48,7 @@ test(`[POST ${url}] should response 302 and redirect to /error/400 for invalid a
 });
 
 
-test(`[POST ${url}] should response 302 and redirect to /error/403 if accessing LOGIN Table encounter error`, async () => {
+test(`[POST ${url}] should response 302 and redirect to /error/403 and alert if accessing LOGIN Table encounter error`, async () => {
   await request(app).post(url)
                     .send({ app: 'test', email: 'error@localhost.io' })
                     .expect(302)
@@ -70,8 +70,22 @@ test(`[POST ${url}] should response 302 and redirect to /error/403 if username n
                     });
 });
 
+test(`[POST ${url}] should response 302 and redirect to /error/403 and alert if failed to create token`, async () => {
+  const _EXPIRE = process.env.EMAIL_EXPIRE_RESET_LINK;
+  process.env.EMAIL_EXPIRE_RESET_LINK = undefined;
+  await request(app).post(url)
+                    .send({ app: 'test', email: 'error-sender@localhost.io' })
+                    .expect(302)
+                    .expect('Location', '/error/403')
+                    .then(res => {
+                      expect(helpers.alert).toHaveBeenCalled();
+                      expect(helpers.alert.mock.results[0].value).toMatch(/POST \/ln\/reset: Error in createToken/);
+                    });
+  process.env.EMAIL_EXPIRE_RESET_LINK = _EXPIRE;
+});
 
-test(`[POST ${url}] should response 302 and redirect to /error/403 if failed to sendmail`, async () => {
+
+test(`[POST ${url}] should response 302 and redirect to /error/403 and alert if failed to sendmail`, async () => {
   await request(app).post(url)
                     .send({ app: 'test', email: 'error-sender@localhost.io' })
                     .expect(302)
@@ -79,5 +93,17 @@ test(`[POST ${url}] should response 302 and redirect to /error/403 if failed to 
                     .then(res => {
                       expect(helpers.alert).toHaveBeenCalled();
                       expect(helpers.alert.mock.results[0].value).toMatch(/POST \/ln\/reset: Error in sendEmail/);
+                    });
+});
+
+
+test(`[POST ${url}] should response 200 when success`, async () => {
+  await request(app).post(url)
+                    .send({ app: 'test', email: 'tester@localhost.io' })
+                    .expect(200)
+                    .expect('Content-Type', /text\/html/)
+                    .then(res => {
+                      expect(helpers.alert).not.toHaveBeenCalled();
+                      expect(res.text).toMatch(/An email has been sent/);
                     });
 });
