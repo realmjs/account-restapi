@@ -1,22 +1,26 @@
 "use strict"
 
-export default {
-  getApps: () => {
-    /*
-      Apps are defined in environment variable in the pair of id|url, seperated by one space
-      ex: APPS="id|url id|url"
-    */
-    return process.env.APPS.split(' ').map( item => {
-      const s = item.split('|');
-      const app = s[0].trim();
-      const url = s[1].trim();
-      const { realm, key } = __findRealm(app);
-      return { id: app, url, realm, key };
-    });
-  },
+/*
+  Apps are defined in environment variable in the pair of id|url, seperated by one space
+  ex: APPS="id|url id|url"
+*/
+const Apps = process.env.APPS.split(' ').map( item => {
+  const s = item.split('|');
+  const app = s[0].trim();
+  const url = s[1].trim();
+  const { realm, key } = __findRealm(app);
+  return { id: app, url, realm, key };
+});
 
+const helpers = {
+  Apps,
   alert : msg => console.log(msg),
+  Database: require('./database'),
+  sendEmail,
+  hooks: [(data) => console.log(`hook:\n ${data}`)],
 }
+
+module.exports = helpers;
 
 function __findRealm(app) {
   const realms = __getRealms();
@@ -54,4 +58,19 @@ function __getRealms() {
     realms[name] = { apps, key };
   });
   return realms;
+}
+
+function sendEmail ({recipient, template, data}) {
+  return new Promise( (resolve, reject) => {
+    console.log(`EMAIL: -----------------------------------------------------------`);
+    console.log(`--> Sent email to:`);
+    recipient.forEach( ({name, email}) => {
+      console.log(`           + ${name}[${email}]`);
+    })
+    console.log(`--> Email Template: ${template}`);
+    console.log('--> Data:');
+    console.log(data)
+    console.log(`-----------------------------------------------------------------`);
+    resolve();
+  });
 }

@@ -30,6 +30,7 @@ function validateTokenIfRequired() {
   return function(req, res, next) {
     if (req.query.name === 'resetpassword' && verifyRequestToken(req) === false) {
       res.redirect('/error/400');
+      return;
     }
     next();
   }
