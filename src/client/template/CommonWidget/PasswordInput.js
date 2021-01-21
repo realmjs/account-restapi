@@ -10,7 +10,7 @@ export default class PasswordInput extends PureComponent {
       error: null,
       syncing: false,
     }
-    this.textInput = React.createRef()
+    this.textInputRef = React.createRef()
     this.getTypedPassword = this.getTypedPassword.bind(this)
     this.handleKeyUpForPassword = this.handleKeyUpForPassword.bind(this)
     this.onSubmit = this.onSubmit.bind(this)
@@ -23,7 +23,7 @@ export default class PasswordInput extends PureComponent {
   }
   focusTextInput() {
     if (this.props.active) {
-      this.textInput.current.focus()
+      this.textInputRef.current && this.textInputRef.current.focus()
     }
   }
   render() {
@@ -38,7 +38,7 @@ export default class PasswordInput extends PureComponent {
                   value = {this.state.password}
                   onChange = {this.getTypedPassword}
                   onKeyUp = {this.handleKeyUpForPassword}
-                  ref={this.textInput}
+                  ref={this.textInputRef}
           />
         </p>
         <div style = {{marginBottom: '42px'}}>

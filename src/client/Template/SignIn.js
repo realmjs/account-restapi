@@ -20,7 +20,7 @@ class Email extends PureComponent {
     this.getTypedInput = this.getTypedInput.bind(this)
     this.handleKeyUp = this.handleKeyUp.bind(this)
     this.onConfirm = this.onConfirm.bind(this)
-    this.textInput = React.createRef()
+    this.textInputRef = React.createRef()
   }
   componentDidMount() {
     this.focusTextInput()
@@ -30,7 +30,7 @@ class Email extends PureComponent {
   }
   focusTextInput() {
     if (this.props.active) {
-      this.textInput.current.focus()
+      this.textInputRef.current && this.textInputRef.current.focus()
     }
   }
   render() {
@@ -47,19 +47,20 @@ class Email extends PureComponent {
           <label className="w3-text-grey"> Email </label>
           <label className="w3-right w3-text-red"> {this.state.error || ''} </label>
           <input className = {`w3-input w3-border ${this.state.error && this.state.error.length > 0 ? 'w3-border-red' : ''}`}
-                type = "text"
+                type = "email"
                 placeholder = "email@example.com"
                 value = {this.state.email}
                 onChange = {this.getTypedInput}
                 onKeyUp = {this.handleKeyUp}
                 disabled = {this.state.syncing}
-                ref={this.textInput}
+                ref={this.textInputRef}
+                aria-label = "email"
           />
         </p>
         <div style = {{marginBottom: '42px'}}>
           <div className="w3-cell-row">
             <div className="w3-cell">
-              <label className="w3-text-red w3-large"><a href={`/form?name=signup&app=${__data.app}`}> Create New Account </a></label>
+              <label className="w3-text-red w3-large"><a href={`/form?name=signup&app=${this.props.data.app}`}> Create New Account </a></label>
             </div>
             <div className="w3-cell" style={{textAlign: 'right'}}>
               <button type="submit" className={`w3-button w3-blue `} onClick={this.onConfirm} disabled = {this.state.syncing} >
@@ -234,7 +235,7 @@ export default class SignIn extends Component {
       done && done("Not registered")
       return
     }
-    const app = __data ? __data.app : undefined;
+    const app = this.props.data ? this.props.data.app : undefined;
     xhttp.get(`/users?u=${email}&app=${app}`, { timeout: 30000 })
     .then( ({status}) => {
       if (status === 200) {
@@ -257,7 +258,7 @@ export default class SignIn extends Component {
   }
   onConfirmPassword(password, done) {
     const form = {...this.state.form}
-    xhttp.post(`/session`, { username: form.email, password, app: __data ? __data.app : undefined }, { timeout: 30000 })
+    xhttp.post(`/session`, { username: form.email, password, app: this.props.data ? this.props.data.app : undefined }, { timeout: 30000 })
     .then( ({status, responseText}) => {
       if (status === 200) {
         done && done()

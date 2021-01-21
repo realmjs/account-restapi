@@ -1,0 +1,294 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Should match snapshot of first scene (email) after mounted 1`] = `
+<div
+  className="w3-container"
+  style={
+    Object {
+      "maxWidth": "460px",
+      "padding": "10px 12px",
+    }
+  }
+>
+  <div>
+    <div
+      className=""
+      style={
+        Object {
+          "display": "block",
+        }
+      }
+    >
+      <div>
+        <header>
+          <span
+            className="w3-button w3-right w3-red"
+            onClick={[MockFunction]}
+            style={
+              Object {
+                "display": "none",
+              }
+            }
+          >
+            ×
+          </span>
+          <h3
+            className="w3-text-blue"
+            style={
+              Object {
+                "fontWeight": "bold",
+              }
+            }
+          >
+             Login 
+          </h3>
+        </header>
+        <p
+          className="w3-text-blue-grey"
+        >
+          Please enter your email
+        </p>
+        <p>
+          <label
+            className="w3-text-grey"
+          >
+             Email 
+          </label>
+          <label
+            className="w3-right w3-text-red"
+          >
+             
+            
+             
+          </label>
+          <input
+            className="w3-input w3-border "
+            disabled={false}
+            onChange={[Function]}
+            onKeyUp={[Function]}
+            placeholder="email@example.com"
+            type="text"
+            value=""
+          />
+        </p>
+        <div
+          style={
+            Object {
+              "marginBottom": "42px",
+            }
+          }
+        >
+          <div
+            className="w3-cell-row"
+          >
+            <div
+              className="w3-cell"
+            >
+              <label
+                className="w3-text-red w3-large"
+              >
+                <a
+                  href="/form?name=signup&app=account"
+                >
+                   Create New Account 
+                </a>
+              </label>
+            </div>
+            <div
+              className="w3-cell"
+              style={
+                Object {
+                  "textAlign": "right",
+                }
+              }
+            >
+              <button
+                className="w3-button w3-blue "
+                disabled={false}
+                onClick={[Function]}
+                type="submit"
+              >
+                Next 
+                 
+                <i
+                  className="fa fa-chevron-right"
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      className=""
+      style={
+        Object {
+          "display": "none",
+        }
+      }
+    >
+      <div>
+        <header>
+          <span
+            className="w3-button w3-right w3-red"
+            onClick={[MockFunction]}
+            style={
+              Object {
+                "display": "none",
+              }
+            }
+          >
+            ×
+          </span>
+          <div>
+            <button
+              className="w3-button w3-border"
+              onClick={[Function]}
+              style={
+                Object {
+                  "marginBottom": "16px",
+                }
+              }
+            >
+              <i
+                className="fa fa-arrow-left"
+              />
+               
+              Back
+            </button>
+          </div>
+        </header>
+        <div
+          style={
+            Object {
+              "display": "block",
+            }
+          }
+        >
+          <div
+            className="w3-text-blue"
+          >
+            <h3>
+               
+              
+               
+            </h3>
+          </div>
+          <div>
+            <p>
+              <label
+                className="w3-text-grey"
+              >
+                Password
+              </label>
+              <label
+                className="w3-right w3-text-red"
+              >
+                 
+                
+                 
+              </label>
+              <input
+                className="w3-input w3-border "
+                onChange={[Function]}
+                onKeyUp={[Function]}
+                placeholder="password"
+                type="password"
+                value=""
+              />
+            </p>
+            <div
+              style={
+                Object {
+                  "marginBottom": "42px",
+                }
+              }
+            >
+              <div
+                className="w3-cell-row"
+              >
+                <div
+                  className="w3-cell"
+                >
+                  <label
+                    className="w3-text-orange "
+                  >
+                    <span
+                      onClick={[Function]}
+                      style={
+                        Object {
+                          "cursor": "pointer",
+                        }
+                      }
+                    >
+                       Forgot your password 
+                    </span>
+                  </label>
+                </div>
+                <div
+                  className="w3-cell"
+                  style={
+                    Object {
+                      "textAlign": "right",
+                    }
+                  }
+                >
+                  <button
+                    className="w3-button w3-blue"
+                    disabled={false}
+                    onClick={[Function]}
+                  >
+                    Submit 
+                     
+                    <i
+                      className="fa fa-level-down fa-rotate-90"
+                      style={
+                        Object {
+                          "marginLeft": "4px",
+                        }
+                      }
+                    />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          style={
+            Object {
+              "display": "none",
+            }
+          }
+        />
+      </div>
+    </div>
+    <div
+      className="w3-animate-top"
+      style={
+        Object {
+          "display": "none",
+        }
+      }
+    >
+      <div
+        style={
+          Object {
+            "textAlign": "center",
+          }
+        }
+      >
+        <div>
+          <h3>
+             Welcome 
+             
+          </h3>
+        </div>
+        <p>
+          You have signed in.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+`;
