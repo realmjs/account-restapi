@@ -3,13 +3,13 @@
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 
-import app from '../server/app';
-import helpers from '../server/helpers';
+import app from '../../server/app';
+import helpers from '../../server/helpers';
 import request from 'supertest';
 
-import { createSessionToken } from '../../src/lib/util';
+import { createSessionToken } from '../../../src/lib/util';
 
-import { setupEnvironmentVariables, clearEnvironmentVariables } from '../util';
+import { setupEnvironmentVariables, clearEnvironmentVariables } from '../../util';
 
 beforeEach( () => jest.clearAllMocks() );
 

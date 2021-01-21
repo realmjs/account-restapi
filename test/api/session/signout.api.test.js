@@ -3,13 +3,13 @@
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 
-import app from '../server/app';
+import app from '../../server/app';
 import request from 'supertest';
 
-import { encodeCookie } from '../../src/lib/util';
-import { COOKIE_SESSION, realm } from "../server/env";
+import { encodeCookie } from '../../../src/lib/util';
+import { COOKIE_SESSION, realm } from "../../server/env";
 
-import { setupEnvironmentVariables, clearEnvironmentVariables } from '../util';
+import { setupEnvironmentVariables, clearEnvironmentVariables } from '../../util';
 beforeAll( () => setupEnvironmentVariables() );
 afterAll( () => clearEnvironmentVariables() );
 

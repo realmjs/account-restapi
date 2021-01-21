@@ -3,15 +3,15 @@
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 
-import app from '../server/app';
-import helpers from '../server/helpers';
+import app from '../../server/app';
+import helpers from '../../server/helpers';
 import request from 'supertest';
 
 const url = '/me/password';
 
 beforeEach( () => jest.clearAllMocks() );
 
-import { setupEnvironmentVariables, clearEnvironmentVariables } from '../util';
+import { setupEnvironmentVariables, clearEnvironmentVariables } from '../../util';
 beforeAll( () => setupEnvironmentVariables() );
 afterAll( () => clearEnvironmentVariables() );
 

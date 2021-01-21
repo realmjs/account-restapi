@@ -5,10 +5,10 @@ import "regenerator-runtime/runtime";
 
 import jwt from 'jsonwebtoken';
 
-import app from '../server/app';
-import helpers from '../server/helpers';
+import app from '../../server/app';
+import helpers from '../../server/helpers';
 import request from 'supertest';
-import { delay, setupEnvironmentVariables, clearEnvironmentVariables } from "../util";
+import { delay, setupEnvironmentVariables, clearEnvironmentVariables } from "../../util";
 
 
 beforeEach( () => jest.clearAllMocks() );
