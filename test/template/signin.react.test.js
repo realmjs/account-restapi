@@ -1,8 +1,13 @@
 "use strict"
+import "core-js/stable";
+import "regenerator-runtime/runtime";
 
 import React from 'react';
 import renderer from 'react-test-renderer';
 import {screen, fireEvent, render} from '@testing-library/react';
+
+import xhttp from '@realmjs/xhttp-request';
+jest.mock('@realmjs/xhttp-request');
 
 import SignIn from '../../src/client/template/SignIn';
 
@@ -21,22 +26,74 @@ test('Should match snapshot of first scene (email) after mounted', () => {
 });
 
 
-test.only('Should alert invalid if entering wrong email format', () => {
+test('Should alert invalid if entering wrong email format', () => {
   render(
     <SignIn data = {data} done = {done} close = {close} />
   );
   // attemp to enter invalid email format
 
   const inputEmailNode = screen.getByLabelText('email');
-  testInValidEMail(inputEmailNode, 'wrongemail', 'Invalid email');
+  testInValidEmail(inputEmailNode, 'wrongemail', 'Invalid email');
+  testInValidEmail(inputEmailNode, 'email@', 'Invalid email');
+  testInValidEmail(inputEmailNode, 'email@domain', 'Invalid email');
+  testInValidEmail(inputEmailNode, '<script>alert("hacked")</script>', 'Invalid email');
+  testInValidEmail(inputEmailNode, '', 'Email is empty');
 
-  function testInValidEMail(node, text, error) {
+  function testInValidEmail(node, text, error) {
     expect(screen.queryByText(error)).toBeNull();
     fireEvent.change(node, {target: { value: text } });
     fireEvent.keyUp(node, { keyCode: 13 });
     expect(screen.queryByText(error)).not.toBeNull();
     // when change value, error message should disapear
-    fireEvent.change(node, {target: { value: '' } });
+    fireEvent.change(node, {target: { value: 'a' } });
     expect(screen.queryByText(error)).toBeNull();
   }
+});
+
+
+test('Should alert Not registered if entering valid but unregistered email', async () => {
+
+  xhttp.get.mockResolvedValue({ status: 404 });
+
+  render(
+    <SignIn data = {data} done = {done} close = {close} />
+  );
+
+  const inputEmailNode = screen.getByLabelText('email');
+  await expectShowError(inputEmailNode, 'newtester@team.com', 'Not registered');
+  await expectShowError(inputEmailNode, 'new.tester123@my.team.com', 'Not registered');
+
+  function expectShowError(node, text, error) {
+      fireEvent.change(node, {target: { value: '' } });
+      expect(screen.queryByText(error)).toBeNull();
+      fireEvent.change(node, {target: { value: text } });
+      fireEvent.keyUp(node, { keyCode: 13 });
+      return screen.findByText(error);
+  }
+
+});
+
+
+test.only('Should move to Password scene after entering a registered email', async () => {
+
+  xhttp.get.mockResolvedValue({ status: 200 });
+
+  const { container } = render( <SignIn data = {data} done = {done} close = {close} /> );
+
+  const inputEmailNode = screen.getByLabelText('email');
+  fireEvent.change(inputEmailNode, {target: { value: 'tester@localhost.io' } });
+  fireEvent.keyUp(inputEmailNode, { keyCode: 13 });
+
+  await waitfor( () => expect(container).toMatchSnapshot() );
+
+  function waitfor(cb) {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        cb();
+        resolve();
+      }, 0);
+    })
+  }
+
+
 });

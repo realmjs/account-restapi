@@ -292,3 +292,217 @@ exports[`Should match snapshot of first scene (email) after mounted 1`] = `
   </div>
 </div>
 `;
+
+exports[`Should move to Password scene after entering a registered email 1`] = `
+<div>
+  <div
+    class="w3-container"
+    style="padding: 10px 12px; max-width: 460px;"
+  >
+    <div>
+      <div
+        class=""
+        style="display: none;"
+      >
+        <div>
+          <header>
+            <span
+              class="w3-button w3-right w3-red"
+              style="display: none;"
+            >
+              ×
+            </span>
+            <h3
+              class="w3-text-blue"
+              style="font-weight: bold;"
+            >
+               Login 
+            </h3>
+          </header>
+          <p
+            class="w3-text-blue-grey"
+          >
+            Please enter your email
+          </p>
+          <p>
+            <label
+              class="w3-text-grey"
+            >
+               Email 
+            </label>
+            <label
+              class="w3-right w3-text-red"
+            >
+               
+              
+               
+            </label>
+            <input
+              aria-label="email"
+              class="w3-input w3-border "
+              placeholder="email@example.com"
+              type="email"
+              value="tester@localhost.io"
+            />
+          </p>
+          <div
+            style="margin-bottom: 42px;"
+          >
+            <div
+              class="w3-cell-row"
+            >
+              <div
+                class="w3-cell"
+              >
+                <label
+                  class="w3-text-red w3-large"
+                >
+                  <a
+                    href="/form?name=signup&app=account"
+                  >
+                     Create New Account 
+                  </a>
+                </label>
+              </div>
+              <div
+                class="w3-cell"
+                style="text-align: right;"
+              >
+                <button
+                  class="w3-button w3-blue "
+                  type="submit"
+                >
+                  Next 
+                   
+                  <i
+                    class="fa fa-chevron-right"
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class=""
+        style="display: block;"
+      >
+        <div>
+          <header>
+            <span
+              class="w3-button w3-right w3-red"
+              style="display: none;"
+            >
+              ×
+            </span>
+            <div>
+              <button
+                class="w3-button w3-border"
+                style="margin-bottom: 16px;"
+              >
+                <i
+                  class="fa fa-arrow-left"
+                />
+                 
+                Back
+              </button>
+            </div>
+          </header>
+          <div
+            style="display: block;"
+          >
+            <div
+              class="w3-text-blue"
+            >
+              <h3>
+                 
+                tester@localhost.io
+                 
+              </h3>
+            </div>
+            <div>
+              <p>
+                <label
+                  class="w3-text-grey"
+                >
+                  Password
+                </label>
+                <label
+                  class="w3-right w3-text-red"
+                >
+                   
+                  
+                   
+                </label>
+                <input
+                  class="w3-input w3-border "
+                  placeholder="password"
+                  type="password"
+                  value=""
+                />
+              </p>
+              <div
+                style="margin-bottom: 42px;"
+              >
+                <div
+                  class="w3-cell-row"
+                >
+                  <div
+                    class="w3-cell"
+                  >
+                    <label
+                      class="w3-text-orange "
+                    >
+                      <span
+                        style="cursor: pointer;"
+                      >
+                         Forgot your password 
+                      </span>
+                    </label>
+                  </div>
+                  <div
+                    class="w3-cell"
+                    style="text-align: right;"
+                  >
+                    <button
+                      class="w3-button w3-blue"
+                    >
+                      Submit 
+                       
+                      <i
+                        class="fa fa-level-down fa-rotate-90"
+                        style="margin-left: 4px;"
+                      />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            style="display: none;"
+          />
+        </div>
+      </div>
+      <div
+        class="w3-animate-top"
+        style="display: none;"
+      >
+        <div
+          style="text-align: center;"
+        >
+          <div>
+            <h3>
+               Welcome 
+               
+            </h3>
+          </div>
+          <p>
+            You have signed in.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
