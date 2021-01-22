@@ -20,7 +20,56 @@ beforeEach( () => jest.clearAllMocks() );
 
 function waitfor(cb) {
   return new Promise(resolve => {
-    setTimeout(() => { cb(); resolve(); }, 0);
+    setTimeout(() => { cb && cb(); resolve(); }, 0);
+  });
+}
+
+function enterEmail(email) {
+  const inputEmailNode = screen.getByLabelText('email');
+  const nextButtonNode = screen.getByText('Next');
+  return inputText(inputEmailNode, nextButtonNode, email);
+}
+
+function resetEmailForm() {
+  const inputEmailNode = screen.getByLabelText('email');
+  fireEvent.change(inputEmailNode, {target: { value: '' } });
+}
+
+function enterPassword(password) {
+  const inputPasswordNode = screen.getByLabelText('password');
+  const sumitButtonNode = screen.getByText('Submit');
+  return inputText(inputPasswordNode, sumitButtonNode, password);
+}
+
+function resetPasswordForm() {
+  const inputPasswordNode = screen.getByLabelText('password');
+  fireEvent.change(inputPasswordNode, {target: { value: '' } });
+}
+
+function inputText(inputTxtNode, actionBtnNode, text) {
+  fireEvent.change(inputTxtNode, {target: { value: text } });
+  fireEvent.click(actionBtnNode);
+  return waitfor();
+}
+
+function expectNoErrorMessage(error) {
+  return expect(screen.queryByText(error)).toBeNull();
+}
+
+function expectErrorMessage(error) {
+  return expect(screen.queryByText(error)).not.toBeNull();
+}
+
+function expectXhttpGetUserCalledCorrectly() {
+  return expect(xhttp.get.mock.calls[0][0]).toMatch(/(\/user\?u=.*&app=.*|\/user\?app=.*&u=.*)/);
+}
+
+function expectXhttpPostSessionCalledCorrectly(credential) {
+  expect(xhttp.post.mock.calls[0][0]).toMatch(/\/session/);
+  expect(xhttp.post.mock.calls[0][1]).toEqual({
+    username: credential.email,
+    password: credential.password,
+    app: 'account',
   });
 }
 
@@ -66,17 +115,18 @@ test('Should alert Not registered if entering valid but unregistered email', asy
     <SignIn data = {data} done = {done} close = {close} />
   );
 
-  const inputEmailNode = screen.getByLabelText('email');
-  await expectShowError(inputEmailNode, 'newtester@team.com', 'Not registered');
-  await expectShowError(inputEmailNode, 'new.tester123@my.team.com', 'Not registered');
+  await testWithEmail('newtester@team.com');
+  await testWithEmail('new.tester123@my.team.com');
 
-  function expectShowError(node, text, error) {
-      fireEvent.change(node, {target: { value: '' } });
-      expect(screen.queryByText(error)).toBeNull();
-      fireEvent.change(node, {target: { value: text } });
-      fireEvent.keyUp(node, { keyCode: 13 });
-      expect(xhttp.get.mock.calls[0][0]).toMatch(/(\/user\?u=.*&app=.*|\/user\?app=.*&u=.*)/);
-      return screen.findByText(error);
+  // supporting functions
+
+  async function testWithEmail(email) {
+    resetEmailForm();
+    expectNoErrorMessage('Not registered');
+    await enterEmail('new.tester123@my.team.com');
+    expectXhttpGetUserCalledCorrectly();
+    expectErrorMessage('Not registered');
+    return Promise.resolve();
   }
 
 });
@@ -88,12 +138,10 @@ test('Should move to Password scene after entering a registered email and back a
 
   const { container } = render( <SignIn data = {data} done = {done} close = {close} /> );
 
-  const inputEmailNode = screen.getByLabelText('email');
-  const nextButtonNode = screen.getByText('Next');
-  fireEvent.change(inputEmailNode, {target: { value: 'tester@localhost.io' } });
-  fireEvent.click(nextButtonNode);
-  expect(xhttp.get.mock.calls[0][0]).toMatch(/(\/user\?u=.*&app=.*|\/user\?app=.*&u=.*)/);
-  await waitfor( () => expect(container).toMatchSnapshot() );
+  await enterEmail('tester@localhost.io');
+
+  expectXhttpGetUserCalledCorrectly();
+  expect(container).toMatchSnapshot();
 
   const backButtonNode = screen.getAllByText('Back')[0];
   fireEvent.click(backButtonNode);
@@ -101,3 +149,26 @@ test('Should move to Password scene after entering a registered email and back a
 
 });
 
+
+test('Should show error failed to signing in if entered wrong password', async () => {
+
+  xhttp.get.mockResolvedValue({ status: 200 });
+  xhttp.post.mockResolvedValue({ status: 400 });
+
+  const { container } = render( <SignIn data = {data} done = {done} close = {close} /> );
+
+  const credential = {
+    email: 'tester@localhost.io',
+    password: 'wrong-password',
+  };
+
+  await enterEmail(credential.email);
+
+  expect(screen.queryByText('Error: Failed to signing in')).toBeNull();
+  await enterPassword(credential.password);
+
+  expectXhttpPostSessionCalledCorrectly(credential);
+
+  expect(screen.queryByText('Error: Failed to signing in')).not.toBeNull();
+
+});

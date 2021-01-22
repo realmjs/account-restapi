@@ -190,6 +190,7 @@ exports[`Should match snapshot of first scene (email) after mounted 1`] = `
                  
               </label>
               <input
+                aria-label="password"
                 className="w3-input w3-border "
                 onChange={[Function]}
                 onKeyUp={[Function]}
@@ -436,6 +437,7 @@ exports[`Should move to Password scene after entering a registered email and bac
                    
                 </label>
                 <input
+                  aria-label="password"
                   class="w3-input w3-border "
                   placeholder="password"
                   type="password"
@@ -650,6 +652,7 @@ exports[`Should move to Password scene after entering a registered email and bac
                    
                 </label>
                 <input
+                  aria-label="password"
                   class="w3-input w3-border "
                   placeholder="password"
                   type="password"

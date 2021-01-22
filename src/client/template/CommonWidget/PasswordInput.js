@@ -39,6 +39,7 @@ export default class PasswordInput extends PureComponent {
                   onChange = {this.getTypedPassword}
                   onKeyUp = {this.handleKeyUpForPassword}
                   ref={this.textInputRef}
+                  aria-label = "password"
           />
         </p>
         <div style = {{marginBottom: '42px'}}>
