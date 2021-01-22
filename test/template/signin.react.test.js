@@ -155,7 +155,7 @@ test('Should show error failed to signing in if entered wrong password', async (
   xhttp.get.mockResolvedValue({ status: 200 });
   xhttp.post.mockResolvedValue({ status: 400 });
 
-  const { container } = render( <SignIn data = {data} done = {done} close = {close} /> );
+  render( <SignIn data = {data} done = {done} close = {close} /> );
 
   const credential = {
     email: 'tester@localhost.io',
@@ -164,11 +164,28 @@ test('Should show error failed to signing in if entered wrong password', async (
 
   await enterEmail(credential.email);
 
-  expect(screen.queryByText('Error: Failed to signing in')).toBeNull();
+  expectNoErrorMessage('Error: Failed to signing in');
   await enterPassword(credential.password);
 
   expectXhttpPostSessionCalledCorrectly(credential);
 
-  expect(screen.queryByText('Error: Failed to signing in')).not.toBeNull();
+  expectErrorMessage('Error: Failed to signing in');
+
+});
+
+
+test('Should call done and move to Welcome page after signed in successfully', async () => {
+
+  xhttp.get.mockResolvedValue({ status: 200 });
+  xhttp.post.mockResolvedValue({ status: 200, responseText: '{"uid":"tester"}' });
+
+  const { container } = render( <SignIn data = {data} done = {done} close = {close} /> );
+
+  await enterEmail('tester@localhost.io');
+  await enterPassword('correct-password');
+
+  expect(done.mock.results[0].value).toEqual({ status: 200, session: { uid: 'tester' } });
+
+  expect(container).toMatchSnapshot();
 
 });
