@@ -11,6 +11,8 @@ const Apps = process.env.APPS.split(' ').map( item => {
   const { realm, key } = __findRealm(app);
   return { id: app, url, realm, key };
 });
+console.log('APPs = ')
+console.log(Apps)
 
 const helpers = {
   Apps,

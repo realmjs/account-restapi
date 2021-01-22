@@ -6,7 +6,7 @@ const USERS = [
   {
     uid: 'tester',
     username: 'tester@localhost.io',
-    realms: { 'account': { role: 'member' } },
+    realms: { 'public': { role: 'member' } },
     profile: { displayName: 'Tester', email: ['tester@localhost.io'],},
     credentials: { password: hashPassword('123') }
   },
@@ -30,7 +30,6 @@ function createFindFunc(prop) {
   return function (expr) {
     return new Promise((resolve, reject) => {
       const usr = expr[prop].split('=')[1].trim();
-      console.log(USERS.filter(user => user[prop] === usr))
       resolve(USERS.filter(user => user[prop] === usr));
     });
   }
