@@ -236,7 +236,7 @@ export default class SignIn extends Component {
       return
     }
     const app = this.props.data ? this.props.data.app : undefined;
-    xhttp.get(`/users?u=${email}&app=${app}`, { timeout: 30000 })
+    xhttp.get(`/user?u=${email}&app=${app}`, { timeout: 30000 })
     .then( ({status}) => {
       if (status === 200) {
         done && done()

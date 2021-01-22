@@ -75,6 +75,7 @@ test('Should alert Not registered if entering valid but unregistered email', asy
       expect(screen.queryByText(error)).toBeNull();
       fireEvent.change(node, {target: { value: text } });
       fireEvent.keyUp(node, { keyCode: 13 });
+      expect(xhttp.get.mock.calls[0][0]).toMatch(/(\/user\?u=.*&app=.*|\/user\?app=.*&u=.*)/);
       return screen.findByText(error);
   }
 
@@ -90,7 +91,7 @@ test('Should move to Password scene after entering a registered email', async ()
   const inputEmailNode = screen.getByLabelText('email');
   fireEvent.change(inputEmailNode, {target: { value: 'tester@localhost.io' } });
   fireEvent.keyUp(inputEmailNode, { keyCode: 13 });
-
+  expect(xhttp.get.mock.calls[0][0]).toMatch(/(\/user\?u=.*&app=.*|\/user\?app=.*&u=.*)/);
   await waitfor( () => expect(container).toMatchSnapshot() );
 
 });
