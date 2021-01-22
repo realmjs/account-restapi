@@ -82,16 +82,22 @@ test('Should alert Not registered if entering valid but unregistered email', asy
 });
 
 
-test('Should move to Password scene after entering a registered email', async () => {
+test('Should move to Password scene after entering a registered email and back after clicking back button', async () => {
 
   xhttp.get.mockResolvedValue({ status: 200 });
 
   const { container } = render( <SignIn data = {data} done = {done} close = {close} /> );
 
   const inputEmailNode = screen.getByLabelText('email');
+  const nextButtonNode = screen.getByText('Next');
   fireEvent.change(inputEmailNode, {target: { value: 'tester@localhost.io' } });
-  fireEvent.keyUp(inputEmailNode, { keyCode: 13 });
+  fireEvent.click(nextButtonNode);
   expect(xhttp.get.mock.calls[0][0]).toMatch(/(\/user\?u=.*&app=.*|\/user\?app=.*&u=.*)/);
   await waitfor( () => expect(container).toMatchSnapshot() );
 
+  const backButtonNode = screen.getAllByText('Back')[0];
+  fireEvent.click(backButtonNode);
+  await waitfor( () => expect(container).toMatchSnapshot() );
+
 });
+
