@@ -62,12 +62,13 @@ exports[`Should match snapshot of first scene (email) after mounted 1`] = `
              
           </label>
           <input
+            aria-label="email"
             className="w3-input w3-border "
             disabled={false}
             onChange={[Function]}
             onKeyUp={[Function]}
             placeholder="email@example.com"
-            type="text"
+            type="email"
             value=""
           />
         </p>

@@ -17,6 +17,13 @@ const data = {"route":"signin","targetOrigin":"localhost:3100","app":"account","
 
 beforeEach( () => jest.clearAllMocks() );
 
+
+function waitfor(cb) {
+  return new Promise(resolve => {
+    setTimeout(() => { cb(); resolve(); }, 0);
+  });
+}
+
 test('Should match snapshot of first scene (email) after mounted', () => {
   const component = renderer.create(
     <SignIn data = {data} done = {done} close = {close} />
@@ -74,7 +81,7 @@ test('Should alert Not registered if entering valid but unregistered email', asy
 });
 
 
-test.only('Should move to Password scene after entering a registered email', async () => {
+test('Should move to Password scene after entering a registered email', async () => {
 
   xhttp.get.mockResolvedValue({ status: 200 });
 
@@ -85,15 +92,5 @@ test.only('Should move to Password scene after entering a registered email', asy
   fireEvent.keyUp(inputEmailNode, { keyCode: 13 });
 
   await waitfor( () => expect(container).toMatchSnapshot() );
-
-  function waitfor(cb) {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        cb();
-        resolve();
-      }, 0);
-    })
-  }
-
 
 });
