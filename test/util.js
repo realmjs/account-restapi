@@ -56,10 +56,13 @@ export function resetEmailForm() {
   fireEvent.change(inputEmailNode, {target: { value: '' } });
 }
 
-export function enterPassword(password) {
-  const inputPasswordNode = screen.getByLabelText('password');
-  const sumitButtonNode = screen.getByText('Submit');
-  return inputText(inputPasswordNode, sumitButtonNode, password);
+export function enterPassword(password, button, keyCode) {
+  const inputNode = screen.getByLabelText('password');
+  if (keyCode) {
+    return inputText(inputNode, undefined, password, keyCode);
+  } else {
+    return inputText(inputNode, screen.getByText(button), password);
+  }
 }
 
 export function resetPasswordForm() {
@@ -67,9 +70,22 @@ export function resetPasswordForm() {
   fireEvent.change(inputPasswordNode, {target: { value: '' } });
 }
 
-export function inputText(inputTxtNode, actionBtnNode, text) {
+export function enterRetypePassword(password, button, keyCode) {
+  const inputNode = screen.getByLabelText('retype-password');
+  if (keyCode) {
+    return inputText(inputNode, undefined, password, keyCode);
+  } else {
+    return inputText(inputNode, screen.getByText(button), password);
+  }
+}
+
+export function inputText(inputTxtNode, actionBtnNode, text, keyCode) {
   fireEvent.change(inputTxtNode, {target: { value: text } });
-  fireEvent.click(actionBtnNode);
+  if (keyCode) {
+    fireEvent.keyUp(inputTxtNode, { keyCode });
+  } else {
+    fireEvent.click(actionBtnNode);
+  }
   return waitfor();
 }
 
@@ -88,10 +104,31 @@ export function expectXhttpGetUserCalledCorrectly() {
 }
 
 export function expectXhttpPostSessionCalledCorrectly(credential) {
-  expect(xhttp.post.mock.calls[0][0]).toMatch(/\/session/);
+  expect(xhttp.post.mock.calls[0][0]).toMatch(/^\/session$/);
   expect(xhttp.post.mock.calls[0][1]).toEqual({
     username: credential.email,
     password: credential.password,
+    app: 'account',
+  });
+}
+
+export function expectXhttpPostUserCalledCorrectly(user) {
+  expect(xhttp.post.mock.calls[0][0]).toMatch(/^\/user$/);
+  expect(xhttp.post.mock.calls[0][1]).toEqual({
+    user: {
+      email: user.email,
+      password: user.password,
+      profile: {
+        "address": "N/A",
+        "displayName": user.profile.fullName,
+        "email": [
+          user.email,
+        ],
+        "fullName": user.profile.fullName,
+        "gender": "N/A",
+        "phone": [],
+      }
+    },
     app: 'account',
   });
 }

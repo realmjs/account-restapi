@@ -30,7 +30,7 @@ class Email extends PureComponent {
   }
   focusTextInput() {
     if (this.props.active) {
-      this.textInput.current.focus()
+      this.textInput.current && this.textInput.current.focus()
     }
   }
   render() {
@@ -54,12 +54,13 @@ class Email extends PureComponent {
                 onKeyUp = {this.handleKeyUp}
                 disabled = {this.state.syncing}
                 ref={this.textInput}
+                aria-label = "email"
           />
         </p>
         <div style = {{marginBottom: '42px'}}>
           <div className="w3-cell-row">
             <div className="w3-cell">
-              {/* <label className="w3-text-red w3-large"><a href={`/form?name=signin&app=${__data.app}`}> Login with an registered account </a></label> */}
+              {/* <label className="w3-text-red w3-large"><a href={`/form?name=signin&app=${this.props.data.app}`}> Login with an registered account </a></label> */}
             </div>
             <div className="w3-cell" style={{textAlign: 'right'}}>
               <button type="submit" className={`w3-button w3-blue `} onClick={this.onConfirm} disabled = {this.state.syncing} >
@@ -162,6 +163,7 @@ class Profile extends PureComponent {
                       value={this.state.fullName}
                       onChange = {this.getTyped('fullName')}
                       onKeyUp = {this.handleKeyUp('fullName')}
+                      aria-label = 'fullname'
               />
             </p>
             <p>
@@ -335,7 +337,9 @@ class Term extends PureComponent {
             <input className = "w3-check"
                    type="checkbox"
                    checked = {this.state.checked}
-                   onChange = {this.toggleChecked} />
+                   onChange = {this.toggleChecked}
+                   aria-label = 'terms'
+            />
             <label> Agree <a>Terms & Services</a> </label>
         </div>
       </div>
@@ -478,8 +482,8 @@ export default class SignUp extends Component {
       done && done("This email has been used")
       return
     }
-    const app = __data ? __data.app : undefined;
-    xhttp.get(`/users?u=${email}&app=${app}`, { timeout: 30000 })
+    const app = this.props.data ? this.props.data.app : undefined;
+    xhttp.get(`/user?u=${email}&app=${app}`, { timeout: 30000 })
     .then( ({status}) => {
       if (status === 200) {
         this.blacklist.push(email)
@@ -512,9 +516,8 @@ export default class SignUp extends Component {
     this.next()
   }
   onConfirmTerm(done) {
-    console.log('Term is accepted')
     const user = {...this.state.form}
-    xhttp.post(`/users`, { user, app: __data ? __data.app : undefined }, { timeout: 30000 })
+    xhttp.post(`/user`, { user, app: this.props.data ? this.props.data.app : undefined }, { timeout: 30000 })
     .then( ({status, responseText}) => {
       if (status === 200) {
         done && done()

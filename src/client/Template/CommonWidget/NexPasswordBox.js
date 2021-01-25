@@ -115,6 +115,7 @@ export default class NewPasswordBox extends Component {
                   value = {this.state.password}
                   onChange = {this.getTypedPassword}
                   onKeyUp = {this.handleKeyUpForPassword}
+                  aria-label = "password"
           />
           <Message message = {this.state.messageBox1} />
 
@@ -131,6 +132,7 @@ export default class NewPasswordBox extends Component {
                   value = {this.state.retypePassword}
                   onChange = {this.getReTypePassword}
                   onKeyUp = {this.handleKeyUpForRetypePassword}
+                  aria-label = "retype-password"
           />
           <Message message = {this.state.messageBox2} />
         </div>
