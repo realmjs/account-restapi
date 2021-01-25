@@ -34,3 +34,64 @@ export function clearEnvironmentVariables() {
   process.env.EMAIL_SIGN_KEY = undefined;
   process.env.EMAIL_EXPIRE_RESET_LINK = undefined;
 }
+
+/* util support testing react compinent */
+
+import { screen, fireEvent } from '@testing-library/react';
+
+export function waitfor(cb) {
+  return new Promise(resolve => {
+    setTimeout(() => { cb && cb(); resolve(); }, 0);
+  });
+}
+
+export function enterEmail(email) {
+  const inputEmailNode = screen.getByLabelText('email');
+  const nextButtonNode = screen.getByText('Next');
+  return inputText(inputEmailNode, nextButtonNode, email);
+}
+
+export function resetEmailForm() {
+  const inputEmailNode = screen.getByLabelText('email');
+  fireEvent.change(inputEmailNode, {target: { value: '' } });
+}
+
+export function enterPassword(password) {
+  const inputPasswordNode = screen.getByLabelText('password');
+  const sumitButtonNode = screen.getByText('Submit');
+  return inputText(inputPasswordNode, sumitButtonNode, password);
+}
+
+export function resetPasswordForm() {
+  const inputPasswordNode = screen.getByLabelText('password');
+  fireEvent.change(inputPasswordNode, {target: { value: '' } });
+}
+
+export function inputText(inputTxtNode, actionBtnNode, text) {
+  fireEvent.change(inputTxtNode, {target: { value: text } });
+  fireEvent.click(actionBtnNode);
+  return waitfor();
+}
+
+export function expectNoErrorMessage(error) {
+  return expect(screen.queryByText(error)).toBeNull();
+}
+
+export function expectErrorMessage(error) {
+  return expect(screen.queryByText(error)).not.toBeNull();
+}
+
+import xhttp from '@realmjs/xhttp-request';
+
+export function expectXhttpGetUserCalledCorrectly() {
+  return expect(xhttp.get.mock.calls[0][0]).toMatch(/(\/user\?u=.*&app=.*|\/user\?app=.*&u=.*)/);
+}
+
+export function expectXhttpPostSessionCalledCorrectly(credential) {
+  expect(xhttp.post.mock.calls[0][0]).toMatch(/\/session/);
+  expect(xhttp.post.mock.calls[0][1]).toEqual({
+    username: credential.email,
+    password: credential.password,
+    app: 'account',
+  });
+}

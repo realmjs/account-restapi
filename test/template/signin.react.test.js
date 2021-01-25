@@ -6,6 +6,8 @@ import React from 'react';
 import renderer from 'react-test-renderer';
 import {screen, fireEvent, render} from '@testing-library/react';
 
+import { waitfor, enterEmail, resetEmailForm, enterPassword, expectNoErrorMessage, expectErrorMessage, expectXhttpGetUserCalledCorrectly, expectXhttpPostSessionCalledCorrectly } from '../util';
+
 import xhttp from '@realmjs/xhttp-request';
 jest.mock('@realmjs/xhttp-request');
 
@@ -17,61 +19,6 @@ const data = {"route":"signin","targetOrigin":"localhost:3100","app":"account","
 
 beforeEach( () => jest.clearAllMocks() );
 
-
-function waitfor(cb) {
-  return new Promise(resolve => {
-    setTimeout(() => { cb && cb(); resolve(); }, 0);
-  });
-}
-
-function enterEmail(email) {
-  const inputEmailNode = screen.getByLabelText('email');
-  const nextButtonNode = screen.getByText('Next');
-  return inputText(inputEmailNode, nextButtonNode, email);
-}
-
-function resetEmailForm() {
-  const inputEmailNode = screen.getByLabelText('email');
-  fireEvent.change(inputEmailNode, {target: { value: '' } });
-}
-
-function enterPassword(password) {
-  const inputPasswordNode = screen.getByLabelText('password');
-  const sumitButtonNode = screen.getByText('Submit');
-  return inputText(inputPasswordNode, sumitButtonNode, password);
-}
-
-function resetPasswordForm() {
-  const inputPasswordNode = screen.getByLabelText('password');
-  fireEvent.change(inputPasswordNode, {target: { value: '' } });
-}
-
-function inputText(inputTxtNode, actionBtnNode, text) {
-  fireEvent.change(inputTxtNode, {target: { value: text } });
-  fireEvent.click(actionBtnNode);
-  return waitfor();
-}
-
-function expectNoErrorMessage(error) {
-  return expect(screen.queryByText(error)).toBeNull();
-}
-
-function expectErrorMessage(error) {
-  return expect(screen.queryByText(error)).not.toBeNull();
-}
-
-function expectXhttpGetUserCalledCorrectly() {
-  return expect(xhttp.get.mock.calls[0][0]).toMatch(/(\/user\?u=.*&app=.*|\/user\?app=.*&u=.*)/);
-}
-
-function expectXhttpPostSessionCalledCorrectly(credential) {
-  expect(xhttp.post.mock.calls[0][0]).toMatch(/\/session/);
-  expect(xhttp.post.mock.calls[0][1]).toEqual({
-    username: credential.email,
-    password: credential.password,
-    app: 'account',
-  });
-}
 
 test('Should match snapshot of first scene (email) after mounted', () => {
   const component = renderer.create(
