@@ -478,8 +478,9 @@ export default class MyAccount extends Component {
     ]
     this.toast = this.toast.bind(this)
     this.onUserUpdated = this.onUserUpdated.bind(this)
-    xhttp.get('/session?app=account&return=json')
+    xhttp.get('/session?app=account&r=json')
     .then( ({status, responseText}) => {
+      console.log(responseText)
       if (status === 200) {
         const res = JSON.parse(responseText)
         const user = res && res.session ? res.session.user : undefined
