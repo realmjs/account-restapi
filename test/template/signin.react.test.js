@@ -112,7 +112,7 @@ test('Should show error failed to signing in if entered wrong password', async (
   await enterEmail(credential.email);
 
   expectNoErrorMessage('Error: Failed to signing in');
-  await enterPassword(credential.password);
+  await enterPassword(credential.password, 'Submit');
 
   expectXhttpPostSessionCalledCorrectly(credential);
 
@@ -129,7 +129,7 @@ test('Should call done and move to Welcome page after signed in successfully', a
   const { container } = render( <SignIn data = {data} done = {done} close = {close} /> );
 
   await enterEmail('tester@localhost.io');
-  await enterPassword('correct-password');
+  await enterPassword('correct-password', 'Submit');
 
   expect(done.mock.results[0].value).toEqual({ status: 200, session: { uid: 'tester' } });
 
