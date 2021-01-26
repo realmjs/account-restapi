@@ -262,7 +262,7 @@ export default class SignIn extends Component {
     .then( ({status, responseText}) => {
       if (status === 200) {
         done && done()
-        const session = JSON.parse(responseText)
+        const session = JSON.parse(responseText).session
         this.setState({ user: session.user})
         this.props.done && this.props.done({status: 200, session})
         this.next()

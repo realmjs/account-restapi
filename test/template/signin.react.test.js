@@ -124,7 +124,7 @@ test('Should show error failed to signing in if entered wrong password', async (
 test('Should call done and move to Welcome page after signed in successfully', async () => {
 
   xhttp.get.mockResolvedValue({ status: 200 });
-  xhttp.post.mockResolvedValue({ status: 200, responseText: '{"uid":"tester"}' });
+  xhttp.post.mockResolvedValue({ status: 200, responseText: '{"session": {"uid":"tester"}}' });
 
   const { container } = render( <SignIn data = {data} done = {done} close = {close} /> );
 
