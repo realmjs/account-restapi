@@ -3,31 +3,31 @@
 const { generateAuthenTokenMiddleware, serializeUser, decodeCookie } = require('../../lib/util');
 const html = require('../../lib/html');
 
-function _sendErrorHTML(res, code, detail, target) {
-  const data = { route: 'error', error: { code, detail }, target };
+function _sendErrorHTML(res, code, detail, targetOrigin) {
+  const data = { route: 'error', error: { code, detail }, targetOrigin };
   res.writeHead( 200, { "Content-Type": "text/html" } );
   res.end(html({title: `Error ${code}`, data, script: process.env.SCRIPT, style: false}));
 }
 
-function _responseError(responseType, res, code, detail, target ) {
+function _responseError(responseType, res, code, detail, targetOrigin ) {
   if (responseType === 'json') {
     res.status(code).json({ error: detail });
   } else {
-    _sendErrorHTML(res, code, detail, target);
+    _sendErrorHTML(res, code, detail, targetOrigin);
   }
 }
 
-function _sendSuccessHTML(res, session, target) {
-  const data = { route: 'sso', target, status: 200, session };
+function _sendSuccessHTML(res, session, targetOrigin) {
+  const data = { route: 'sso', targetOrigin, status: 200, session };
   res.writeHead( 200, { "Content-Type": "text/html" } );
   res.end(html({title: 'SSO', data, script: process.env.SCRIPT, style: false}));
 }
 
-function _responseSuccess(responseType, res, session, target) {
+function _responseSuccess(responseType, res, session, targetOrigin) {
   if (responseType === 'json') {
     res.status(200).json({ session });
   } else {
-    _sendSuccessHTML(res, session, target);
+    _sendSuccessHTML(res, session, targetOrigin);
   }
 }
 
