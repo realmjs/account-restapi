@@ -9,7 +9,7 @@ function validateParams() {
     if (req.query && req.query.app && req.query.name) {
       next();
     } else {
-      res.redirect('/error/400');
+      _renderError(req, res, 400, 'Bad Request');
     }
   }
 }
@@ -21,15 +21,25 @@ function verifyApp(helpers) {
       req.app = app;
       next();
     } else {
-      res.redirect('/error/400');
+      _renderError(req, res, 400, 'Bad Request');
     }
+  }
+}
+
+function validateIfSignOutForm() {
+  return function(req, res, next) {
+    if (req.query.name === 'signout' && !req.query.sid) {
+      _renderError(req, res, 400, 'Bad Request');
+      return;
+    }
+    next();
   }
 }
 
 function validateTokenIfRequired() {
   return function(req, res, next) {
     if (req.query.name === 'resetpassword' && verifyRequestToken(req) === false) {
-      res.redirect('/error/400');
+      _renderError(req, res, 400, 'Bad Request');
       return;
     }
     next();
@@ -49,11 +59,17 @@ function verifyRequestToken(req) {
 }
 
 function _renderForm(req, res, name, title, app, query) {
-  const data = { route: name, targetOrigin: app.url, app: app.id, query }
+  const data = { route: name, targetOrigin: app.url, app: app.id, query };
   if (req.query && req.query.height) { data.height= req.query.height }
   if (req.query && req.query.width) { data.width= req.query.width }
   res.writeHead( 200, { "Content-Type": "text/html" } );
   res.end(html({title, data, script: process.env.SCRIPT}));
 }
 
-module.exports = [validateParams, verifyApp, validateTokenIfRequired, responseForm];
+function _renderError(req, res, code, detail) {
+  const data = { route: 'error', targetOrigin: req.app && req.app.url, error: {code, detail} };
+  res.writeHead( 200, { "Content-Type": "text/html" } );
+  res.end(html({title: `Error ${code}`, data, script: process.env.SCRIPT}));
+}
+
+module.exports = [validateParams, verifyApp, validateIfSignOutForm, validateTokenIfRequired, responseForm];

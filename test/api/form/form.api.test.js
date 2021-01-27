@@ -15,45 +15,73 @@ afterAll( () => clearEnvironmentVariables() );
 
 const url = '/form';
 
-test(`[GET ${url}] should response 302 and redirect to /error/400 if missing all parameters`, async () => {
+test(`[GET ${url}] should response error page (400) if missing all parameters`, async () => {
   await request(app).get(url)
-                    .expect(302)
-                    .expect('Location', '/error/400');
+                    .expect(200)
+                    .expect('Content-Type', /text\/html/)
+                    .then(res => {
+                      expect(res.text).toMatch(/ __data={\"route\":\"error\",.*\"code\":400/);
+                    });
 });
 
 
-test(`[GET ${url}] should response 302 and redirect to /error/400 if missing name in parameters`, async () => {
+test(`[GET ${url}] should response error page (400) if missing name in parameters`, async () => {
   await request(app).get(`${url}?app=test`)
-                    .expect(302)
-                    .expect('Location', '/error/400');
+                    .expect(200)
+                    .expect('Content-Type', /text\/html/)
+                    .then(res => {
+                      expect(res.text).toMatch(/ __data={\"route\":\"error\",.*\"code\":400/);
+                    });
 });
 
 
-test(`[GET ${url}] should response 302 and redirect to /error/400 if missing app in parameters`, async () => {
+test(`[GET ${url}] should response error page (400) if missing app in parameters`, async () => {
   await request(app).get(`${url}?name=signin`)
-                    .expect(302)
-                    .expect('Location', '/error/400');
+                    .expect(200)
+                    .expect('Content-Type', /text\/html/)
+                    .then(res => {
+                      expect(res.text).toMatch(/ __data={\"route\":\"error\",.*\"code\":400/);
+                    });
 });
 
 
-test(`[GET ${url}] should response 302 and redirect to /error/400 for invalid app`, async () => {
+test(`[GET ${url}] should response error page (400) for invalid app`, async () => {
   await request(app).get(`${url}?app=true&name=signin`)
-                    .expect(302)
-                    .expect('Location', '/error/400');
+                    .expect(200)
+                    .expect('Content-Type', /text\/html/)
+                    .then(res => {
+                      expect(res.text).toMatch(/ __data={\"route\":\"error\",.*\"code\":400/);
+                    });
 });
 
 
-test(`[GET ${url}] should response 302 and redirect to /error/400 if request resetpassword form without token`, async () => {
+test(`[GET ${url}] should response error page (400) if requesting signout form without sid`, async () => {
+  await request(app).get(`${url}?app=test&&name=signout`)
+                    .expect(200)
+                    .expect('Content-Type', /text\/html/)
+                    .then(res => {
+                      expect(res.text).toMatch(/ __data={\"route\":\"error\",.*\"code\":400/);
+                    });
+});
+
+
+test(`[GET ${url}] should response error page (400) if request resetpassword form without token`, async () => {
   await request(app).get(`${url}?app=test&name=resetpassword`)
-                    .expect(302)
-                    .expect('Location', '/error/400');
+                    .expect(200)
+                    .expect('Content-Type', /text\/html/)
+                    .then(res => {
+                      expect(res.text).toMatch(/ __data={\"route\":\"error\",.*\"code\":400/);
+                    });
 });
 
 
-test(`[GET ${url}] should response 302 and redirect to /error/400 if request resetpassword form with invalid token`, async () => {
+test(`[GET ${url}] should response error page (400) if request resetpassword form with invalid token`, async () => {
   await request(app).get(`${url}?app=test&name=resetpassword&t=invalid`)
-                    .expect(302)
-                    .expect('Location', '/error/400');
+                    .expect(200)
+                    .expect('Content-Type', /text\/html/)
+                    .then(res => {
+                      expect(res.text).toMatch(/ __data={\"route\":\"error\",.*\"code\":400/);
+                    });
 });
 
 
