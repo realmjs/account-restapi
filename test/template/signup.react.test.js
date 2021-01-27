@@ -156,7 +156,7 @@ test('Should able to move to Term and Service scene', async () => {
 
 test('Should proceed to last scene only if checkbox is checked', async () => {
   xhttp.get.mockResolvedValue({ status: 404 });
-  xhttp.post.mockResolvedValue({ status: 200, responseText: '{"uid":"tester"}' });
+  xhttp.post.mockResolvedValue({ status: 200, responseText: '{"session": {"uid":"tester"}}' });
   const { container } = render( <SignUp data = {data} done = {done} close = {close} /> );
 
   const user = {
