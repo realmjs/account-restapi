@@ -84,13 +84,13 @@ class TabPassword extends PureComponent {
   }
   onConfirmPassword(password, done) {
     const username = this.props.user.username
-    xhttp.post('/session', {username, password})
+    xhttp.post('/session', {username, password, app: this.props.data.app})
     .then( ({status}) => {
       if (status === 200) {
         this.setState({ password, display: 'new-password' })
         done && done()
       } else {
-        done && done('Invalid password')
+        done && done('Error: Verify password failed')
       }
     })
     .catch( error => done && done(error))
@@ -99,7 +99,8 @@ class TabPassword extends PureComponent {
     xhttp.put('/me/password', {
       username: this.props.user.username,
       password: this.state.password,
-      newPassword: password
+      newPassword: password,
+      app: this.props.data.app,
     })
     .then( ({status}) => {
       if (status === 200) {
