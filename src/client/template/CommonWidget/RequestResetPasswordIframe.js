@@ -10,9 +10,6 @@ export default class extends PureComponent {
     this.ref = React.createRef()
     this.resize = this.resize.bind(this)
   }
-  componentDidUpdate() {
-    this.resize()
-  }
   render() {
     if (this.props.active) {
       return (
@@ -20,6 +17,7 @@ export default class extends PureComponent {
                 width = '100%'
                 style = {{border: 0, height: this.state.height}}
                 ref = {this.ref}
+                onLoad = {this.resize}
         />
       )
     } else {
