@@ -38,7 +38,7 @@ function validateIfSignOutForm() {
 
 function validateTokenIfRequired() {
   return function(req, res, next) {
-    if (req.query.name === 'resetpassword' && verifyRequestToken(req) === false) {
+    if (req.query.name === 'reset' && verifyRequestToken(req) === false) {
       _renderError(req, res, 400, 'Bad Request');
       return;
     }

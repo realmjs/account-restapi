@@ -106,7 +106,7 @@ export default class extends PureComponent {
     this.setState({ activeRoute: route })
   }
   onConfirm(password) {
-    xhttp.put('/users/password', { t : __data.query.t, password })
+    xhttp.put('/user/password', { t : __data.query.t, password })
     .then( ({status, responseText}) => {
       if (status === 200) {
         this.setState({ activeRoute: 'success', error: ''})

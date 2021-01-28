@@ -66,7 +66,7 @@ test(`[GET ${url}] should response error page (400) if requesting signout form w
 
 
 test(`[GET ${url}] should response error page (400) if request resetpassword form without token`, async () => {
-  await request(app).get(`${url}?app=test&name=resetpassword`)
+  await request(app).get(`${url}?app=test&name=reset`)
                     .expect(200)
                     .expect('Content-Type', /text\/html/)
                     .then(res => {
@@ -76,7 +76,7 @@ test(`[GET ${url}] should response error page (400) if request resetpassword for
 
 
 test(`[GET ${url}] should response error page (400) if request resetpassword form with invalid token`, async () => {
-  await request(app).get(`${url}?app=test&name=resetpassword&t=invalid`)
+  await request(app).get(`${url}?app=test&name=reset&t=invalid`)
                     .expect(200)
                     .expect('Content-Type', /text\/html/)
                     .then(res => {
