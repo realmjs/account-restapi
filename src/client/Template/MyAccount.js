@@ -364,18 +364,6 @@ class TabProfile extends PureComponent {
         if ({}.toString.call(this.state[prop]) === '[object String]' && this.state[prop].length === 0) { continue }
         changed[prop] = this.state[prop]
       }
-      /* changed: get the full prop from state to write to db
-      if (origin[prop] !== this.state[prop]) {
-        console.log(prop + ':' + {}.toString.call(this.state[prop]))
-        if ({}.toString.call(this.state[prop]) === '[object Array]') {
-          if (this.isEquivalentArray(origin[prop], this.state[prop])) { continue }
-          changed[prop] = this.state[prop].filter(i => i.length > 0)
-        } else {
-          // if ({}.toString.call(this.state[prop]) === '[object String]' && this.state[prop].length === 0) { continue }
-          changed[prop] = this.state[prop]
-        }
-      }
-      */
     }
     return changed
   }
@@ -481,7 +469,6 @@ export default class MyAccount extends Component {
     this.onUserUpdated = this.onUserUpdated.bind(this)
     xhttp.get('/session?app=account&r=json')
     .then( ({status, responseText}) => {
-      console.log(responseText)
       if (status === 200) {
         const res = JSON.parse(responseText)
         const user = res && res.session ? res.session.user : undefined
@@ -492,7 +479,7 @@ export default class MyAccount extends Component {
         this.setState({ user: undefined, token: undefined })
       }
     })
-    .catch(err => console.log(`SSO error: ${err}`))
+    .catch(err => console.log(`SSO Failed`))
   }
   render() {
     const user = this.state.user
