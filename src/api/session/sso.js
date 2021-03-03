@@ -17,17 +17,18 @@ function _responseError(responseType, res, code, detail, targetOrigin ) {
   }
 }
 
-function _sendSuccessHTML(res, session, targetOrigin) {
-  const data = { route: 'sso', targetOrigin, status: 200, session };
+function _sendSuccessHTML(res, statusCode, session, targetOrigin) {
+  const data = { route: 'sso', targetOrigin, status: statusCode, session };
   res.writeHead( 200, { "Content-Type": "text/html" } );
   res.end(html({title: 'SSO', data, script: process.env.SCRIPT, style: false}));
 }
 
 function _responseSuccess(responseType, res, session, targetOrigin) {
+  const statusCode = session? 200 : 404;
   if (responseType === 'json') {
-    res.status(200).json({ session });
+    res.status(statusCode).json({ session });
   } else {
-    _sendSuccessHTML(res, session, targetOrigin);
+    _sendSuccessHTML(res, statusCode, session, targetOrigin);
   }
 }
 

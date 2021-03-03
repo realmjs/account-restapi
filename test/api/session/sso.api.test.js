@@ -73,9 +73,9 @@ test(`[GET ${url}] should response 400 for invalid app`, async () => {
 });
 
 
-test(`[GET ${url}] should response 200 with null session if request without a session cookie`, async () => {
+test(`[GET ${url}] should response 404 with null session if request without a session cookie`, async () => {
   await request(app).get(`${url}?r=json&app=test`)
-                    .expect(200)
+                    .expect(404)
                     .expect('Content-Type', /json/)
                     .then( res => {
                       expect(res.body.session).toBeNull();
@@ -86,6 +86,7 @@ test(`[GET ${url}] should response 200 with null session if request without a se
                     .expect('Content-Type', /text\/html/)
                     .then( res => {
                       expect(res.text).toMatch(/\"session\":null/);
+                      expect(res.text).toMatch(/\"status\":404/);
                       expect(res.headers['set-cookie']).toBeUndefined();
                     });
 });
