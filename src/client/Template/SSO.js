@@ -7,7 +7,7 @@ export default class extends PureComponent {
     super(props)
   }
   componentDidMount() {
-    this.props.done({ status: 200, session: window.__data.session })
+    this.props.done({ status: window.__data.status, session: window.__data.session })
   }
   render() {
     return( <div />)

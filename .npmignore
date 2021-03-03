@@ -1,3 +1,7 @@
 build/
 node_modules/
+test/
+src/client/
+example/
 npm-debug.*
+webpack.*
