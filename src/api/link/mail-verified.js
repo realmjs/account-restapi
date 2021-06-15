@@ -24,7 +24,7 @@ function decodeToken() {
       if (err) {
         res.redirect('/error/403');
       } else {
-        req.uid = decoded.uid;
+        res.locals.uid = decoded.uid;
         next();
       }
     })

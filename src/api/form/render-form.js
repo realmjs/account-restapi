@@ -18,7 +18,7 @@ function verifyApp(helpers) {
   return function(req, res, next) {
     const app = helpers.Apps.find( app => app.id === req.query.app );
     if (app) {
-      req.app = app;
+      res.locals.app = app;
       next();
     } else {
       _renderError(req, res, 400, 'Bad Request');
@@ -48,7 +48,7 @@ function validateTokenIfRequired() {
 
 function responseForm() {
   return function(req, res) {
-    _renderForm(req, res, req.query.name, req.query.title || 'Form', req.app, req.query);
+    _renderForm(req, res, req.query.name, req.query.title || 'Form', res.locals.app, req.query);
   }
 }
 
@@ -67,7 +67,7 @@ function _renderForm(req, res, name, title, app, query) {
 }
 
 function _renderError(req, res, code, detail) {
-  const data = { route: 'error', targetOrigin: req.app && req.app.url, error: {code, detail} };
+  const data = { route: 'error', targetOrigin: res.locals.app && res.locals.app.url, error: {code, detail} };
   res.writeHead( 200, { "Content-Type": "text/html" } );
   res.end(html({title: `Error ${code}`, data, script: process.env.SCRIPT}));
 }

@@ -10,7 +10,7 @@ function validateParams(helpers) {
     }
     const app = helpers.Apps.find( app => app.id === req.body.app );
     if (app) {
-      req.app = app;
+      res.locals.app = app;
       next();
     } else {
       res.status(400).json({ error: 'Bad Request' });
@@ -21,7 +21,7 @@ function validateParams(helpers) {
 function getSession() {
   return function(req, res, next) {
     const cookies = req.cookies;
-    const app = req.app;
+    const app = res.locals.app;
     decodeCookie(cookies, app)
     .then( session => {
       if (session && session.sessionId === req.body.sid) {

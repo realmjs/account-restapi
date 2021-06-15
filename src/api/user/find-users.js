@@ -19,7 +19,7 @@ function verifyApp(helpers) {
   return function(req, res, next) {
     const app = helpers.Apps.find( app => app.id === req.query.app );
     if (app) {
-      req.app = app;
+      res.locals.app = app;
       next();
     } else {
       res.status(400).json({ error: 'Bad Request' });
@@ -64,7 +64,7 @@ function findUserByEmail(req, res, helpers) {
 */
 function findUserByToken(req, res, helpers) {
   const token = req.query.u;
-  const app = req.app;
+  const app = res.locals.app;
   jwt.verify(token, app.key, (err, decoded) => {
     if (err) {
       res.status(401).json({ error: 'Unauthorized' });

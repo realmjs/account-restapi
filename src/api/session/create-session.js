@@ -16,7 +16,7 @@ function verifyApp(helpers) {
   return function(req, res, next) {
     const app = helpers.Apps.find( app => app.id === req.body.app );
     if (app) {
-      req.app = app;
+      res.locals.app = app;
       next();
     } else {
       res.status(400).json({ error: 'Bad Request'});
@@ -28,8 +28,8 @@ function findUser(helpers) {
   return function(req, res, next) {
     helpers.Database.LOGIN.find({ username: req.body.username })
     .then( user => {
-      if (user && user.realms && user.realms[req.app.realm]) {
-        req.user = user;
+      if (user && user.realms && user.realms[res.locals.app.realm]) {
+        res.locals.user = user;
         next();
       } else {
         res.status(404).send({ error: 'Not Found' });
@@ -44,7 +44,7 @@ function findUser(helpers) {
 
 function verifyPassword() {
   return function(req, res, next) {
-    if (checkPassword(req.user, req.body.password)) {
+    if (checkPassword(res.locals.user, req.body.password)) {
       next();
     } else {
       res.status(401).send({ error: 'Unauthorized' });
@@ -54,7 +54,7 @@ function verifyPassword() {
 
 function responseSuccess() {
   return function(req, res) {
-    const session = { user: serializeUser(req.user), token: req.authenToken, sid: req.sid };
+    const session = { user: serializeUser(res.locals.user), token: res.locals.authenToken, sid: res.locals.sid };
     res.status(200).json({ session });
   }
 }

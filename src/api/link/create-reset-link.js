@@ -19,7 +19,7 @@ function verifyApp(helpers) {
   return function(req, res, next) {
     const app = helpers.Apps.find( app => app.id === req.body.app );
     if (app) {
-      req.app = app;
+      res.locals.app = app;
       next();
     } else {
       res.redirect('/error/400');
@@ -32,7 +32,7 @@ function findUser(helpers) {
     helpers.Database.LOGIN.find({ username: req.body.email })
       .then( user => {
         if (user) {
-          req.user = user;
+          res.locals.user = user;
           next();
         } else {
           res.redirect('/error/403');
@@ -48,7 +48,7 @@ function findUser(helpers) {
 function createToken(helpers) {
   return function(req, res, next) {
     try {
-      req.token = jwt.sign({ uid: req.user.uid }, process.env.EMAIL_SIGN_KEY, { expiresIn: process.env.EMAIL_EXPIRE_RESET_LINK });
+      res.locals.token = jwt.sign({ uid: res.locals.user.uid }, process.env.EMAIL_SIGN_KEY, { expiresIn: process.env.EMAIL_EXPIRE_RESET_LINK });
       next();
     } catch(err) {
       helpers.alert && helpers.alert(`POST /ln/reset: Error in createToken: ${err}`);
@@ -59,13 +59,13 @@ function createToken(helpers) {
 
 function sendEmail(helpers) {
   return function(req, res, next) {
-    const user = req.user;
+    const user = res.locals.user;
     const account = helpers.Apps.find(app => app.id === 'account');
     if (account) {
       helpers.sendEmail({
         recipient: [{ address: user.profile.email[0], name: user.profile.displayName }],
         template: 'resetemail',
-        data: { customer: user.profile.displayName, endpoint:`${account.url}/form?name=reset&app=account`, token: req.token }
+        data: { customer: user.profile.displayName, endpoint:`${account.url}/form?name=reset&app=account`, token: res.locals.token }
       })
       .then(() => next())
       .catch(err => {
@@ -89,7 +89,7 @@ function responseSuccessPage() {
       </div>
     `
     res.writeHead( 200, { "Content-Type": "text/html" } );
-    res.end(html({ title: 'Success', dom, data: {targetOrigin: req.app.url} }));
+    res.end(html({ title: 'Success', dom, data: {targetOrigin: res.locals.app.url} }));
   }
 }
 

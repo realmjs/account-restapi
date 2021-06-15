@@ -20,7 +20,7 @@ function verifyApp(helpers) {
   return function(req, res, next) {
     const app = helpers.Apps.find( app => app.id === req.body.app );
     if (app) {
-      req.app = app;
+      res.locals.app = app;
       next();
     } else {
       res.status(400).json({ error: 'Bad Request'});
@@ -49,7 +49,7 @@ function checkUserExistance(helpers) {
 function createUser(helpers) {
   return function(req, res, next) {
     const profile = prepareUserProfile(req.body.user);
-    const realms = prepareUserRealms(req.app.realm);
+    const realms = prepareUserRealms(res.locals.app.realm);
     const user = {
       username: req.body.user.email.toLowerCase().trim(),
       uid: uuid(),
@@ -61,7 +61,7 @@ function createUser(helpers) {
     };
 
     helpers.Database.USER.insert(user)
-    .then( () => { req.user = user; next(); })
+    .then( () => { res.locals.user = user; next(); })
     .catch( err => {
       helpers.alert && helpers.alert(`POST /user: Error in createUser: ${err}`);
       res.status(403).json({ error: 'Forbidden' });
@@ -107,7 +107,7 @@ function sendEmail(helpers) {
   return function(req, res, next) {
     if (helpers.sendEmail) {
       /* generate token to active email */
-      const user = req.user;
+      const user = res.locals.user;
       const account = helpers.Apps.find(app => app.id === 'account');
 
       if (account) {
@@ -146,8 +146,8 @@ function hook(helpers) {
   return function(req, res, next) {
     if (helpers.hooks) {
       Promise.all(helpers.hooks.map(hook => hook({
-        user: serializeUser(req.user),
-        token: req.authenToken
+        user: serializeUser(res.locals.user),
+        token: res.locals.authenToken
       })))
       .then(() => next())
       .catch(err => {
@@ -160,7 +160,7 @@ function hook(helpers) {
 
 function responseSuccess() {
   return function(req, res) {
-    const session = { user: serializeUser(req.user), token: req.authenToken, sid: req.sid };
+    const session = { user: serializeUser(res.locals.user), token: res.locals.authenToken, sid: res.locals.sid };
     res.status(200).json({ session });
   }
 }

@@ -52,7 +52,7 @@ function validateParameters(helpers) {
       return;
     }
 
-    req.app = app;
+    res.locals.app = app;
     next();
 
   }
@@ -61,12 +61,12 @@ function validateParameters(helpers) {
 function getSession(helpers) {
   return function(req, res, next) {
     const cookies = req.cookies;
-    const app = req.app;
+    const app = res.locals.app;
     decodeCookie(cookies, app)
     .then( session => {
       if (session) {
-        req.uid = session.uid;
-        req.sid = session.sessionId;
+        res.locals.uid = session.uid;
+        res.locals.sid = session.sessionId;
         next();
       } else {
         _responseSuccess(req.query.r, res, null, app.url);
@@ -81,11 +81,11 @@ function getSession(helpers) {
 
 function findUser(helpers) {
   return function(req, res, next) {
-    const app = req.app;
-    helpers.Database.USER.find({ uid: req.uid })
+    const app = res.locals.app;
+    helpers.Database.USER.find({ uid: res.locals.uid })
     .then( user => {
       if (user && user.realms && user.realms[app.realm]) {
-        req.user = user;
+        res.locals.user = user;
         next();
       } else {
         _responseError(req.query.r, res, 404, 'Not Found');
@@ -100,8 +100,8 @@ function findUser(helpers) {
 
 function final() {
   return function(req, res) {
-    const session = { user: serializeUser(req.user), token: req.authenToken, sid: req.sid };
-    const app = req.app;
+    const session = { user: serializeUser(res.locals.user), token: res.locals.authenToken, sid: res.locals.sid };
+    const app = res.locals.app;
     _responseSuccess(req.query.r, res, session, app.url);
   }
 }

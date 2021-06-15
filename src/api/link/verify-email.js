@@ -21,7 +21,7 @@ function decodeToken() {
       if (err) {
         res.redirect('/error/403');
       } else {
-        req.uid = decoded.uid;
+        res.locals.uid = decoded.uid;
         next();
       }
     })
@@ -30,7 +30,7 @@ function decodeToken() {
 
 function checkVerifiedEmail(helpers) {
   return function(req, res, next) {
-    helpers.Database.USER.find({ uid: req.uid })
+    helpers.Database.USER.find({ uid: res.locals.uid })
     .then( user => {
       if (user) {
         if (user.username !== req.query.email) { res.redirect('/error/403'); return }
@@ -49,7 +49,7 @@ function checkVerifiedEmail(helpers) {
 
 function setEmailVerified(helpers) {
   return function(req, res, next) {
-    helpers.Database.USER.verified.update({ uid: req.uid }, true)
+    helpers.Database.USER.verified.update({ uid: res.locals.uid }, true)
     .then( _ => res.redirect(`/ln/mailverified?t=${req.query.t}`) )
     .catch( err => {
       helpers.alert && helpers.alert(`GET /ln/email: Error in setEmailVerified: ${err}`);

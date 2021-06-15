@@ -15,13 +15,13 @@ function authenUserMiddleware() {
     }
     const bearer = bearerHeader.split(" ");
     const token = bearer[1];
-    req.token = token;
-    const secret = req.app.key;
+    res.locals.token = token;
+    const secret = res.locals.app.key;
     jwt.verify(token, secret, (err, decoded) => {
       if (err) {
         res.status(401).json({ error: 'Unauthorized' });
       } else {
-        req.uid = decoded.uid;
+        res.locals.uid = decoded.uid;
         next();
       }
     });
@@ -30,7 +30,7 @@ function authenUserMiddleware() {
 
 function generateAuthenTokenMiddleware(helpers) {
   return function(req, res, next) {
-    req.authenToken = createSessionToken(req.user, req.app);
+    res.locals.authenToken = createSessionToken(res.locals.user, res.locals.app);
     next();
   }
 }
@@ -45,16 +45,16 @@ function createSessionToken(user, app) {
 
 function setHttpCookieMiddleware() {
   return function(req, res, next) {
-    const cookie = encodeCookie(req.user);
-    res.cookie(`${COOKIE_SESSION}_${req.app.realm}`, cookie, { httpOnly: true });
-    req.sid = JSON.parse(cookie).sessionId;
+    const cookie = encodeCookie(res.locals.user);
+    res.cookie(`${COOKIE_SESSION}_${res.locals.app.realm}`, cookie, { httpOnly: true });
+    res.locals.sid = JSON.parse(cookie).sessionId;
     next();
   }
 }
 
 function cleanCookieMiddleware() {
   return function(req, res, next) {
-    res.clearCookie(`${COOKIE_SESSION}_${req.app.realm}`);
+    res.clearCookie(`${COOKIE_SESSION}_${res.locals.app.realm}`);
     next();
   }
 }
