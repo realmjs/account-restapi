@@ -7,8 +7,9 @@ export default {
   USER: {
     find: jest.fn(createFindFunc('uid')),
     insert: jest.fn(insertUser),
-    update: jest.fn(updateUser),
-    set: jest.fn(setUserProp),
+    password: { update: jest.fn(updateUser) },
+    verified: { update: jest.fn(updateUser) },
+    profile: { update: jest.fn(updateUser) },
   },
   LOGIN: {
     find: jest.fn(createFindFunc('username')),
@@ -16,9 +17,9 @@ export default {
 };
 
 function createFindFunc(prop) {
-  return function (expr) {
+  return function (key) {
     return new Promise((resolve, reject) => {
-      const usr = expr[prop].split('=')[1].trim();
+      const usr = key[prop];
       if (usr === 'error' || usr === 'error@localhost.io') {
         reject('err');
         return;
@@ -26,48 +27,48 @@ function createFindFunc(prop) {
       if (usr === 'tester' || usr === 'tester@localhost.io') {
         const realms = {};
         realms[realm] = { roles: ['member'] };
-        resolve([{
+        resolve({
           uid: 'tester',
           username: 'tester@localhost.io',
           realms,
           profile: { displayName: 'tester', email: ['tester@localhost.io'],},
           credentials: { password: hashPassword('secret-pwd') }
-        }]);
+        });
       } else if (usr === 'verifiedtester' || usr === 'verifiedtester@localhost.io') {
         const realms = {};
         realms[realm] = { roles: ['member'] };
-        resolve([{
+        resolve({
           uid: 'verifiedtester',
           username: 'verifiedtester@localhost.io',
           realms,
           credentials: { password: hashPassword('secret-pwd') },
           verify: true,
-        }]);
+        });
       } else if (usr === 'error-updater' || usr === 'error-updater@localhost.io') {
         const realms = {};
         realms[realm] = { roles: ['member'] };
-        resolve([{
+        resolve({
           uid: 'error-updater',
           username: 'error-updater@localhost.io',
           realms,
           credentials: { password: hashPassword('secret-pwd') }
-        }]);
+        });
       } else if (usr === 'error-sender' || usr === 'error-sender@localhost.io') {
         const realms = {};
         realms[realm] = { roles: ['member'] };
-        resolve([{
+        resolve({
           uid: 'error-sender',
           username: 'error-sender@localhost.io',
           realms,
           profile: { displayName: 'error-sender', email: ['error-sender@localhost.io'],},
           credentials: { password: hashPassword('secret-pwd') }
-        }]);
+        });
       } else if (usr === 'norealm') {
-        resolve([ {uid: 'norealm'} ]);
+        resolve({uid: 'norealm'});
       } else if (usr === 'outsider') {
-        resolve([ {uid: 'outsider', realms: { 'outsider': true} } ]);
+        resolve({uid: 'outsider', realms: { 'outsider': true} });
       } else {
-        resolve([]);
+        resolve();
       }
     });
   }
@@ -76,7 +77,7 @@ function createFindFunc(prop) {
 function insertUser(user) {
   return new Promise((resolve, reject) => {
     if (user.username === 'error-inserter') reject('err')
-    else resolve(user);
+    else resolve();
   });
 }
 
@@ -87,9 +88,3 @@ function updateUser({uid}) {
   });
 }
 
-function setUserProp({uid}) {
-  return new Promise((resolve, reject) => {
-    if (uid === 'error-updater') reject(false)
-    else resolve(true);
-  });
-}

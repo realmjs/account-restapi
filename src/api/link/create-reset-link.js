@@ -29,10 +29,10 @@ function verifyApp(helpers) {
 
 function findUser(helpers) {
   return function(req, res, next) {
-    helpers.Database.LOGIN.find({ username: `= ${req.body.email}` })
-      .then( users => {
-        if (users && users.length > 0) {
-          req.user = users[0];
+    helpers.Database.LOGIN.find({ username: req.body.email })
+      .then( user => {
+        if (user) {
+          req.user = user;
           next();
         } else {
           res.redirect('/error/403');

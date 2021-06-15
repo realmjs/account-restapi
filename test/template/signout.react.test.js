@@ -7,7 +7,7 @@ import renderer from 'react-test-renderer';
 
 import { waitfor } from '../util';
 
-import SignOut from '../../src/client/Template/SignOut';
+import SignOut from '../../src/client/template/SignOut';
 
 import xhttp from '@realmjs/xhttp-request';
 jest.mock('@realmjs/xhttp-request');

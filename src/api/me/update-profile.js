@@ -42,7 +42,7 @@ function authen() {
 function update(helpers) {
   return function(req, res) {
     const profile = req.body.profile;
-    helpers.Database.USER.set({ uid: req.uid }, { profile })
+    helpers.Database.USER.profile.update({ uid: req.uid }, profile)
     .then( update => {
       res.status(200).json({ update });
     })

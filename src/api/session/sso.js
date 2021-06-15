@@ -82,10 +82,10 @@ function getSession(helpers) {
 function findUser(helpers) {
   return function(req, res, next) {
     const app = req.app;
-    helpers.Database.USER.find({ uid: `= ${req.uid}`})
-    .then( users => {
-      if (users && users.length > 0 && users[0].realms && users[0].realms[app.realm]) {
-        req.user = users[0];
+    helpers.Database.USER.find({ uid: req.uid })
+    .then( user => {
+      if (user && user.realms && user.realms[app.realm]) {
+        req.user = user;
         next();
       } else {
         _responseError(req.query.r, res, 404, 'Not Found');

@@ -4,7 +4,7 @@ import React from 'react';
 import renderer from 'react-test-renderer';
 import {screen, fireEvent, render} from '@testing-library/react';
 
-import Error from '../../src/client/Template/Error';
+import Error from '../../src/client/template/Error';
 
 test('Should match snapshot and call done when mounted', () => {
   const done = jest.fn(msg => msg);

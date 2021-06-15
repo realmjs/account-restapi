@@ -26,10 +26,10 @@ function verifyApp(helpers) {
 
 function findUser(helpers) {
   return function(req, res, next) {
-    helpers.Database.LOGIN.find({ username: `= ${req.body.username}`})
-    .then( users => {
-      if (users && users.length > 0 && users[0].realms && users[0].realms[req.app.realm]) {
-        req.user = users[0];
+    helpers.Database.LOGIN.find({ username: req.body.username })
+    .then( user => {
+      if (user && user.realms && user.realms[req.app.realm]) {
+        req.user = user;
         next();
       } else {
         res.status(404).send({ error: 'Not Found' });

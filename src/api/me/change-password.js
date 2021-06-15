@@ -29,10 +29,10 @@ function verifyApp(helpers) {
 
 function findUser(helpers) {
   return function(req, res, next) {
-    helpers.Database.LOGIN.find({ username: `= ${req.body.username}`})
-    .then( users => {
-      if (users && users.length > 0 && users[0].realms && users[0].realms[req.app.realm]) {
-        req.user = users[0];
+    helpers.Database.LOGIN.find({ username: req.body.username })
+    .then( user => {
+      if (user && user.realms && user.realms[req.app.realm]) {
+        req.user = user;
         next();
       } else {
         res.status(403).json({ error: 'Forbidden' }); // for security, return 403 instead of 404
@@ -58,7 +58,7 @@ function verifyPassword() {
 
 function updatePassword(helpers) {
   return function(req, res) {
-    helpers.Database.USER.update({ uid: req.user.uid }, { credentials: { password: hashPassword(req.body.newPassword) } })
+    helpers.Database.USER.password.update({ uid: req.user.uid }, hashPassword(req.body.newPassword))
     .then( _ => res.status(200).json({ message: 'Success' }) )
     .catch( err => {
       helpers.alert && helpers.alert(`PUT /me/password: Error in updatePassword: ${err}`);

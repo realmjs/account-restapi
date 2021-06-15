@@ -43,9 +43,9 @@ function findUser(helpers) {
 */
 function findUserByEmail(req, res, helpers) {
   const email = req.query.u;
-  helpers.Database.LOGIN.find({ username: `= ${email}`})
-  .then( users => {
-    if (users && users.length > 0) {
+  helpers.Database.LOGIN.find({ username: email })
+  .then( user => {
+    if (user) {
       res.status(200).json({ username: email });
     } else {
       res.status(404).json({ error: 'Not Found' });
@@ -70,10 +70,9 @@ function findUserByToken(req, res, helpers) {
       res.status(401).json({ error: 'Unauthorized' });
       return
     }
-    helpers.Database.USER.find({ uid: `= ${decoded.uid}`})
-    .then( users => {
-      if (users && users.length > 0) {
-        const user = users[0];
+    helpers.Database.USER.find({ uid: decoded.uid })
+    .then( user => {
+      if (user) {
         res.status(200).json({ username: user.username, profile: user.profile });
       } else {
         res.status(404).json({ error: 'Not Found' });

@@ -1,7 +1,7 @@
 "use strict"
 
 if (module.hot) {
-  module.hot.accept('../Template/App', () => {
+  module.hot.accept('../template/App', () => {
     render(<App data = {__data} close = {xclose} done = {xdone} />, document.getElementById("root"));
   });
 }
@@ -10,7 +10,7 @@ import React from 'react'
 import { render } from "react-dom"
 
 import { postMessage } from "../../lib/message"
-import App from '../Template/App'
+import App from '../template/App'
 
 document.addEventListener("DOMContentLoaded", function(event) {
   postMessage('iframe.loaded',  {height: __data.height || 615, width: __data.width || 460});

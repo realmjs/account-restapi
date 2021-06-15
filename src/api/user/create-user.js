@@ -31,9 +31,9 @@ function verifyApp(helpers) {
 function checkUserExistance(helpers) {
   return function(req, res, next) {
     const user = req.body.user;
-    helpers.Database.LOGIN.find({ username: `= ${user.email}`})
-    .then( users => {
-      if (users && users.length > 0) {
+    helpers.Database.LOGIN.find({ username: user.email })
+    .then( user => {
+      if (user) {
         res.status(403).send({ error: 'Forbidden' });
       } else {
         next();
@@ -61,7 +61,7 @@ function createUser(helpers) {
     };
 
     helpers.Database.USER.insert(user)
-    .then( user => { req.user = user; next(); })
+    .then( () => { req.user = user; next(); })
     .catch( err => {
       helpers.alert && helpers.alert(`POST /user: Error in createUser: ${err}`);
       res.status(403).json({ error: 'Forbidden' });

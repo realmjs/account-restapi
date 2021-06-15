@@ -16,8 +16,9 @@ const Database = {
   USER: {
     find: createFindFunc('uid'),
     insert: insertUser,
-    update: updateUser,
-    set: updateUser,
+    password: { update: updatePassword },
+    verified: { update: updateVerified },
+    profile: { update: updateProfile },
   },
   LOGIN: {
     find: createFindFunc('username'),
@@ -27,10 +28,10 @@ const Database = {
 module.exports = Database;
 
 function createFindFunc(prop) {
-  return function (expr) {
+  return function (key) {
     return new Promise((resolve, reject) => {
-      const usr = expr[prop].split('=')[1].trim();
-      resolve(USERS.filter(user => user[prop] === usr));
+      const usr = key[prop];
+      resolve(USERS.find(user => user[prop] === usr));
     });
   }
 }
@@ -46,16 +47,22 @@ function insertUser(user) {
   });
 }
 
-function updateUser({uid}, updater) {
-  return new Promise((resolve, reject) => {
-    const user = USERS.find(u => u.uid === uid);
-    if (user) {
-      for (let prop in updater) {
-        user[prop] = updater[prop];
-      }
-      resolve();
-    } else {
-      reject(`User ${uid} does not exist!`);
-    }
-  });
+function updatePassword({ uid }, password) {
+  const user = USERS.find(u => u.uid === uid);
+  user.credentials.password = password;
+  return Promise.resolve();
+}
+
+function updateVerified({ uid }, status) {
+  const user = USERS.find(u => u.uid === uid);
+  user.verified = status;
+  return Promise.resolve();
+}
+
+function updateProfile({ uid }, profile) {
+  const user = USERS.find(u => u.uid === uid);
+  for (let prop in profile) {
+    user.profile[prop] = profile[prop];
+  }
+  return Promise.resolve();
 }

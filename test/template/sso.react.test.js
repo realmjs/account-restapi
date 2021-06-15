@@ -3,9 +3,9 @@
 import React from 'react';
 import renderer from 'react-test-renderer';
 
-import SSO from '../../src/client/Template/SSO';
+import SSO from '../../src/client/template/SSO';
 
-beforeEach(() => window.__data = { session: 'user-session' });
+beforeEach(() => window.__data = { status: 200, session: 'user-session' });
 
 test('Should match snapshot and call done when mounted', () => {
   const done = jest.fn(msg => msg);

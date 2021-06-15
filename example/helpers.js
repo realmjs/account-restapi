@@ -66,8 +66,8 @@ function sendEmail ({recipient, template, data}) {
   return new Promise( (resolve, reject) => {
     console.log(`EMAIL: -----------------------------------------------------------`);
     console.log(`--> Sent email to:`);
-    recipient.forEach( ({name, email}) => {
-      console.log(`           + ${name}[${email}]`);
+    recipient.forEach( ({name, address}) => {
+      console.log(`           + ${name}[${address}]`);
     })
     console.log(`--> Email Template: ${template}`);
     console.log('--> Data:');

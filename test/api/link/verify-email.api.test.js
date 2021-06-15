@@ -118,6 +118,6 @@ test(`[GET ${url}] should response 302 and redirect to /ln/mailverified after up
                     .expect('Location', `/ln/mailverified?t=${token}`)
                     .then(res => {
                       expect(helpers.alert).not.toHaveBeenCalled();
-                      expect(helpers.Database.USER.update).toHaveBeenCalled();
+                      expect(helpers.Database.USER.verified.update).toHaveBeenCalled();
                     });
 });

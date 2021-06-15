@@ -30,10 +30,9 @@ function decodeToken() {
 
 function checkVerifiedEmail(helpers) {
   return function(req, res, next) {
-    helpers.Database.USER.find({ uid: `= ${req.uid}` })
-    .then( users => {
-      if (users && users.length > 0) {
-        const user = users[0];
+    helpers.Database.USER.find({ uid: req.uid })
+    .then( user => {
+      if (user) {
         if (user.username !== req.query.email) { res.redirect('/error/403'); return }
         if (user.verify) { res.redirect(`/ln/mailverified?t=${req.query.t}`); return }
         next();
@@ -50,7 +49,7 @@ function checkVerifiedEmail(helpers) {
 
 function setEmailVerified(helpers) {
   return function(req, res, next) {
-    helpers.Database.USER.update({ uid: req.uid }, { verified: true })
+    helpers.Database.USER.verified.update({ uid: req.uid }, true)
     .then( _ => res.redirect(`/ln/mailverified?t=${req.query.t}`) )
     .catch( err => {
       helpers.alert && helpers.alert(`GET /ln/email: Error in setEmailVerified: ${err}`);

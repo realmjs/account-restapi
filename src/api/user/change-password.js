@@ -29,7 +29,7 @@ function decodeToken() {
 
 function updatePassword(helpers) {
   return function(req, res, next) {
-    helpers.Database.USER.update({ uid: req.uid }, { credentials: { password: hashPassword(req.body.password) } })
+    helpers.Database.USER.password.update({ uid: req.uid }, hashPassword(req.body.password))
     .then( _ => res.status(200).json({ message: 'Success' }) )
     .catch( err => {
       helpers.alert && helpers.alert(`PUT /user/password: Error in updatePassword: ${err}`);
