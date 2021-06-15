@@ -62,16 +62,21 @@ function sendEmail(helpers) {
     const user = res.locals.user;
     const account = helpers.Apps.find(app => app.id === 'account');
     if (account) {
-      helpers.sendEmail({
-        recipient: [{ address: user.profile.email[0], name: user.profile.displayName }],
-        template: 'resetemail',
-        data: { customer: user.profile.displayName, endpoint:`${account.url}/form?name=reset&app=account`, token: res.locals.token }
-      })
-      .then(() => next())
-      .catch(err => {
-        helpers.alert && helpers.alert(`POST /ln/reset: Error in sendEmail to ${user.profile.displayName}[${user.profile.email[0]}]: ${err}`);
-        res.redirect('/error/403');
-      })
+      try {
+        helpers.sendEmail({
+          recipient: [{ address: user.profile.email[0], name: user.profile.displayName }],
+          template: 'resetemail',
+          data: { customer: user.profile.displayName, endpoint:`${account.url}/form?name=reset&app=account`, token: res.locals.token }
+        })
+        .then(() => next())
+        .catch(err => {
+          helpers.alert && helpers.alert(`POST /ln/reset: Error in sendEmail to ${user.profile.displayName}[${user.profile.email[0]}]: ${err}`);
+          res.redirect('/error/403');
+        });
+      } catch(err) {
+        helpers.alert && helpers.alert(`POST /ln/reset: Error in sendEmail: ${err}`);
+        res.redirect('/error/400');
+      }
     } else {
       helpers.alert && helpers.alert('Cannot find account in environment variable APPS');
       res.redirect('/error/403');
