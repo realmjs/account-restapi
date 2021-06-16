@@ -80,10 +80,6 @@ function prepareUserProfile(user) {
     }
   }
 
-  if (!profile.picture) {
-    profile.picture = process.env.DEFAULT_PROFILE_PICTURE;
-  }
-
   if (!profile.email || profile.email.length === 0) {
     profile.email = [user.email];
   }
