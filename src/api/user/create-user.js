@@ -142,7 +142,7 @@ function hook(helpers) {
   return function(req, res, next) {
     if (helpers.hooks) {
       Promise.all(helpers.hooks.map(hook => hook({
-        user: serializeUser(res.locals.user),
+        user: res.locals.user,
         token: res.locals.authenToken
       })))
       .then(() => next())
