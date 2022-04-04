@@ -27,41 +27,49 @@ function createFindFunc(prop) {
       if (usr === 'tester' || usr === 'tester@localhost.io') {
         const realms = {};
         realms[realm] = { roles: ['member'] };
+        const salty = { head: 'head', tail: 'tail' };
         resolve({
           uid: 'tester',
           username: 'tester@localhost.io',
+          salty,
           realms,
           profile: { displayName: 'tester', email: ['tester@localhost.io'],},
-          credentials: { password: hashPassword('secret-pwd') }
+          credentials: { password: hashPassword('secret-pwd', salty) }
         });
       } else if (usr === 'verifiedtester' || usr === 'verifiedtester@localhost.io') {
         const realms = {};
         realms[realm] = { roles: ['member'] };
+        const salty = { head: 'head', tail: 'tail' };
         resolve({
           uid: 'verifiedtester',
           username: 'verifiedtester@localhost.io',
+          salty,
           realms,
-          credentials: { password: hashPassword('secret-pwd') },
+          credentials: { password: hashPassword('secret-pwd', salty) },
           verify: true,
         });
       } else if (usr === 'error-updater' || usr === 'error-updater@localhost.io') {
         const realms = {};
         realms[realm] = { roles: ['member'] };
+        const salty = { head: 'head', tail: 'tail' };
         resolve({
           uid: 'error-updater',
           username: 'error-updater@localhost.io',
+          salty,
           realms,
-          credentials: { password: hashPassword('secret-pwd') }
+          credentials: { password: hashPassword('secret-pwd', salty) }
         });
       } else if (usr === 'error-sender' || usr === 'error-sender@localhost.io') {
         const realms = {};
         realms[realm] = { roles: ['member'] };
+        const salty = { head: 'head', tail: 'tail' };
         resolve({
           uid: 'error-sender',
           username: 'error-sender@localhost.io',
+          salty,
           realms,
           profile: { displayName: 'error-sender', email: ['error-sender@localhost.io'],},
-          credentials: { password: hashPassword('secret-pwd') }
+          credentials: { password: hashPassword('secret-pwd', salty) }
         });
       } else if (usr === 'norealm') {
         resolve({uid: 'norealm'});

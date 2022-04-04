@@ -58,7 +58,7 @@ function verifyPassword() {
 
 function updatePassword(helpers) {
   return function(req, res) {
-    helpers.Database.USER.password.update({ uid: res.locals.user.uid }, hashPassword(req.body.newPassword))
+    helpers.Database.USER.password.update({ uid: res.locals.user.uid }, hashPassword(req.body.newPassword, res.locals.user.salty))
     .then( _ => res.status(200).json({ message: 'Success' }) )
     .catch( err => {
       helpers.alert && helpers.alert(`PUT /me/password: Error in updatePassword: ${err}`);

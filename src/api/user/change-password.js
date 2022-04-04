@@ -27,9 +27,23 @@ function decodeToken() {
   }
 }
 
+function findUser(helpers) {
+  return function(req, res, next) {
+    helpers.Database.USER.find({ uid: res.locals.uid })
+    .then( user => {
+      res.locals.user = user;
+      next();
+    })
+    .catch( err => {
+      helpers.alert && helpers.alert(`PUT /user/password: Error in findUser: ${err}`);
+      res.status(403).json({ error: 'Forbidden' });
+    });
+  }
+}
+
 function updatePassword(helpers) {
   return function(req, res, next) {
-    helpers.Database.USER.password.update({ uid: res.locals.uid }, hashPassword(req.body.password))
+    helpers.Database.USER.password.update({ uid: res.locals.uid }, hashPassword(req.body.password, res.locals.user.salty))
     .then( _ => res.status(200).json({ message: 'Success' }) )
     .catch( err => {
       helpers.alert && helpers.alert(`PUT /user/password: Error in updatePassword: ${err}`);
@@ -38,4 +52,4 @@ function updatePassword(helpers) {
   }
 }
 
-module.exports = [validateParams, decodeToken, updatePassword];
+module.exports = [validateParams, decodeToken, findUser, updatePassword];

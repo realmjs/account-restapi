@@ -3,6 +3,8 @@
 const uuid = require('uuid/v1');
 const jwt = require('jsonwebtoken');
 
+const { ustring } = require('../../lib/util');
+
 const { hashPassword, generateAuthenTokenMiddleware, setHttpCookieMiddleware, serializeUser } = require('../../lib/util');
 
 function validateParameters() {
@@ -50,10 +52,12 @@ function createUser(helpers) {
   return function(req, res, next) {
     const profile = prepareUserProfile(req.body.user);
     const realms = prepareUserRealms(res.locals.app.realm);
+    const salty = { head: ustring(8), tail: ustring(8) };
     const user = {
       username: req.body.user.email.toLowerCase().trim(),
       uid: uuid(),
-      credentials: { password: hashPassword(req.body.user.password) },
+      salty,
+      credentials: { password: hashPassword(req.body.user.password, salty) },
       profile,
       verified: false,
       createdAt: (new Date()).getTime(),

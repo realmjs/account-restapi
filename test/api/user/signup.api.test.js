@@ -195,3 +195,20 @@ test(`[POST ${url}] should response 200 and alert when failed to hook after crea
                       await expect(helpers.hooks[0].mock.results[0].value).rejects.toBeFalsy();
                     });
 });
+
+
+test(`[POST ${url}] should response 200 and user salty must be created`, async () => {
+  await request(app).post(url)
+                    .send({ app: 'test', user: { email: 'tester@localhost', password: 'secret' } })
+                    .set('Accept', 'application/json')
+                    .expect(200)
+                    .expect('Content-Type', /json/)
+                    .then( async res => {
+                      expect(helpers.hooks[0].mock.calls[0][0]).toHaveProperty('user');
+                      expect(helpers.hooks[0].mock.calls[0][0].user).toHaveProperty('salty');
+                      expect(helpers.hooks[0].mock.calls[0][0].user.salty).toHaveProperty('head');
+                      expect(helpers.hooks[0].mock.calls[0][0].user.salty.head.length).toBe(8);
+                      expect(helpers.hooks[0].mock.calls[0][0].user.salty).toHaveProperty('tail');
+                      expect(helpers.hooks[0].mock.calls[0][0].user.salty.tail.length).toBe(8);
+                    });
+});

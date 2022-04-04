@@ -96,15 +96,31 @@ function serializeUser(user) {
 }
 
 function checkPassword(user, password) {
-  return user.credentials.password === hashPassword(password);
+  return user.credentials.password === hashPassword(password, user.salty);
 }
 
-function hashPassword(password) {
+function hashPassword(password, salty) {
   const hash = crypto.createHash('sha256');
-  const head = process.env.PWD_PREFIX;
-  const tail = process.env.PWD_SUFFIX;
+  const head = salty.head;
+  const tail = salty.tail;
   hash.update(`${head}${password}${tail}`);
   return hash.digest('hex');
 }
 
-module.exports = { authenUserMiddleware, generateAuthenTokenMiddleware, setHttpCookieMiddleware, cleanCookieMiddleware, encodeCookie, decodeCookie, serializeUser, checkPassword, hashPassword, createSessionToken }
+function ustring(ln) {
+  return Math.random().toString(36).substring(2,ln+2);
+}
+
+module.exports = {
+  authenUserMiddleware,
+  generateAuthenTokenMiddleware,
+  setHttpCookieMiddleware,
+  cleanCookieMiddleware,
+  encodeCookie,
+  decodeCookie,
+  serializeUser,
+  checkPassword,
+  hashPassword,
+  createSessionToken,
+  ustring,
+};

@@ -68,7 +68,7 @@ test(`[PUT ${url}] should response 403 for expired token`, async () => {
 });
 
 
-test(`[PUT ${url}] should response 400 and alert when accessing USER Table encounter an error`, async () => {
+test(`[PUT ${url}] should response 403 and alert when accessing USER Table encounter an error`, async () => {
   await request(app).put(url)
                     .send({ password: 'secret', t: jwt.sign({uid:'error-updater'}, process.env.EMAIL_SIGN_KEY) })
                     .set('Accept', 'application/json')

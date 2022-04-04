@@ -6,9 +6,10 @@ const USERS = [
   {
     uid: 'tester',
     username: 'tester@localhost.io',
+    salty: { head: 'head', tail: 'tail' },
     realms: { 'public': { role: 'member' } },
     profile: { displayName: 'Tester', email: ['tester@localhost.io'],},
-    credentials: { password: hashPassword('123') }
+    credentials: { password: hashPassword('123', salty) }
   },
 ];
 
