@@ -163,7 +163,6 @@ test(`[POST ${url}] should response 200, send email and call hooks after created
   function expectHooksAreCall() {
     expect(helpers.hooks[0]).toHaveBeenCalledTimes(1);
     expect(helpers.hooks[0].mock.calls[0][0]).toHaveProperty('user');
-    expectUserIsSerialized(helpers.hooks[0].mock.calls[0][0].user);
     expect(helpers.hooks[0].mock.calls[0][0]).toHaveProperty('token');
   }
 });
