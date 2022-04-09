@@ -9,6 +9,7 @@ export function expectUserIsSerialized(user) {
 export function expectLoginSession(session) {
   expect(session).toHaveProperty('user');
   expect(session.user).not.toHaveProperty('uid');
+  expect(session.user).not.toHaveProperty('salty');
   expect(session.user).not.toHaveProperty('credentials');
   expect(session.user).not.toHaveProperty('realms');
   expect(session).toHaveProperty('token');

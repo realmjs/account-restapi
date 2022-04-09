@@ -90,6 +90,7 @@ function decodeCookie(cookies, app) {
 function serializeUser(user) {
   const _user = {...user};
   delete _user.uid;
+  delete _user.salty;
   delete _user.credentials;
   delete _user.realms;
   return _user;
