@@ -46,7 +46,7 @@ function createSessionToken(user, app) {
 function setHttpCookieMiddleware() {
   return function(req, res, next) {
     const cookie = encodeCookie(res.locals.user);
-    res.cookie(`${COOKIE_SESSION}_${res.locals.app.realm}`, cookie, { httpOnly: true });
+    res.cookie(`${COOKIE_SESSION}_${res.locals.app.realm}`, cookie, { httpOnly: true, sameSite: 'strict', secure: true });
     res.locals.sid = JSON.parse(cookie).sessionId;
     next();
   }
@@ -62,7 +62,7 @@ function cleanCookieMiddleware() {
 function encodeCookie(user) {
   return JSON.stringify({
     uid: jwt.sign({uid: user.uid}, process.env.COOKIE_SECRET_KEY),
-    sessionId: Math.random().toString(36).substr(2,9),
+    sessionId:  ustring(8)
   });
 }
 
