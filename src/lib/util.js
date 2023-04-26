@@ -108,6 +108,13 @@ function hashPassword(password, salty) {
   return hash.digest('hex');
 }
 
+function hashEmail(email) {
+  const [username, domainname] = email.trim().split('@')
+  const hash = crypto.createHash('sha256')
+  hash.update(`#${process.env.EMAIL_NAME_SALTY}#${username}@#${process.env.EMAIL_DOMAIN_SALTY}#${domainname}`)
+  return hash.digest('hex')
+}
+
 function ustring(ln) {
   return Math.random().toString(36).substring(2,ln+2);
 }
@@ -122,6 +129,7 @@ module.exports = {
   serializeUser,
   checkPassword,
   hashPassword,
+  hashEmail,
   createSessionToken,
   ustring,
 };
