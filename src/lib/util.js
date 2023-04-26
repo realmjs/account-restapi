@@ -119,6 +119,17 @@ function ustring(ln) {
   return Math.random().toString(36).substring(2,ln+2);
 }
 
+function alertCrashedEvent(alertFn, file, func, err) {
+  alertFn(`
+    Server Crashed!
+    When: ${new Date()}
+    File: ${file}
+    Function: ${func}
+    Error:
+    ${err}
+  `)
+}
+
 module.exports = {
   authenUserMiddleware,
   generateAuthenTokenMiddleware,
@@ -132,4 +143,5 @@ module.exports = {
   hashEmail,
   createSessionToken,
   ustring,
+  alertCrashedEvent,
 };

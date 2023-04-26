@@ -1,7 +1,7 @@
 'use strict'
 import jwt from 'jsonwebtoken';
 import { isEmail } from '../../lib/form'
-import { hashEmail } from '../../lib/util'
+import { alertCrashedEvent, hashEmail } from '../../lib/util'
 
 const validateRequest = () => (req, res, next) => {
   if (req.body.email && isEmail(req.body.email)) {
@@ -20,7 +20,9 @@ const checkEmailExistence = (helpers) => (req, res, next) => {
       next()
     }
   })
-  .catch( err => console.log(err))
+  .catch( err =>
+    helpers.alert && alertCrashedEvent(helpers.alert, 'post_link_signup.js', 'checkEmailExistence', err)
+  )
 }
 
 const createRegisterLink = () => (req, res, next) => {
@@ -44,7 +46,9 @@ const sendEmail = (helpers) => (req, res, next) => {
     })
     .then( () => next() )
   })
-  .catch( err => console.log(err) )
+  .catch( err =>
+    helpers.alert && alertCrashedEvent(helpers.alert, 'post_link_signup.js', 'sendEmail', err)
+  )
 }
 
 const final = () => (req, res) => res.status(200).send('Register link is sent')
