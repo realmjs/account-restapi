@@ -1,6 +1,6 @@
 "use strict"
 
-import api from '../../src/api';
+import api from '../../src/api_v2';
 import helpers from './helpers';
 
 api.helpers(helpers);
