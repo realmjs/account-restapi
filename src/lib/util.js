@@ -28,13 +28,6 @@ function authenUserMiddleware() {
   }
 }
 
-function generateAuthenTokenMiddleware(helpers) {
-  return function(req, res, next) {
-    res.locals.authenToken = createSessionToken(res.locals.user, res.locals.app);
-    next();
-  }
-}
-
 function createSessionToken(user, app) {
   const data = { uid: user.uid };
   if (user.realms[app.realm] && user.realms[app.realm].roles) {
@@ -43,13 +36,16 @@ function createSessionToken(user, app) {
   return jwt.sign(data, app.key);
 }
 
-function setHttpCookieMiddleware() {
-  return function(req, res, next) {
-    const cookie = encodeCookie(res.locals.user);
-    res.cookie(`${COOKIE_SESSION}_${res.locals.app.realm}`, cookie, { httpOnly: true, sameSite: 'strict', secure: true });
-    res.locals.sid = JSON.parse(cookie).sessionId;
-    next();
-  }
+function createCookie(uid, realm) {
+  const cookie = JSON.stringify({
+    uid: jwt.sign({uid}, process.env.COOKIE_SECRET_KEY),
+    sessionId:  ustring(8)
+  })
+  return [
+    `${process.env.COOKIE_SESSION}_${realm}`,
+    cookie,
+    { httpOnly: true, sameSite: 'strict', secure: true }
+  ]
 }
 
 function cleanCookieMiddleware() {
@@ -57,13 +53,6 @@ function cleanCookieMiddleware() {
     res.clearCookie(`${COOKIE_SESSION}_${res.locals.app.realm}`);
     next();
   }
-}
-
-function encodeCookie(user) {
-  return JSON.stringify({
-    uid: jwt.sign({uid: user.uid}, process.env.COOKIE_SECRET_KEY),
-    sessionId:  ustring(8)
-  });
 }
 
 function decodeCookie(cookies, app) {
@@ -87,13 +76,15 @@ function decodeCookie(cookies, app) {
   })
 }
 
-function serializeUser(user) {
-  const _user = {...user};
-  delete _user.uid;
-  delete _user.salty;
-  delete _user.credentials;
-  delete _user.realms;
-  return _user;
+function maskUser(user) {
+  const masks = ['uid', 'salty', 'credentials', 'realms']
+  const maskedUser = {}
+  for (let prop in user) {
+    if (masks.indexOf(prop) === -1) {
+      maskedUser[prop] = user[prop]
+    }
+  }
+  return maskedUser
 }
 
 function checkPassword(user, password) {
@@ -132,12 +123,10 @@ function alertCrashedEvent(alertFn, file, func, err) {
 
 module.exports = {
   authenUserMiddleware,
-  generateAuthenTokenMiddleware,
-  setHttpCookieMiddleware,
+  maskUser,
   cleanCookieMiddleware,
-  encodeCookie,
+  createCookie,
   decodeCookie,
-  serializeUser,
   checkPassword,
   hashPassword,
   hashEmail,
