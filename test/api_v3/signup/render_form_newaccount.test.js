@@ -11,7 +11,7 @@ import request from 'supertest'
 import { api, app } from '../../testutils/fakeserver'
 import { setupEnvironmentVariables, clearEnvironmentVariables } from '../../testutils/fakeenv'
 
-import funcs from '../../../src/api_v3/signup/get_form_newaccount'
+import funcs from '../../../src/api_v3/signup/render_form_newaccount'
 const endpoint = '/form/account/new'
 api.add(endpoint, { get: funcs })
 app.use('/', api.generate());

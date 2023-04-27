@@ -8,7 +8,7 @@ import request from 'supertest'
 import { api, app } from '../../testutils/fakeserver'
 import { setupEnvironmentVariables, clearEnvironmentVariables } from '../../testutils/fakeenv'
 
-import funcs from '../../../src/api_v3/signup/post_link_signup'
+import funcs from '../../../src/api_v3/signup/create_link_signup'
 const endpoint = '/signup/email'
 api.add(endpoint, { post: funcs })
 app.use('/', api.generate());

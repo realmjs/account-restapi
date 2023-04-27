@@ -7,7 +7,7 @@ import request from 'supertest'
 
 import { api, app } from '../../testutils/fakeserver'
 
-import funcs from '../../../src/api_v3/signup/get_form_signup'
+import funcs from '../../../src/api_v3/signup/render_form_signup'
 const endpoint = '/form/signup'
 api.add(endpoint, { get: funcs })
 app.use('/', api.generate());

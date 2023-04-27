@@ -1,7 +1,7 @@
 "use strict"
 
 import jwt from 'jsonwebtoken';
-import { hashEmail } from '../../../src/lib/util';
+import { hashEmail } from '../../lib/util';
 
 const validateRequest = (helpers) => (req, res, next) => {
   if (req.query.email && req.query.token) {

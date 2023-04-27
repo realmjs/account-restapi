@@ -21,7 +21,7 @@ const checkEmailExistence = (helpers) => (req, res, next) => {
     }
   })
   .catch( err =>
-    helpers.alert && alertCrashedEvent(helpers.alert, 'post_link_signup.js', 'checkEmailExistence', err)
+    helpers.alert && alertCrashedEvent(helpers.alert, 'create_link_signup.js', 'checkEmailExistence', err)
   )
 }
 
@@ -47,7 +47,7 @@ const sendEmail = (helpers) => (req, res, next) => {
     .then( () => next() )
   })
   .catch( err =>
-    helpers.alert && alertCrashedEvent(helpers.alert, 'post_link_signup.js', 'sendEmail', err)
+    helpers.alert && alertCrashedEvent(helpers.alert, 'create_link_signup.js', 'sendEmail', err)
   )
 }
 
