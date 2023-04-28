@@ -34,7 +34,7 @@ const helpers = {
 
 api.helpers(helpers)
 
-test('Validate request and response 400 if missing email in request', async () => {
+test('Validate request and response 400', async () => {
 
   helpers.form.mockReturnValue('error_400_html_page')
 
@@ -123,7 +123,7 @@ test('Verify email and reponses 400 if not match with decoded from token', async
 })
 
 
-test('Response 403 if validating app failed', async () => {
+test('Validate App and response 403', async () => {
 
   helpers.database.app.find.mockResolvedValueOnce(undefined)
   helpers.form.mockReturnValueOnce('error_403_html_page')
