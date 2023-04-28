@@ -22,6 +22,9 @@ afterAll( () => clearEnvironmentVariables() )
 
 const helpers = {
   database: {
+    app: {
+      find: jest.fn()
+    },
     account: {
       find: jest.fn()
     }
@@ -56,10 +59,18 @@ test('Validate request and response 400 if missing email in request', async () =
     expect(res.text).toMatch(/error_400_html_page/);
   })
 
-  expect(helpers.form).toHaveBeenCalledTimes(3)
+  await request(app).get(`${endpoint}?email=email&token=token`)
+  .expect(400)
+  .expect('Content-Type', /text\/html/)
+  .then(res => {
+    expect(res.text).toMatch(/error_400_html_page/);
+  })
+
+  expect(helpers.form).toHaveBeenCalledTimes(4)
   expect(helpers.form.mock.calls[0]).toEqual(['error', { code: 400, reason: 'Bad query params'}])
   expect(helpers.form.mock.calls[1]).toEqual(['error', { code: 400, reason: 'Bad query params'}])
   expect(helpers.form.mock.calls[2]).toEqual(['error', { code: 400, reason: 'Bad query params'}])
+  expect(helpers.form.mock.calls[3]).toEqual(['error', { code: 400, reason: 'Bad query params'}])
 
   helpers.form.mockClear()
 
@@ -74,7 +85,7 @@ test('Verify token and reponses 400 if decode failed', async () => {
 
   const token = jwt.sign({ email }, 'Fake')
 
-  await request(app).get(`${endpoint}?email=${email}&token=${token}`)
+  await request(app).get(`${endpoint}?email=${email}&app=test&token=${token}`)
   .expect(400)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -97,7 +108,7 @@ test('Verify email and reponses 400 if not match with decoded from token', async
 
   const token = jwt.sign({ email }, process.env.EMAIL_VALLIDATION_SIGN_KEY)
 
-  await request(app).get(`${endpoint}?email=${email}&token=${token}`)
+  await request(app).get(`${endpoint}?email=${email}&app=test&token=${token}`)
   .expect(400)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -111,16 +122,43 @@ test('Verify email and reponses 400 if not match with decoded from token', async
 
 })
 
-test('Verify email and reponses 409 if already exists in database', async () => {
 
-  helpers.form.mockReturnValue('error_409_html_page')
-  helpers.database.account.find.mockResolvedValue({ email: 'email@test.ext'})
+test('Response 403 if validating app failed', async () => {
+
+  helpers.database.app.find.mockResolvedValueOnce(undefined)
+  helpers.form.mockReturnValueOnce('error_403_html_page')
 
   const email = hashEmail('email@test.ext')
 
   const token = jwt.sign({ email }, process.env.EMAIL_VALLIDATION_SIGN_KEY)
 
-  await request(app).get(`${endpoint}?email=email@test.ext&token=${token}`)
+  await request(app).get(`${endpoint}?email=email@test.ext&app=invalid&token=${token}`)
+  .expect(403)
+  .expect('Content-Type', /text\/html/)
+  .then(res => {
+    expect(res.text).toMatch(/error_403_html_page/);
+  })
+
+  expect(helpers.form).toHaveBeenCalledTimes(1)
+  expect(helpers.form.mock.calls[0]).toEqual(['error', { code: 403, reason: 'Permission Denied'}])
+
+  helpers.form.mockClear()
+  helpers.database.app.find.mockClear()
+
+})
+
+
+test('Verify email and reponses 409 if already exists in database', async () => {
+
+  helpers.form.mockReturnValue('error_409_html_page')
+  helpers.database.account.find.mockResolvedValue({ email: 'email@test.ext'})
+  helpers.database.app.find.mockResolvedValueOnce({ url: 'url' })
+
+  const email = hashEmail('email@test.ext')
+
+  const token = jwt.sign({ email }, process.env.EMAIL_VALLIDATION_SIGN_KEY)
+
+  await request(app).get(`${endpoint}?email=email@test.ext&app=test&token=${token}`)
   .expect(409)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -134,6 +172,7 @@ test('Verify email and reponses 409 if already exists in database', async () => 
 
   helpers.form.mockClear()
   helpers.database.account.find.mockClear()
+  helpers.database.app.find.mockClear()
 
 })
 
@@ -142,12 +181,13 @@ test('Reponses 200 with newaccount form return from helpers.form ', async () => 
 
   helpers.form.mockReturnValue('200_new_account_html_page')
   helpers.database.account.find.mockResolvedValue(undefined)
+  helpers.database.app.find.mockResolvedValueOnce({ url: 'url' })
 
   const email = hashEmail('email@test.ext')
 
   const token = jwt.sign({ email }, process.env.EMAIL_VALLIDATION_SIGN_KEY)
 
-  await request(app).get(`${endpoint}?email=email@test.ext&token=${token}`)
+  await request(app).get(`${endpoint}?email=email@test.ext&app=test&token=${token}`)
   .expect(200)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -155,9 +195,10 @@ test('Reponses 200 with newaccount form return from helpers.form ', async () => 
   })
 
   expect(helpers.form).toHaveBeenCalledTimes(1)
-  expect(helpers.form.mock.calls[0]).toEqual(['newaccount', { email: 'email@test.ext' }])
+  expect(helpers.form.mock.calls[0]).toEqual(['newaccount', { email: 'email@test.ext', app: { url: 'url' } }])
 
   helpers.form.mockClear()
   helpers.database.account.find.mockClear()
+  helpers.database.app.find.mockClear()
 
 })

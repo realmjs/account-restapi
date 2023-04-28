@@ -3,6 +3,7 @@
 const uuid = require('uuid/v1');
 import { isEmail } from '../../lib/form'
 import { alertCrashedEvent, hashPassword, ustring, createCookie, maskUser, createSessionToken } from '../../lib/util'
+import middlewareFactory from '../../lib/middleware_factory';
 
 const validateRequest = () => (req, res, next) => {
   if (req.body.email && isEmail(req.body.email) &&
@@ -16,20 +17,12 @@ const validateRequest = () => (req, res, next) => {
   }
 }
 
-const validateApp = (helpers) => (req, res, next) => {
-  helpers.database.app.find({ id: req.body.app })
-  .then(app => {
-    if (app) {
-      res.locals.app = app
-      next()
-    } else {
-      res.status(403).send('Permission Denied')
-    }
-  })
-  .catch( err =>
-    helpers.alert && alertCrashedEvent(helpers.alert, 'create_newaccount.js', 'validateApp', err)
-  )
-}
+
+const validateAppThenStoreToLocals = middlewareFactory.create(
+  'validateAppThenStoreToLocals',
+  'byRequestBody',
+  'create_link_newaccount.js'
+)
 
 const checkEmailExistence = (helpers) => (req, res, next) => {
   helpers.database.account.find({ email: req.body.email })
@@ -122,7 +115,7 @@ const final = () => (req, res) => res.status(200).json({
 
 module.exports = [
   validateRequest,
-  validateApp,
+  validateAppThenStoreToLocals,
   checkEmailExistence,
   createUID,
   createUser,

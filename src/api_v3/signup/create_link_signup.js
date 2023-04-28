@@ -2,14 +2,21 @@
 import jwt from 'jsonwebtoken';
 import { isEmail } from '../../lib/form'
 import { alertCrashedEvent, hashEmail } from '../../lib/util'
+import middlewareFactory from '../../lib/middleware_factory';
 
 const validateRequest = () => (req, res, next) => {
-  if (req.body.email && isEmail(req.body.email)) {
+  if (req.body.email && isEmail(req.body.email) && req.body.app) {
     next()
   } else {
     res.status(400).send('Bad Request')
   }
 }
+
+const validateAppThenStoreToLocals = middlewareFactory.create(
+  'validateAppThenStoreToLocals',
+  'byRequestBody',
+  'create_link_signup.js'
+)
 
 const checkEmailExistence = (helpers) => (req, res, next) => {
   helpers.database.account.find({ email: req.body.email })
@@ -37,12 +44,12 @@ const createRegisterLink = () => (req, res, next) => {
 const sendEmail = (helpers) => (req, res, next) => {
   const email = req.body.email
   const token = res.locals.token
-
-  helpers.database.apps.find({id: 'account'})
+  const app = req.body.app
+  helpers.database.app.find({id: 'account'})
   .then(account => {
     helpers.hook.sendEmail({
       email: req.body.email,
-      link: `${account.url}/form/account/new?email=${email}&token=${token}`
+      link: `${account.url}/form/account/new?email=${email}&app=${app}&token=${token}`
     })
     .then( () => next() )
   })
@@ -55,6 +62,7 @@ const final = () => (req, res) => res.status(200).send('Register link is sent')
 
 module.exports = [
   validateRequest,
+  validateAppThenStoreToLocals,
   checkEmailExistence,
   createRegisterLink,
   sendEmail,

@@ -2,9 +2,10 @@
 
 import jwt from 'jsonwebtoken';
 import { hashEmail } from '../../lib/util';
+import middlewareFactory from '../../lib/middleware_factory';
 
 const validateRequest = (helpers) => (req, res, next) => {
-  if (req.query.email && req.query.token) {
+  if (req.query.email && req.query.token && req.query.app) {
     next()
   } else {
     res.writeHead( 400, { "Content-Type": "text/html" } )
@@ -33,6 +34,12 @@ const verifyDecodedEmail = (helpers) => (req, res, next) => {
   }
 }
 
+const validateAppThenStoreToLocals = middlewareFactory.create(
+  'validateAppThenStoreToLocals',
+  'byRequestQuery',
+  'render_form_newaccount.js'
+)
+
 const checkEmailExistence = (helpers) => (req, res, next) => {
   helpers.database.account.find({ email: req.query.email })
   .then( user => {
@@ -50,13 +57,14 @@ const checkEmailExistence = (helpers) => (req, res, next) => {
 
 const final = (helpers) => (req, res) => {
   res.writeHead( 200, { "Content-Type": "text/html" } )
-  res.end(helpers.form('newaccount', { email: req.query.email }))
+  res.end(helpers.form('newaccount', { email: req.query.email, app: res.locals.app }))
 }
 
 module.exports = [
   validateRequest,
   decodeToken,
   verifyDecodedEmail,
+  validateAppThenStoreToLocals,
   checkEmailExistence,
   final
 ]
