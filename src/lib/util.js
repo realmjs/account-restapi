@@ -87,7 +87,7 @@ function maskUser(user) {
   return maskedUser
 }
 
-function checkPassword(user, password) {
+function matchUserPassword(user, password) {
   return user.credentials.password === hashPassword(password, user.salty);
 }
 
@@ -127,7 +127,7 @@ module.exports = {
   cleanCookieMiddleware,
   createCookie,
   decodeCookie,
-  checkPassword,
+  matchUserPassword,
   hashPassword,
   hashEmail,
   createSessionToken,
