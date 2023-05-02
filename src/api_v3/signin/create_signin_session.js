@@ -35,7 +35,10 @@ const getUserAccountByEmail = (helpers) => (req, res, next) => {
 
 const checkRealm = () => (req, res, next) => {
   const realm = res.locals.app.realm
-  if (Object.keys(res.locals.user.realms).indexOf(realm) !== -1 && res.locals.user.realms[realm].length > 0) {
+  if (Object.keys(res.locals.user.realms).indexOf(realm) !== -1 && 
+      res.locals.user.realms[realm].roles &&
+      res.locals.user.realms[realm].roles.length > 0) 
+  {
     next()
   } else {
     res.status(401).send('Unauthenticated')

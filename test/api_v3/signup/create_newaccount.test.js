@@ -136,7 +136,7 @@ test('Create new account, call helpers.hook to send email and callback', async (
     salty: { head: expect.any(String), tail: expect.any(String) },
     profile: { phone: '098', fullName: 'Awesome' },
     createdAt: expect.any(Number),
-    realms: { test: ['member'] }
+    realms: { test: { roles: ['member'] } }
   }])
 
   expect(helpers.hook.sendEmail).toHaveBeenCalledTimes(1)
@@ -151,7 +151,7 @@ test('Create new account, call helpers.hook to send email and callback', async (
     email: 'email@test.ext',
     profile: { phone: '098', fullName: 'Awesome' },
     createdAt: expect.any(Number),
-    realms: { test: ['member'] }
+    realms: { test: { roles: ['member'] } }
   }])
 
   helpers.database.account.find.mockClear()

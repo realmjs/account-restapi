@@ -129,15 +129,17 @@ test('Check password and response 401', async () => {
 
 })
 
+
+import jwt from 'jsonwebtoken'
 import { hashPassword } from '../../../src/lib/util'
 test('Authenticate with response code 201', async () => {
 
   helpers.database.app.find.mockResolvedValue({ realm: 'test', key: 'key' })
   helpers.database.account.find.mockResolvedValueOnce({
-    uid: 'secret-uid',
+    uid: 'uid',
     email: 'email@test.ext',
     profile: { phone: '098', fullName: 'Awesome' },
-    realms: { test: ['member'] },
+    realms: { test: { roles: ['member'] } },
     credentials: { password: hashPassword('correct', { head: 'head', tail: 'tail' }) },
     salty: { head: 'head', tail: 'tail' },
     createdAt: 1234567890
@@ -155,7 +157,7 @@ test('Authenticate with response code 201', async () => {
         profile: { phone: '098', fullName: 'Awesome' },
         createdAt: 1234567890,
       },
-      token: expect.any(String),
+      token: jwt.sign({uid: 'uid', roles: ['member']}, 'key'),
       sid: expect.any(String),
     })
   )

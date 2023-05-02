@@ -67,7 +67,7 @@ const createUser = (helpers) => (req, res, next) => {
     credentials: { password: hashPassword(req.body.password, salty) },
     profile,
     createdAt: (new Date()).getTime(),
-    realms: { [res.locals.app.realm] : ['member'] },
+    realms: { [res.locals.app.realm] : { roles: ['member'] } },
   }
   res.locals.user = user
 
