@@ -26,8 +26,8 @@ const getSessionFromCookie = (helpers) => (req, res, next) => {
   decodeCookie(cookies, app)
   .then( session => {
     if (session) {
-      res.locals.uid = session.uid;
-      res.locals.sid = session.sessionId;
+      res.locals.uid = session.uid
+      res.locals.sid = session.sessionId
       next();
     } else {
       res.writeHead( 400, { 'Content-Type': 'text/html' } )
