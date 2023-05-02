@@ -48,4 +48,17 @@ api.add('/session/sso', {
   get: require('./sso/render_form_sso')
 })
 
+/* API Sign out
+step 1: GET form/signout
+step 2: DELETE session
+*/
+
+api.add('/form/signout', {
+  get: require('./signout/render_form_signout')
+})
+
+api.add('/session', {
+  delete: require('./signout/create_signout_session')
+})
+
 module.exports = api
