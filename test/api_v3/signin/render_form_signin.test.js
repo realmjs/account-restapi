@@ -20,7 +20,7 @@ const helpers = {
       find: jest.fn()
     },
   },
-  form: jest.fn().mockReturnValue('mock_html_page')
+  form: jest.fn()
 }
 
 api.helpers(helpers)
