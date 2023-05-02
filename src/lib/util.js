@@ -57,20 +57,23 @@ function cleanCookieMiddleware() {
 
 function decodeCookie(cookies, app) {
   return new Promise((resolve, reject) => {
-    if (!cookies || !cookies[`${COOKIE_SESSION}_${app.realm}`]) { resolve(null); return; }
-    let session = {};
+    if (!cookies || !cookies[`${process.env.COOKIE_SESSION}_${app.realm}`]) { 
+      resolve(null) 
+      return 
+    }
+    let session = {}
     try {
-      session = JSON.parse(cookies[`${COOKIE_SESSION}_${app.realm}`]);
+      session = JSON.parse(cookies[`${process.env.COOKIE_SESSION}_${app.realm}`])
     } catch (err) {
-      reject(`Error when parsing JSON: ${cookies[`${COOKIE_SESSION}_${app.realm}`]}`);
-      return;
+      reject(`Error when parsing JSON: ${cookies[`${process.env.COOKIE_SESSION}_${app.realm}`]}`)
+      return
     }
     if (!session.uid) { resolve(null); return; }
     jwt.verify(session.uid, process.env.COOKIE_SECRET_KEY, (err, decoded) => {
       if (err) {
         reject(err);
       } else {
-        resolve({ uid: decoded.uid, sessionId: session.sessionId });
+        resolve({ uid: decoded.uid, sessionId: session.sessionId })
       }
     })
   })

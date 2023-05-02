@@ -42,4 +42,10 @@ api.add('/session', {
   post: require('./signin/create_signin_session')
 })
 
+/* API SSO */
+
+api.add('/session/sso', {
+  get: require('./sso/render_form_sso')
+})
+
 module.exports = api
