@@ -2,7 +2,7 @@
 
 import { isEmail } from '../../lib/form'
 import middlewareFactory from '../../lib/middleware_factory'
-import { alertCrashedEvent, matchUserPassword, createCookie, maskUser, createSessionToken } from '../../lib/util'
+import { alertCrashedEvent, matchUserPassword, createCookie, maskUser, createSessionToken, verifyRealm } from '../../lib/util'
 
 const validateRequest = () => (req, res, next) => {
   if (req.body.email && isEmail(req.body.email) && req.body.password && req.body.app) {
@@ -34,11 +34,7 @@ const getUserAccountByEmail = (helpers) => (req, res, next) => {
 }
 
 const checkRealm = () => (req, res, next) => {
-  const realm = res.locals.app.realm
-  if (Object.keys(res.locals.user.realms).indexOf(realm) !== -1 && 
-      res.locals.user.realms[realm].roles &&
-      res.locals.user.realms[realm].roles.length > 0) 
-  {
+  if (verifyRealm(res.locals.app, res.locals.user)) {
     next()
   } else {
     res.status(401).send('Unauthenticated')

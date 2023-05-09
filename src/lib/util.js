@@ -57,9 +57,9 @@ function cleanCookieMiddleware() {
 
 function decodeCookie(cookies, app) {
   return new Promise((resolve, reject) => {
-    if (!cookies || !cookies[`${process.env.COOKIE_SESSION}_${app.realm}`]) { 
-      resolve(null) 
-      return 
+    if (!cookies || !cookies[`${process.env.COOKIE_SESSION}_${app.realm}`]) {
+      resolve(null)
+      return
     }
     let session = {}
     try {
@@ -124,6 +124,12 @@ function alertCrashedEvent(alertFn, file, func, err) {
   `)
 }
 
+function verifyRealm(app, user) {
+  return Object.keys(user.realms).indexOf(app.realm) !== -1 &&
+         user.realms[app.realm].roles &&
+         user.realms[app.realm].roles.length > 0
+}
+
 module.exports = {
   authenUserMiddleware,
   maskUser,
@@ -136,4 +142,5 @@ module.exports = {
   createSessionToken,
   ustring,
   alertCrashedEvent,
+  verifyRealm,
 };
