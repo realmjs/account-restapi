@@ -48,8 +48,9 @@ const sendEmail = (helpers) => (req, res, next) => {
   helpers.database.app.find({id: 'account'})
   .then(account => {
     helpers.hook.sendEmail({
-      email: req.body.email,
-      link: `${account.url}/form/account/new?email=${email}&app=${app}&token=${token}`
+      to: { address: req.body.email },
+      template: 'create_new_account',
+      data: { link: `${account.url}/form/account/new?e=${email}&a=${app}&t=${token}` }
     })
     .then( () => next() )
   })

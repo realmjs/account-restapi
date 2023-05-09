@@ -135,8 +135,9 @@ test('Create register link and pass it to helpers.hook.sendEmail, then reponse 2
 
   expect(helpers.hook.sendEmail).toHaveBeenCalledTimes(1)
   expect(helpers.hook.sendEmail.mock.calls[0]).toEqual([{
-    email,
-    link: expect.stringMatching(`email=${email}&app=app&token=${token}`),
+    to: { address: email },
+    template: 'create_new_account',
+    data: { link: expect.stringMatching(`e=${email}&a=app&t=${token}`) },
   }])
 
   // tear down
