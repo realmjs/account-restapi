@@ -52,7 +52,7 @@ test('Response 403 if validating app failed', async () => {
   helpers.database.app.find.mockResolvedValueOnce(undefined)
   helpers.form.mockReturnValueOnce('error_403_html_page')
 
-  await request(app).get(`${endpoint}?app=test`)
+  await request(app).get(`${endpoint}?a=app`)
   .expect(403)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -73,7 +73,7 @@ test('Response signup form returned by helpers.form', async () => {
   helpers.database.app.find.mockResolvedValueOnce({ url: 'url' })
   helpers.form.mockReturnValueOnce('mock_html_page')
 
-  await request(app).get(`${endpoint}?app=test`)
+  await request(app).get(`${endpoint}?a=app`)
   .expect(200)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -81,7 +81,7 @@ test('Response signup form returned by helpers.form', async () => {
   })
 
   expect(helpers.form).toHaveBeenCalled()
-  expect(helpers.form.mock.calls[0]).toEqual(['signup', { app: 'test' }])
+  expect(helpers.form.mock.calls[0]).toEqual(['signup', { app: 'app' }])
 
   helpers.form.mockClear()
   helpers.database.app.find.mockClear()

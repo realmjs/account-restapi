@@ -3,7 +3,7 @@
 import middlewareFactory from '../../lib/middleware_factory';
 
 const validateRequest = (helpers) => (req, res, next) => {
-  if (req.query.app) {
+  if (req.query.a) {
     next()
   } else {
     res.writeHead( 400, { "Content-Type": "text/html" } )
@@ -19,7 +19,7 @@ const validateAppThenStoreToLocals = middlewareFactory.create(
 
 const final = (helpers) => (req, res) => {
   res.writeHead( 200, { "Content-Type": "text/html" } )
-  res.end(helpers.form('signup', { app: req.query.app }))
+  res.end(helpers.form('signup', { app: req.query.a }))
 }
 
 module.exports = [

@@ -4,7 +4,7 @@ import middlewareFactory from '../../lib/middleware_factory'
 import { decodeCookie, maskUser, createSessionToken } from '../../lib/util'
 
 const validateRequest = (helpers) => (req, res, next) => {
-  if (req.query.app) {
+  if (req.query.a) {
     next()
   } else {
     res.writeHead( 400, { 'Content-Type': 'text/html' } )
@@ -59,7 +59,7 @@ const getUserAccountByUID = (helpers) => (req, res, next) => {
 
  const final = (helpers) => (req, res) => {
     res.writeHead( 200, { 'Content-Type': 'text/html' } )
-    res.end(helpers.form('sso', { 
+    res.end(helpers.form('sso', {
       user: maskUser(res.locals.user),
       token: createSessionToken(res.locals.user, res.locals.app),
       sid: res.locals.sid

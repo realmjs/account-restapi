@@ -29,7 +29,7 @@ function validateAppThenStoreToLocals(checkInRequestType = 'byRequestQuery', fil
 
   function validateAppInRequestQueryMiddleware(filename) {
     return (helpers) => (req, res, next) => {
-      helpers.database.app.find({ id: req.query.app })
+      helpers.database.app.find({ id: req.query.a })
       .then(app => {
         if (app) {
           res.locals.app = app

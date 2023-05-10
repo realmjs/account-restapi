@@ -54,7 +54,7 @@ test('Validate App and response 403', async () => {
   helpers.database.app.find.mockResolvedValueOnce(undefined)
   helpers.form.mockReturnValueOnce('error_403_html_page')
 
-  await request(app).get(`${endpoint}?app=test`)
+  await request(app).get(`${endpoint}?a=app`)
   .expect(403)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -75,7 +75,7 @@ test('Verify cookie and response 400 for bad cookie', async () => {
   helpers.database.app.find.mockResolvedValue({ realm: 'test' })
   helpers.form.mockReturnValue('error_400_html_page')
 
-  await request(app).get(`${endpoint}?app=test`)
+  await request(app).get(`${endpoint}?a=app`)
   .expect(400)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -83,7 +83,7 @@ test('Verify cookie and response 400 for bad cookie', async () => {
     expect(res.headers['set-cookie']).toBeUndefined()
   })
 
-  await request(app).get(`${endpoint}?app=test`)
+  await request(app).get(`${endpoint}?a=app`)
   .set('Cookie', [`${process.env.COOKIE_SESSION}_test=invalid_json`])
   .expect(400)
   .expect('Content-Type', /text\/html/)
@@ -92,7 +92,7 @@ test('Verify cookie and response 400 for bad cookie', async () => {
     expect(res.headers['set-cookie']).toBeUndefined()
   })
 
-  await request(app).get(`${endpoint}?app=test`)
+  await request(app).get(`${endpoint}?a=app`)
   .set('Cookie', [`${process.env.COOKIE_SESSION}_test="{"uid":"not-encode-cookie"}"`])
   .expect(400)
   .expect('Content-Type', /text\/html/)
@@ -104,7 +104,7 @@ test('Verify cookie and response 400 for bad cookie', async () => {
   process.env.COOKIE_SECRET_KEY = 'invalid-key' // fake invalid key
   const cookie = createCookie('uid', 'test')
   setupEnvironmentVariables()                   // restore key sothat valid is used when decode cookie
-  await request(app).get(`${endpoint}?app=test`)
+  await request(app).get(`${endpoint}?a=app`)
   .set('Cookie', [`${cookie[0]}=${cookie[1]}`])
   .expect(400)
   .expect('Content-Type', /text\/html/)
@@ -132,7 +132,7 @@ test('Verify account and response 404 for invalid user', async () => {
   helpers.database.account.find.mockResolvedValue(undefined)
 
   const cookie = createCookie('uid', 'test')
-  await request(app).get(`${endpoint}?app=test`)
+  await request(app).get(`${endpoint}?a=app`)
   .set('Cookie', [`${cookie[0]}=${cookie[1]}`])
   .expect(404)
   .expect('Content-Type', /text\/html/)
@@ -170,7 +170,7 @@ test('Reponse signin session for valid request', async () => {
   })
 
   const cookie = createCookie('uid', 'test')
-  await request(app).get(`${endpoint}?app=test`)
+  await request(app).get(`${endpoint}?a=app`)
   .set('Cookie', [`${cookie[0]}=${cookie[1]}`])
   .expect(200)
   .expect('Content-Type', /text\/html/)
