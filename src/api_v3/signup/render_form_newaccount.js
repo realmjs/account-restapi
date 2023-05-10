@@ -5,7 +5,7 @@ import { hashEmail } from '../../lib/util';
 import middlewareFactory from '../../lib/middleware_factory';
 
 const validateRequest = (helpers) => (req, res, next) => {
-  if (req.query.email && req.query.token && req.query.app) {
+  if (req.query.e && req.query.t && req.query.a) {
     next()
   } else {
     res.writeHead( 400, { "Content-Type": "text/html" } )
@@ -14,7 +14,7 @@ const validateRequest = (helpers) => (req, res, next) => {
 }
 
 const decodeToken = (helpers) => (req, res, next) => {
-  jwt.verify(req.query.token, process.env.EMAIL_VALLIDATION_SIGN_KEY, (err, decoded) => {
+  jwt.verify(req.query.t, process.env.EMAIL_VALLIDATION_SIGN_KEY, (err, decoded) => {
     if (err || !decoded || !decoded.email) {
       res.writeHead( 400, { "Content-Type": "text/html" } )
       res.end(helpers.form('error', { code: 400, reason: 'Bad Signature' }))
@@ -26,7 +26,7 @@ const decodeToken = (helpers) => (req, res, next) => {
 }
 
 const verifyDecodedEmail = (helpers) => (req, res, next) => {
-  if (hashEmail(req.query.email) === res.locals.hashedEmail) {
+  if (hashEmail(req.query.e) === res.locals.hashedEmail) {
     next()
   } else {
     res.writeHead( 400, { "Content-Type": "text/html" } )
@@ -41,7 +41,7 @@ const validateAppThenStoreToLocals = middlewareFactory.create(
 )
 
 const checkEmailExistence = (helpers) => (req, res, next) => {
-  helpers.database.account.find({ email: req.query.email })
+  helpers.database.account.find({ email: req.query.e })
   .then( user => {
     if (user) {
       res.writeHead( 409, { "Content-Type": "text/html" } )
@@ -57,7 +57,7 @@ const checkEmailExistence = (helpers) => (req, res, next) => {
 
 const final = (helpers) => (req, res) => {
   res.writeHead( 200, { "Content-Type": "text/html" } )
-  res.end(helpers.form('newaccount', { email: req.query.email, app: res.locals.app }))
+  res.end(helpers.form('newaccount', { email: req.query.e, app: res.locals.app }))
 }
 
 module.exports = [

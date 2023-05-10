@@ -45,21 +45,21 @@ test('Validate request and response 400', async () => {
     expect(res.text).toMatch(/error_400_html_page/);
   })
 
-  await request(app).get(`${endpoint}?email=email`)
+  await request(app).get(`${endpoint}?e=email`)
   .expect(400)
   .expect('Content-Type', /text\/html/)
   .then(res => {
     expect(res.text).toMatch(/error_400_html_page/);
   })
 
-  await request(app).get(`${endpoint}?token=token`)
+  await request(app).get(`${endpoint}?t=token`)
   .expect(400)
   .expect('Content-Type', /text\/html/)
   .then(res => {
     expect(res.text).toMatch(/error_400_html_page/);
   })
 
-  await request(app).get(`${endpoint}?email=email&token=token`)
+  await request(app).get(`${endpoint}?e=email&t=token`)
   .expect(400)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -85,7 +85,7 @@ test('Verify token and reponses 400 if decode failed', async () => {
 
   const token = jwt.sign({ email }, 'Fake')
 
-  await request(app).get(`${endpoint}?email=${email}&app=test&token=${token}`)
+  await request(app).get(`${endpoint}?e=${email}&a=app&t=${token}`)
   .expect(400)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -108,7 +108,7 @@ test('Verify email and reponses 400 if not match with decoded from token', async
 
   const token = jwt.sign({ email }, process.env.EMAIL_VALLIDATION_SIGN_KEY)
 
-  await request(app).get(`${endpoint}?email=${email}&app=test&token=${token}`)
+  await request(app).get(`${endpoint}?e=${email}&a=app&t=${token}`)
   .expect(400)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -132,7 +132,7 @@ test('Validate App and response 403', async () => {
 
   const token = jwt.sign({ email }, process.env.EMAIL_VALLIDATION_SIGN_KEY)
 
-  await request(app).get(`${endpoint}?email=email@test.ext&app=invalid&token=${token}`)
+  await request(app).get(`${endpoint}?e=email@test.ext&a=invalid&t=${token}`)
   .expect(403)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -158,7 +158,7 @@ test('Verify email and reponses 409 if already exists in database', async () => 
 
   const token = jwt.sign({ email }, process.env.EMAIL_VALLIDATION_SIGN_KEY)
 
-  await request(app).get(`${endpoint}?email=email@test.ext&app=test&token=${token}`)
+  await request(app).get(`${endpoint}?e=email@test.ext&a=app&t=${token}`)
   .expect(409)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -187,7 +187,7 @@ test('Reponses 200 with newaccount form return from helpers.form ', async () => 
 
   const token = jwt.sign({ email }, process.env.EMAIL_VALLIDATION_SIGN_KEY)
 
-  await request(app).get(`${endpoint}?email=email@test.ext&app=test&token=${token}`)
+  await request(app).get(`${endpoint}?e=email@test.ext&a=app&t=${token}`)
   .expect(200)
   .expect('Content-Type', /text\/html/)
   .then(res => {
