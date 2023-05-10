@@ -45,7 +45,7 @@ const checkRealm = () => (req, res, next) => {
 
 const createResetLink = () => (req, res, next) => {
   res.locals.token = jwt.sign(
-    { uid: res.locals.user.uid, action: 'resetpassword' },
+    { uid: res.locals.user.uid },
     process.env.EMAIL_VALLIDATION_SIGN_KEY,
     { expiresIn: process.env.EMAIL_EXPIRE_VALIDATION_LINK }
   )

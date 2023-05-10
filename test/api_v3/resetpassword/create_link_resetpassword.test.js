@@ -122,7 +122,7 @@ test('Generate reset link and call send email hook', async () => {
   .expect(200)
 
   const token = jwt.sign(
-    { uid: 'uid', action: 'resetpassword' },
+    { uid: 'uid' },
     process.env.EMAIL_VALLIDATION_SIGN_KEY,
     { expiresIn: process.env.EMAIL_EXPIRE_VALIDATION_LINK }
   )

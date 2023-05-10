@@ -61,4 +61,22 @@ api.add('/session', {
   delete: require('./signout/create_signout_session')
 })
 
+/* API Reset password
+step 1: POST link/resetpassword
+step 2: GET form/account/newpassword
+step 3: PUT account/password
+*/
+
+api.add('/link/resetpassword', {
+  post: require('./resetpassword/create_link_resetpassword')
+})
+
+api.add('/form/account/newpassword', {
+  get: require('./resetpassword/render_form_newpassword')
+})
+
+api.add('/account', {
+  put: require('./resetpassword/reset_password')
+})
+
 module.exports = api
