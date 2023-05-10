@@ -21,7 +21,7 @@ const validateAppThenStoreToLocals = middlewareFactory.create(
 const getUserAccountByEmail = (helpers) => (req, res, next) => {
   helpers.database.account.find({ email: req.body.email })
   .then( user => {
-    if (user) {
+    if (user && verifyRealm(res.locals.app, user)) {
       res.locals.user = user
       next()
     } else {
@@ -31,14 +31,6 @@ const getUserAccountByEmail = (helpers) => (req, res, next) => {
   .catch( err =>
     helpers.alert && alertCrashedEvent(helpers.alert, 'create_signin_session.js', 'getUserAccountByEmail', err)
   )
-}
-
-const checkRealm = () => (req, res, next) => {
-  if (verifyRealm(res.locals.app, res.locals.user)) {
-    next()
-  } else {
-    res.status(401).send('Unauthenticated')
-  }
 }
 
 const checkPassword = () => (req, res, next) => {
@@ -66,7 +58,6 @@ module.exports = [
   validateRequest,
   validateAppThenStoreToLocals,
   getUserAccountByEmail,
-  checkRealm,
   checkPassword,
   setCookie,
   final
