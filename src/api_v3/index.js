@@ -13,7 +13,7 @@ step 3: GET form/account/new
 step 3: POST account
 */
 
-api.add('/form/signup', {
+api.add('/form/signup/email', {
   get: require('./signup/render_form_signup')
 })
 
@@ -58,7 +58,7 @@ api.add('/form/signout', {
 })
 
 api.add('/session', {
-  delete: require('./signout/create_signout_session')
+  delete: require('./signout/delete_signin_session')
 })
 
 /* API Reset password
