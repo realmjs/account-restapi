@@ -29,7 +29,7 @@ const getUserAccountByEmail = (helpers) => (req, res, next) => {
     }
   })
   .catch( err =>
-    helpers.alert && alertCrashedEvent(helpers.alert, 'create_signin_session.js', 'checkEmailExistence', err)
+    helpers.alert && alertCrashedEvent(helpers.alert, 'create_signin_session.js', 'getUserAccountByEmail', err)
   )
 }
 

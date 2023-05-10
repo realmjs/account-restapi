@@ -3,7 +3,7 @@
 const uuid = require('uuid/v1');
 import { isEmail } from '../../lib/form'
 import { alertCrashedEvent, hashPassword, ustring, createCookie, maskUser, createSessionToken } from '../../lib/util'
-import middlewareFactory from '../../lib/middleware_factory';
+import middlewareFactory from '../../lib/middleware_factory'
 
 const validateRequest = () => (req, res, next) => {
   if (req.body.email && isEmail(req.body.email) &&

@@ -10,7 +10,6 @@ import { api, app } from '../../testutils/fakeserver'
 import { setupEnvironmentVariables, clearEnvironmentVariables } from '../../testutils/fakeenv'
 
 import funcs from '../../../src/api_v3/sso/render_form_sso'
-import { expectErrorMessage } from "../../util";
 const endpoint = '/session/sso'
 api.add(endpoint, { get: funcs })
 app.use('/', api.generate());
@@ -180,7 +179,7 @@ test('Reponse signin session for valid request', async () => {
   })
 
   expect(helpers.form).toHaveBeenCalledTimes(1)
-  expect(helpers.form.mock.calls[0]).toEqual(['sso', { 
+  expect(helpers.form.mock.calls[0]).toEqual(['sso', {
     user: {
       email: 'email@test.ext',
       profile: { phone: '098', fullName: 'Awesome' },
