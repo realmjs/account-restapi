@@ -75,8 +75,21 @@ api.add('/form/account/newpassword', {
   get: require('./resetpassword/render_form_newpassword')
 })
 
-api.add('/account', {
+api.add('/account/password', {
   put: require('./resetpassword/reset_password')
+})
+
+/* API Change password
+step 1: Get form/account/changepassword
+step 2: PUT me/password
+*/
+
+api.add('/form/account/changepassword', {
+  get: require('./changepassword/render_form_changepassword')
+})
+
+api.add('/me/password', {
+  put: require('./changepassword/change_password')
 })
 
 module.exports = api
