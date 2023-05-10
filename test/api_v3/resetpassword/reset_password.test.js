@@ -10,7 +10,7 @@ import { api, app } from '../../testutils/fakeserver'
 import { setupEnvironmentVariables, clearEnvironmentVariables } from '../../testutils/fakeenv'
 
 import funcs from '../../../src/api_v3/resetpassword/reset_password'
-const endpoint = '/account'
+const endpoint = '/account/password'
 api.add(endpoint, { put: funcs })
 app.use('/', api.generate());
 
@@ -153,5 +153,6 @@ test('Change password and response 200', async () => {
 
   helpers.database.app.find.mockClear()
   helpers.database.account.find.mockClear()
+  helpers.database.account.update.mockClear()
 
 })
