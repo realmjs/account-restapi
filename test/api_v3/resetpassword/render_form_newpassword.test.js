@@ -31,7 +31,7 @@ test('Validate request and response 400', async () => {
     expect(res.text).toMatch(/error_400_html_page/);
   })
 
-  await request(app).get(`${endpoint}?a=app`)
+  await request(app).get(`${endpoint}?a=apptest`)
   .expect(400)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -59,7 +59,7 @@ test('Reponse 200 with reset password form', async () => {
 
   helpers.form.mockReturnValue('200_html_page')
 
-  await request(app).get(`${endpoint}?a=app&t=token`)
+  await request(app).get(`${endpoint}?a=apptest&t=token`)
   .expect(200)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -67,7 +67,7 @@ test('Reponse 200 with reset password form', async () => {
   })
 
   expect(helpers.form).toHaveBeenCalledTimes(1)
-  expect(helpers.form.mock.calls[0]).toEqual(['newpassword', { token: 'token', app: 'app' } ])
+  expect(helpers.form.mock.calls[0]).toEqual(['newpassword', { token: 'token', app: 'apptest' } ])
 
   helpers.form.mockClear()
 

@@ -57,7 +57,7 @@ const checkEmailExistence = (helpers) => (req, res, next) => {
 
 const final = (helpers) => (req, res) => {
   res.writeHead( 200, { "Content-Type": "text/html" } )
-  res.end(helpers.form('newaccount', { email: req.query.e, app: res.locals.app }))
+  res.end(helpers.form('newaccount', { email: req.query.e, app: { url: res.locals.app.url } }))
 }
 
 module.exports = [

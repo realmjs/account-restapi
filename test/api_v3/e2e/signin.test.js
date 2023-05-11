@@ -62,14 +62,12 @@ test('Signin with a registered account', async() => {
   })
 
   expect(helpers.form).toHaveBeenCalledTimes(1)
-  expect(helpers.form.mock.calls[0]).toEqual(['signin', { app: { id: 'apptest', url: 'url', realm: 'test', key: 'appkey' } }])
-
-  const appId = helpers.form.mock.calls[0][1].app.id
+  expect(helpers.form.mock.calls[0]).toEqual(['signin', { app: { url: 'url' } }])
 
   // step 2: POST session
   await request(app).post('/session')
   .set('Accept', 'application/json')
-  .send({ email: 'e2e@test.ext', password: 'correct', app: appId })
+  .send({ email: 'e2e@test.ext', password: 'correct', app: 'apptest' })
   .expect(200)
   .expect('set-cookie', new RegExp(`${process.env.COOKIE_SESSION}_test=.+; Path=/; HttpOnly`))
   .then( res =>
@@ -115,14 +113,12 @@ test('Signin with a registered account but wrong password', async() => {
   })
 
   expect(helpers.form).toHaveBeenCalledTimes(1)
-  expect(helpers.form.mock.calls[0]).toEqual(['signin', { app: { id: 'apptest', url: 'url', realm: 'test', key: 'appkey' } }])
-
-  const appId = helpers.form.mock.calls[0][1].app.id
+  expect(helpers.form.mock.calls[0]).toEqual(['signin', { app: {url: 'url' } }])
 
   // step 2: POST session
   await request(app).post('/session')
   .set('Accept', 'application/json')
-  .send({ email: 'e2e@test.ext', password: 'wrong', app: appId })
+  .send({ email: 'e2e@test.ext', password: 'wrong', app: 'apptest' })
   .expect(401)
   .then( res => {
     expect(res.body).toEqual({})
@@ -153,14 +149,13 @@ test('Signin with a not registered account', async() => {
   })
 
   expect(helpers.form).toHaveBeenCalledTimes(1)
-  expect(helpers.form.mock.calls[0]).toEqual(['signin', { app: { id: 'apptest', url: 'url', realm: 'test', key: 'appkey' } }])
+  expect(helpers.form.mock.calls[0]).toEqual(['signin', { app: { url: 'url' } }])
 
-  const appId = helpers.form.mock.calls[0][1].app.id
 
   // step 2: POST session
   await request(app).post('/session')
   .set('Accept', 'application/json')
-  .send({ email: 'notexist@test.ext', password: 'correct', app: appId })
+  .send({ email: 'notexist@test.ext', password: 'correct', app: 'apptest' })
   .expect(401)
   .then( res => {
     expect(res.body).toEqual({})

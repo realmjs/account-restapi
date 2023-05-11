@@ -157,7 +157,7 @@ test('Verify account and response 404 for invalid user', async () => {
 import jwt from 'jsonwebtoken'
 test('Reponse signin session for valid request', async () => {
 
-  helpers.database.app.find.mockResolvedValue({ realm: 'test', key: 'key' })
+  helpers.database.app.find.mockResolvedValue({ id: 'apptest', url: 'url', realm: 'test', key: 'appkey' })
   helpers.form.mockReturnValue('sso_200_html_page')
   helpers.database.account.find.mockResolvedValue({
     uid: 'uid',
@@ -170,7 +170,7 @@ test('Reponse signin session for valid request', async () => {
   })
 
   const cookie = createCookie('uid', 'test')
-  await request(app).get(`${endpoint}?a=app`)
+  await request(app).get(`${endpoint}?a=apptest`)
   .set('Cookie', [`${cookie[0]}=${cookie[1]}`])
   .expect(200)
   .expect('Content-Type', /text\/html/)
@@ -185,8 +185,9 @@ test('Reponse signin session for valid request', async () => {
       profile: { phone: '098', fullName: 'Awesome' },
       createdAt: 1234567890,
     },
-    token: jwt.sign({uid: 'uid', roles: ['member']}, 'key'),
+    token: jwt.sign({uid: 'uid', roles: ['member']}, 'appkey'),
     sid: JSON.parse(cookie[1]).sessionId,
+    app: { url: 'url' }
   }])
 
   helpers.form.mockClear()

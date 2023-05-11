@@ -56,17 +56,14 @@ test('Signout a session', async() => {
   })
 
   expect(helpers.form).toHaveBeenCalledTimes(1)
-  expect(helpers.form.mock.calls[0]).toEqual(['signout', { app: { id: 'apptest', url: 'url', realm: 'test', key: 'appkey' } }])
-
-  const appId = helpers.form.mock.calls[0][1].app.id
-  const realm = helpers.form.mock.calls[0][1].app.realm
+  expect(helpers.form.mock.calls[0]).toEqual(['signout', { app: { url: 'url' } }])
 
   // step 2: DELETE session
-  const cookie = createCookie('uid', realm)
+  const cookie = createCookie('uid', 'test')
   await request(app).delete('/session')
   .set('Cookie', [`${cookie[0]}=${cookie[1]}`])
   .set('Accept', 'application/json')
-  .send({ app: appId, sid: JSON.parse(cookie[1]).sessionId })
+  .send({ app: 'apptest', sid: JSON.parse(cookie[1]).sessionId })
   .expect(200)
   .expect('set-cookie', new RegExp(`${process.env.COOKIE_SESSION}_test=; Path=/`));
 

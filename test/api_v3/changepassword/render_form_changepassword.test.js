@@ -3,8 +3,6 @@
 import "core-js/stable";
 import "regenerator-runtime/runtime";
 
-import jwt from 'jsonwebtoken'
-
 import request from 'supertest'
 
 import { api, app } from '../../testutils/fakeserver'
@@ -58,7 +56,7 @@ test('Verify app and response 403', async () => {
   helpers.form.mockReturnValue('error_403_html_page')
   helpers.database.app.find.mockResolvedValueOnce(undefined)
 
-  await request(app).get(`${endpoint}?a=app`)
+  await request(app).get(`${endpoint}?a=apptest`)
   .expect(403)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -77,9 +75,9 @@ test('Verify app and response 403', async () => {
 test('Render from and response 200', async () => {
 
   helpers.form.mockReturnValue('200_html_page')
-  helpers.database.app.find.mockResolvedValueOnce({ url: 'url' })
+  helpers.database.app.find.mockResolvedValueOnce({ id: 'apptest', url: 'url', realm: 'test', key: 'appkey' })
 
-  await request(app).get(`${endpoint}?a=app`)
+  await request(app).get(`${endpoint}?a=apptest`)
   .expect(200)
   .expect('Content-Type', /text\/html/)
   .then(res => {

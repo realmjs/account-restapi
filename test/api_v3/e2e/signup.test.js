@@ -93,7 +93,7 @@ test('Signup a new account', async() => {
   })
 
   expect(helpers.form).toHaveBeenCalledTimes(2)
-  expect(helpers.form.mock.calls[1]).toEqual(['newaccount', { email: email, app: { id: 'apptest', url: 'url', realm: 'test', key: 'appkey' } }])
+  expect(helpers.form.mock.calls[1]).toEqual(['newaccount', { email: email, app: { url: 'url' } }])
 
   // step 3: POST account
   await request(app).post('/account')
@@ -119,7 +119,10 @@ test('Signup a new account', async() => {
 test('Signup with a registered email', async() => {
 
   helpers.database.app.find.mockImplementation(
-    ({id}) => id === 'apptest' || id === 'account' ? Promise.resolve({ url: 'url', realm: 'test', key: 'appkey' }) : Promise.resolve(undefined)
+    ({id}) => id === 'apptest' || id === 'account' ?
+                Promise.resolve({ id: id, url: 'url', realm: 'test', key: 'appkey' })
+              :
+                Promise.resolve(undefined)
   )
   helpers.form.mockReturnValue('mock_html_page')
   helpers.database.account.find.mockImplementation(

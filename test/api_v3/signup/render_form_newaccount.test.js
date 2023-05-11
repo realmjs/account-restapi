@@ -85,7 +85,7 @@ test('Verify token and reponses 400 if decode failed', async () => {
 
   const token = jwt.sign({ email }, 'Fake')
 
-  await request(app).get(`${endpoint}?e=${email}&a=app&t=${token}`)
+  await request(app).get(`${endpoint}?e=${email}&a=apptest&t=${token}`)
   .expect(400)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -108,7 +108,7 @@ test('Verify email and reponses 400 if not match with decoded from token', async
 
   const token = jwt.sign({ email }, process.env.EMAIL_VALLIDATION_SIGN_KEY)
 
-  await request(app).get(`${endpoint}?e=${email}&a=app&t=${token}`)
+  await request(app).get(`${endpoint}?e=${email}&a=apptest&t=${token}`)
   .expect(400)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -152,13 +152,13 @@ test('Verify email and reponses 409 if already exists in database', async () => 
 
   helpers.form.mockReturnValue('error_409_html_page')
   helpers.database.account.find.mockResolvedValue({ email: 'email@test.ext'})
-  helpers.database.app.find.mockResolvedValueOnce({ url: 'url' })
+  helpers.database.app.find.mockResolvedValueOnce({ id: 'apptest', url: 'url', realm: 'test', key: 'appkey' })
 
   const email = hashEmail('email@test.ext')
 
   const token = jwt.sign({ email }, process.env.EMAIL_VALLIDATION_SIGN_KEY)
 
-  await request(app).get(`${endpoint}?e=email@test.ext&a=app&t=${token}`)
+  await request(app).get(`${endpoint}?e=email@test.ext&a=apptest&t=${token}`)
   .expect(409)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -181,13 +181,13 @@ test('Reponses 200 with newaccount form return from helpers.form ', async () => 
 
   helpers.form.mockReturnValue('200_new_account_html_page')
   helpers.database.account.find.mockResolvedValue(undefined)
-  helpers.database.app.find.mockResolvedValueOnce({ url: 'url' })
+  helpers.database.app.find.mockResolvedValueOnce({ id: 'apptest', url: 'url', realm: 'test', key: 'appkey' })
 
   const email = hashEmail('email@test.ext')
 
   const token = jwt.sign({ email }, process.env.EMAIL_VALLIDATION_SIGN_KEY)
 
-  await request(app).get(`${endpoint}?e=email@test.ext&a=app&t=${token}`)
+  await request(app).get(`${endpoint}?e=email@test.ext&a=apptest&t=${token}`)
   .expect(200)
   .expect('Content-Type', /text\/html/)
   .then(res => {

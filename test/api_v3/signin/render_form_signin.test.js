@@ -47,7 +47,7 @@ test('Validate App and response 403', async () => {
   helpers.database.app.find.mockResolvedValueOnce(undefined)
   helpers.form.mockReturnValueOnce('error_403_html_page')
 
-  await request(app).get(`${endpoint}?a=app`)
+  await request(app).get(`${endpoint}?a=apptest`)
   .expect(403)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -64,10 +64,10 @@ test('Validate App and response 403', async () => {
 
 
 test('Render signin form using helpers.form and reponse 200', async () => {
-  helpers.database.app.find.mockResolvedValueOnce({ url: 'url' })
+  helpers.database.app.find.mockResolvedValueOnce({ id: 'apptest', url: 'url', realm: 'test', key: 'appkey' })
   helpers.form.mockReturnValueOnce('signin_200_html_page')
 
-  await request(app).get(`${endpoint}?a=app`)
+  await request(app).get(`${endpoint}?a=apptest`)
   .expect(200)
   .expect('Content-Type', /text\/html/)
   .then(res => {
