@@ -7,7 +7,7 @@
     "start": "node example/server",
     "start:dev": "webpack serve --config webpack.dev.config.js",
     "build": "rm -rf build && webpack --config webpack.build.config.js",
-    "test": "jest --coverage"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
