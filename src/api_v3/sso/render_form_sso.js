@@ -62,7 +62,8 @@ const getUserAccountByUID = (helpers) => (req, res, next) => {
     res.end(helpers.form('sso', {
       user: maskUser(res.locals.user),
       token: createSessionToken(res.locals.user, res.locals.app),
-      sid: res.locals.sid
+      sid: res.locals.sid,
+      app: { url: res.locals.app.url },
      }))
  }
 
