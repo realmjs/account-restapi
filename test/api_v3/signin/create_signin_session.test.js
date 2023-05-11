@@ -79,6 +79,10 @@ test('Check account existance and response 401', async () => {
   .set('Accept', 'application/json')
   .send({ email: 'email@exists.test', password: 'secret', app: 'app' })
   .expect(401)
+  .then( res => {
+    expect(res.body).toEqual({})
+    expect(res.header).not.toHaveProperty('set-cookie')
+  })
 
   expect(helpers.database.account.find).toHaveBeenCalledTimes(1)
   expect(helpers.database.account.find.mock.calls[0]).toEqual([{ email: 'email@exists.test' }])
@@ -103,6 +107,10 @@ test('Check user realms and response 401', async () => {
   .set('Accept', 'application/json')
   .send({ email: 'email@exists.test', password: 'secret', app: 'app' })
   .expect(401)
+  .then( res => {
+    expect(res.body).toEqual({})
+    expect(res.header).not.toHaveProperty('set-cookie')
+  })
 
   helpers.database.app.find.mockClear()
   helpers.database.account.find.mockClear()
@@ -123,6 +131,10 @@ test('Check password and response 401', async () => {
   .set('Accept', 'application/json')
   .send({ email: 'email@exists.test', password: 'wrong', app: 'app' })
   .expect(401)
+  .then( res => {
+    expect(res.body).toEqual({})
+    expect(res.header).not.toHaveProperty('set-cookie')
+  })
 
   helpers.database.app.find.mockClear()
   helpers.database.account.find.mockClear()
