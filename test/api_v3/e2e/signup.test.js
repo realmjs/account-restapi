@@ -3,8 +3,6 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 
-import request from 'supertest'
-
 import { app } from '../../testutils/fakeserver'
 import api from '../../../src/api_v3/index'
 
@@ -31,14 +29,20 @@ app.use('/', api.generate());
 
 import { setupEnvironmentVariables, clearEnvironmentVariables } from '../../testutils/fakeenv'
 
+import request from 'supertest'
+
 beforeEach( () => jest.clearAllMocks() )
 beforeAll( () => setupEnvironmentVariables() )
 afterAll( () => clearEnvironmentVariables() )
 
+
 test('Signup a new account', async() => {
 
-  helpers.database.app.find.mockImplementation( 
-    ({id}) => id === 'apptest' || id === 'account' ? Promise.resolve({ url: 'url', realm: 'test', key: 'appkey' }) : Promise.resolve(undefined)
+  helpers.database.app.find.mockImplementation(
+    ({id}) => id === 'apptest' || id === 'account' ?
+                Promise.resolve({ id: id, url: 'url', realm: 'test', key: 'appkey' })
+              :
+                Promise.resolve(undefined)
   )
   helpers.form.mockReturnValue('mock_html_page')
   helpers.database.account.find.mockResolvedValue(undefined)
@@ -77,7 +81,7 @@ test('Signup a new account', async() => {
 
   apptest = /&a=(.*)&t/.exec(helpers.hook.sendEmail.mock.calls[0][0].data.link)[1]
   expect(apptest).toEqual('apptest')
-  
+
   const token = /^.*&t=(.*)/.exec(helpers.hook.sendEmail.mock.calls[0][0].data.link)[1]
 
   // step 3: GET form/account/new
@@ -89,7 +93,7 @@ test('Signup a new account', async() => {
   })
 
   expect(helpers.form).toHaveBeenCalledTimes(2)
-  expect(helpers.form.mock.calls[1]).toEqual(['newaccount', { email: email, app: { url: 'url', realm: 'test', key: 'appkey' } }])
+  expect(helpers.form.mock.calls[1]).toEqual(['newaccount', { email: email, app: { id: 'apptest', url: 'url', realm: 'test', key: 'appkey' } }])
 
   // step 3: POST account
   await request(app).post('/account')
@@ -114,11 +118,11 @@ test('Signup a new account', async() => {
 
 test('Signup with a registered email', async() => {
 
-  helpers.database.app.find.mockImplementation( 
+  helpers.database.app.find.mockImplementation(
     ({id}) => id === 'apptest' || id === 'account' ? Promise.resolve({ url: 'url', realm: 'test', key: 'appkey' }) : Promise.resolve(undefined)
   )
   helpers.form.mockReturnValue('mock_html_page')
-  helpers.database.account.find.mockImplementation( 
+  helpers.database.account.find.mockImplementation(
     ({email}) => email === 'registered@test.ext' ? Promise.resolve({ uid: 'uid' }) : Promise.resolve(undefined)
   )
   helpers.hook.sendEmail.mockResolvedValue(undefined)
@@ -143,6 +147,6 @@ test('Signup with a registered email', async() => {
   .expect(409)
 
   expect(helpers.hook.sendEmail).not.toHaveBeenCalled()
-  
+
 })
 
