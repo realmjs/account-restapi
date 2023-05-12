@@ -31,7 +31,6 @@ app.use('/', api.generate());
 import { setupEnvironmentVariables, clearEnvironmentVariables } from '../../testutils/fakeenv'
 
 import request from 'supertest'
-import jwt from 'jsonwebtoken'
 
 beforeEach( () => jest.clearAllMocks() )
 beforeAll( () => setupEnvironmentVariables() )
