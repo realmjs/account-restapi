@@ -1,12 +1,9 @@
 {
   "name": "@realmjs/account-restapi",
-  "version": "2.1.5",
+  "version": "3.0.0",
   "description": "REST APIs for Account serverless application",
   "main": "src/api/index.js",
   "scripts": {
-    "start": "node example/server",
-    "start:dev": "webpack serve --config webpack.dev.config.js",
-    "build": "rm -rf build && webpack --config webpack.build.config.js",
     "test": "jest"
   },
   "repository": {
