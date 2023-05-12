@@ -4,28 +4,9 @@ const jwt = require('jsonwebtoken')
 
 const crypto = require('crypto')
 
-const COOKIE_SESSION = '__r_c_sess_';
-
-function authenUserMiddleware() {
-  return function(req, res, next) {
-    const bearerHeader = req.headers['authorization'];
-    if (typeof bearerHeader === 'undefined') {
-      res.status(401).json({ error: 'Unauthorized' });
-      return;
-    }
-    const bearer = bearerHeader.split(" ");
-    const token = bearer[1];
-    res.locals.token = token;
-    const secret = res.locals.app.key;
-    jwt.verify(token, secret, (err, decoded) => {
-      if (err) {
-        res.status(401).json({ error: 'Unauthorized' });
-      } else {
-        res.locals.uid = decoded.uid;
-        next();
-      }
-    });
-  }
+function isEmail(str) {
+  const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(str);
 }
 
 function createSessionToken(user, app) {
@@ -50,7 +31,7 @@ function createCookie(uid, realm) {
 
 function cleanCookieMiddleware() {
   return function(req, res, next) {
-    res.clearCookie(`${COOKIE_SESSION}_${res.locals.app.realm}`);
+    res.clearCookie(`${process.env.COOKIE_SESSION}_${res.locals.app.realm}`);
     next();
   }
 }
@@ -131,7 +112,7 @@ function verifyRealm(app, user) {
 }
 
 module.exports = {
-  authenUserMiddleware,
+  isEmail,
   maskUser,
   cleanCookieMiddleware,
   createCookie,

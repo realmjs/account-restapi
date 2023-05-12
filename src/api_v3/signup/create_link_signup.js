@@ -1,7 +1,6 @@
 'use strict'
 import jwt from 'jsonwebtoken';
-import { isEmail } from '../../lib/form'
-import { alertCrashedEvent, hashEmail } from '../../lib/util'
+import { isEmail, alertCrashedEvent, hashEmail } from '../../lib/util'
 import middlewareFactory from '../../lib/middleware_factory';
 
 const validateRequest = () => (req, res, next) => {

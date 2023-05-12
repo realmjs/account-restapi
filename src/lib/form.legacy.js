@@ -1,10 +1,5 @@
 "use strict"
 
-function isEmail(str) {
-  const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  return re.test(str);
-}
-
 /**
  * Function scorePassword
  * score password strength
@@ -43,4 +38,4 @@ function scorePassword(password) {
 
 }
 
-module.exports = { isEmail, scorePassword }
+module.exports = { scorePassword }

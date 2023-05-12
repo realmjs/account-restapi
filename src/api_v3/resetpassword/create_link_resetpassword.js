@@ -2,9 +2,8 @@
 
 import jwt from 'jsonwebtoken'
 
-import { isEmail } from '../../lib/form'
 import middlewareFactory from '../../lib/middleware_factory'
-import { alertCrashedEvent, verifyRealm } from '../../lib/util'
+import { isEmail, alertCrashedEvent, verifyRealm } from '../../lib/util'
 
 const validateRequest = () => (req, res, next) => {
   if (req.body.email && isEmail(req.body.email) && req.body.app) {
