@@ -1,5 +1,7 @@
 "use strict"
 
+import middlewareFactory from '../../lib/middleware_factory'
+
 const validateRequest = (helpers) => (req, res, next) => {
   if (req.query.a && req.query.t) {
     next()
@@ -9,12 +11,19 @@ const validateRequest = (helpers) => (req, res, next) => {
   }
 }
 
+const validateAppThenStoreToLocals = middlewareFactory.create(
+  'validateAppThenStoreToLocals',
+  'byRequestQuery',
+  'render_form_newpassword.js'
+)
+
 const final = (helpers) => (req, res) => {
   res.writeHead( 200, { "Content-Type": "text/html" } )
-  res.end(helpers.form('newpassword', { token: req.query.t, app: req.query.a }))
+  res.end(helpers.form('newpassword', { token: req.query.t, app: {id: res.locals.app.id, url: res.locals.app.url} }))
 }
 
 module.exports = [
   validateRequest,
+  validateAppThenStoreToLocals,
   final
 ]

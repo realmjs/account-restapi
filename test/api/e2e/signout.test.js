@@ -56,7 +56,7 @@ test('Signout a session', async() => {
   })
 
   expect(helpers.form).toHaveBeenCalledTimes(1)
-  expect(helpers.form.mock.calls[0]).toEqual(['signout', { app: { url: 'url' } }])
+  expect(helpers.form.mock.calls[0]).toEqual(['signout', { app: {id: 'apptest', url: 'url'} }])
 
   // step 2: DELETE session
   const cookie = createCookie('uid', 'test')

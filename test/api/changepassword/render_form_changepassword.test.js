@@ -85,7 +85,7 @@ test('Render from and response 200', async () => {
   })
 
   expect(helpers.form).toHaveBeenCalledTimes(1)
-  expect(helpers.form.mock.calls[0]).toEqual(['changepassword', { app: {url: 'url'} }])
+  expect(helpers.form.mock.calls[0]).toEqual(['changepassword', { app: {id: 'apptest', url: 'url'} }])
 
   helpers.form.mockClear()
   helpers.database.app.find.mockClear()

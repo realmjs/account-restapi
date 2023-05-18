@@ -81,7 +81,7 @@ test('Response signup form returned by helpers.form', async () => {
   })
 
   expect(helpers.form).toHaveBeenCalled()
-  expect(helpers.form.mock.calls[0]).toEqual(['signup', { app: 'apptest' }])
+  expect(helpers.form.mock.calls[0]).toEqual(['signup', { app: { id: 'apptest', url: 'url' } }])
 
   helpers.form.mockClear()
   helpers.database.app.find.mockClear()

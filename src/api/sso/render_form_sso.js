@@ -63,7 +63,7 @@ const getUserAccountByUID = (helpers) => (req, res, next) => {
       user: maskUser(res.locals.user),
       token: createSessionToken(res.locals.user, res.locals.app),
       sid: res.locals.sid,
-      app: { url: res.locals.app.url },
+      app: {id: res.locals.app.id, url: res.locals.app.url},
      }))
  }
 

@@ -75,7 +75,7 @@ test('Render signin form using helpers.form and reponse 200', async () => {
   })
 
   expect(helpers.form).toHaveBeenCalledTimes(1)
-  expect(helpers.form.mock.calls[0]).toEqual(['signin', { app: {url: 'url'} }])
+  expect(helpers.form.mock.calls[0]).toEqual(['signin', { app: {id: 'apptest', url: 'url',} }])
 
   helpers.form.mockClear()
   helpers.database.app.find.mockClear()

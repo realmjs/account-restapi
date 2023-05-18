@@ -76,7 +76,7 @@ test('Render signout form using helpers.form and reponse 200', async () => {
   })
 
   expect(helpers.form).toHaveBeenCalledTimes(1)
-  expect(helpers.form.mock.calls[0]).toEqual(['signout', { app: {url: 'url'} }])
+  expect(helpers.form.mock.calls[0]).toEqual(['signout', { app: {id: 'apptest', url: 'url'} }])
 
   helpers.form.mockClear()
   helpers.database.app.find.mockClear()

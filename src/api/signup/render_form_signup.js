@@ -19,7 +19,7 @@ const validateAppThenStoreToLocals = middlewareFactory.create(
 
 const final = (helpers) => (req, res) => {
   res.writeHead( 200, { "Content-Type": "text/html" } )
-  res.end(helpers.form('signup', { app: req.query.a }))
+  res.end(helpers.form('signup', { app: {id: res.locals.app.id, url: res.locals.app.url} }))
 }
 
 module.exports = [

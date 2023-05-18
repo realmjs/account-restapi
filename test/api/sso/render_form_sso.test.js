@@ -187,7 +187,7 @@ test('Reponse signin session for valid request', async () => {
     },
     token: jwt.sign({uid: 'uid', roles: ['member']}, 'appkey'),
     sid: JSON.parse(cookie[1]).sessionId,
-    app: { url: 'url' }
+    app: { id: 'apptest', url: 'url' }
   }])
 
   helpers.form.mockClear()

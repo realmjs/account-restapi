@@ -62,7 +62,7 @@ test('Request change password and update the new one', async() => {
   })
 
   expect(helpers.form).toHaveBeenCalledTimes(1)
-  expect(helpers.form.mock.calls[0]).toEqual(['changepassword', { app: {url: 'url'} }])
+  expect(helpers.form.mock.calls[0]).toEqual(['changepassword', { app: {id: 'apptest', url: 'url'} }])
 
   // step 2: PUT me/password
   const token = jwt.sign({ uid: 'uid' }, process.env.EMAIL_VALLIDATION_SIGN_KEY)
@@ -108,7 +108,7 @@ test('Prevent update password if currunt password is not matched', async() => {
   })
 
   expect(helpers.form).toHaveBeenCalledTimes(1)
-  expect(helpers.form.mock.calls[0]).toEqual(['changepassword', { app: {url: 'url'} }])
+  expect(helpers.form.mock.calls[0]).toEqual(['changepassword', { app: {id: 'apptest', url: 'url'} }])
 
   // step 2: PUT me/password
   const token = jwt.sign({ uid: 'uid' }, process.env.EMAIL_VALLIDATION_SIGN_KEY)

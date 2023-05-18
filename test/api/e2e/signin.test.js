@@ -62,7 +62,7 @@ test('Signin with a registered account', async() => {
   })
 
   expect(helpers.form).toHaveBeenCalledTimes(1)
-  expect(helpers.form.mock.calls[0]).toEqual(['signin', { app: { url: 'url' } }])
+  expect(helpers.form.mock.calls[0]).toEqual(['signin', { app: { id: 'apptest', url: 'url' } }])
 
   // step 2: POST session
   await request(app).post('/session')
@@ -113,7 +113,7 @@ test('Signin with a registered account but wrong password', async() => {
   })
 
   expect(helpers.form).toHaveBeenCalledTimes(1)
-  expect(helpers.form.mock.calls[0]).toEqual(['signin', { app: {url: 'url' } }])
+  expect(helpers.form.mock.calls[0]).toEqual(['signin', { app: {id: 'apptest', url: 'url'} }])
 
   // step 2: POST session
   await request(app).post('/session')
@@ -149,7 +149,7 @@ test('Signin with a not registered account', async() => {
   })
 
   expect(helpers.form).toHaveBeenCalledTimes(1)
-  expect(helpers.form.mock.calls[0]).toEqual(['signin', { app: { url: 'url' } }])
+  expect(helpers.form.mock.calls[0]).toEqual(['signin', { app: {id: 'apptest', url: 'url'} }])
 
 
   // step 2: POST session

@@ -195,7 +195,7 @@ test('Reponses 200 with newaccount form return from helpers.form ', async () => 
   })
 
   expect(helpers.form).toHaveBeenCalledTimes(1)
-  expect(helpers.form.mock.calls[0]).toEqual(['newaccount', { email: 'email@test.ext', app: { url: 'url' } }])
+  expect(helpers.form.mock.calls[0]).toEqual(['newaccount', { email: 'email@test.ext', app: { id: 'apptest', url: 'url' } }])
 
   helpers.form.mockClear()
   helpers.database.account.find.mockClear()

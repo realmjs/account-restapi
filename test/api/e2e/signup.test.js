@@ -59,9 +59,9 @@ test('Signup a new account', async() => {
   })
 
   expect(helpers.form).toHaveBeenCalled()
-  expect(helpers.form.mock.calls[0]).toEqual(['signup', { app: expect.any(String) }])
+  expect(helpers.form.mock.calls[0]).toEqual(['signup', { app: {id: expect.any(String), url: 'url'} }])
 
-  let apptest = helpers.form.mock.calls[0][1].app
+  let apptest = helpers.form.mock.calls[0][1].app.id
 
   // step 2: POST link/signup
   await request(app).post('/link/signup')
@@ -93,7 +93,7 @@ test('Signup a new account', async() => {
   })
 
   expect(helpers.form).toHaveBeenCalledTimes(2)
-  expect(helpers.form.mock.calls[1]).toEqual(['newaccount', { email: email, app: { url: 'url' } }])
+  expect(helpers.form.mock.calls[1]).toEqual(['newaccount', { email: email, app: {id: 'apptest', url: 'url'} }])
 
   // step 3: POST account
   await request(app).post('/account')
@@ -139,9 +139,9 @@ test('Signup with a registered email', async() => {
   })
 
   expect(helpers.form).toHaveBeenCalled()
-  expect(helpers.form.mock.calls[0]).toEqual(['signup', { app: expect.any(String) }])
+  expect(helpers.form.mock.calls[0]).toEqual(['signup', { app: {id: expect.any(String), url: 'url'} }])
 
-  let apptest = helpers.form.mock.calls[0][1].app
+  let apptest = helpers.form.mock.calls[0][1].app.id
 
   // step 2: POST link/signup
   await request(app).post('/link/signup')

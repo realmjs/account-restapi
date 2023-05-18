@@ -72,7 +72,7 @@ test('SSO a signed in session', async() => {
     },
     token: jwt.sign({uid: 'uid', roles: ['member']}, 'appkey'),
     sid: JSON.parse(cookie[1]).sessionId,
-    app: { url: 'url' }
+    app: {id: 'apptest', url: 'url'}
   }])
 
 })

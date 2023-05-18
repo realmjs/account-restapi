@@ -83,7 +83,7 @@ test('Request reset password and update the new one', async() => {
   })
 
   expect(helpers.form).toHaveBeenCalledTimes(1)
-  expect(helpers.form.mock.calls[0]).toEqual(['newpassword', { token: token, app: 'apptest' } ])
+  expect(helpers.form.mock.calls[0]).toEqual(['newpassword', { token: token, app: {id: 'apptest', url: 'url'} } ])
 
   // step 3: PUT account/password 
   await request(app).put('/account/password')
