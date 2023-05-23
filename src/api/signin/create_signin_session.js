@@ -1,7 +1,7 @@
 "use strict"
 
-import middlewareFactory from '../../lib/middleware_factory'
-import { isEmail, alertCrashedEvent, matchUserPassword, createCookie, maskUser, createSessionToken, verifyRealm } from '../../lib/util'
+const middlewareFactory = require('../../lib/middleware_factory')
+const { isEmail, alertCrashedEvent, matchUserPassword, createCookie, maskUser, createSessionToken, verifyRealm } = require('../../lib/util')
 
 const validateRequest = () => (req, res, next) => {
   if (req.body.email && isEmail(req.body.email) && req.body.password && req.body.app) {

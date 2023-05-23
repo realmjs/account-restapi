@@ -1,8 +1,8 @@
 'use strict'
 
 const uuid = require('uuid/v1');
-import { isEmail, alertCrashedEvent, hashPassword, ustring, createCookie, maskUser, createSessionToken } from '../../lib/util'
-import middlewareFactory from '../../lib/middleware_factory'
+const { isEmail, alertCrashedEvent, hashPassword, ustring, createCookie, maskUser, createSessionToken } = require('../../lib/util')
+const middlewareFactory = require('../../lib/middleware_factory')
 
 const validateRequest = () => (req, res, next) => {
   if (req.body.email && isEmail(req.body.email) &&

@@ -1,7 +1,7 @@
 'use strict'
-import jwt from 'jsonwebtoken';
-import { isEmail, alertCrashedEvent, hashEmail } from '../../lib/util'
-import middlewareFactory from '../../lib/middleware_factory';
+const jwt = require('jsonwebtoken')
+const { isEmail, alertCrashedEvent, hashEmail } = require('../../lib/util')
+const middlewareFactory = require('../../lib/middleware_factory')
 
 const validateRequest = () => (req, res, next) => {
   if (req.body.email && isEmail(req.body.email) && req.body.app) {

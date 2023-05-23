@@ -1,8 +1,8 @@
 "use strict"
 
-import jwt from 'jsonwebtoken';
-import { hashEmail } from '../../lib/util';
-import middlewareFactory from '../../lib/middleware_factory';
+const jwt = require('jsonwebtoken')
+const { hashEmail } = require('../../lib/util')
+const middlewareFactory = require('../../lib/middleware_factory')
 
 const validateRequest = (helpers) => (req, res, next) => {
   if (req.query.e && req.query.t && req.query.a) {

@@ -1,6 +1,6 @@
 "use strict"
 
-import middlewareFactory from '../../lib/middleware_factory'
+const middlewareFactory = require('../../lib/middleware_factory')
 
 const validateRequest = (helpers) => (req, res, next) => {
   if (req.query.a) {

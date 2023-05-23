@@ -1,8 +1,8 @@
 "use strict"
 
-import jwt from 'jsonwebtoken'
-import middlewareFactory from '../../lib/middleware_factory'
-import { verifyRealm, matchUserPassword, hashPassword } from '../../lib/util'
+const jwt = require('jsonwebtoken')
+const middlewareFactory = require('../../lib/middleware_factory')
+const { verifyRealm, matchUserPassword, hashPassword } = require('../../lib/util')
 
 const validateRequest = () => (req, res, next) => {
   if (req.body.token && req.body.password && req.body.app) {

@@ -1,7 +1,7 @@
 "use strict"
 
-import middlewareFactory from '../../lib/middleware_factory'
-import { decodeCookie, cleanCookieMiddleware } from '../../lib/util'
+const middlewareFactory = require('../../lib/middleware_factory')
+const { decodeCookie, cleanCookieMiddleware } = require('../../lib/util')
 
 const validateRequest = () => (req, res, next) => {
   if (req.body.app && req.body.sid) {
