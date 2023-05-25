@@ -3,6 +3,8 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 
+import endpoint from '@realmjs/account-endpoint'
+
 import { app } from '../../testutils/fakeserver'
 import api from '../../../src/api/index'
 
@@ -54,7 +56,7 @@ test('Request change password and update the new one', async() => {
   helpers.database.account.update.mockResolvedValue()
 
   // step 1: Get form/account/changepassword
-  await request(app).get(`/form/account/changepassword?a=apptest`)
+  await request(app).get(`${endpoint.Form.ChangePassword}?a=apptest`)
   .expect(200)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -100,7 +102,7 @@ test('Prevent update password if currunt password is not matched', async() => {
   helpers.database.account.update.mockResolvedValue()
 
   // step 1: Get form/account/changepassword
-  await request(app).get(`/form/account/changepassword?a=apptest`)
+  await request(app).get(`${endpoint.Form.ChangePassword}?a=apptest`)
   .expect(200)
   .expect('Content-Type', /text\/html/)
   .then(res => {

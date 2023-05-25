@@ -1,7 +1,9 @@
 'use strict'
 
-import 'core-js/stable';
-import 'regenerator-runtime/runtime';
+import 'core-js/stable'
+import 'regenerator-runtime/runtime'
+
+import endpoint from '@realmjs/account-endpoint'
 
 import { app } from '../../testutils/fakeserver'
 import api from '../../../src/api/index'
@@ -59,7 +61,7 @@ test('Request reset password and update the new one', async() => {
   helpers.form.mockReturnValue('200_html_page')
 
   // step 1: POST link/resetpassword
-  await request(app).post('/link/resetpassword')
+  await request(app).post(endpoint.Link.ResetPassword)
   .set('Accept', 'application/json')
   .send({ app: 'apptest', email })
   .expect(200)
@@ -75,7 +77,7 @@ test('Request reset password and update the new one', async() => {
   const token = /^.*&t=(.*)/.exec(link)[1]
 
   // step 2: GET form/account/newpassword
-  await request(app).get(`/form/account/newpassword?a=apptest&t=${token}`)
+  await request(app).get(`${endpoint.Form.NewPassword}?a=apptest&t=${token}`)
   .expect(200)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -86,7 +88,7 @@ test('Request reset password and update the new one', async() => {
   expect(helpers.form.mock.calls[0]).toEqual(['newpassword', { token: token, app: {id: 'apptest', url: 'url'} } ])
 
   // step 3: PUT account/password 
-  await request(app).put('/account/password')
+  await request(app).put(endpoint.Account.Password)
   .set('Accept', 'application/json')
   .send({ app: 'apptest', password: 'password', token: token })
   .expect(200)

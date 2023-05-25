@@ -1,7 +1,9 @@
 'use strict'
 
-import 'core-js/stable';
-import 'regenerator-runtime/runtime';
+import 'core-js/stable'
+import 'regenerator-runtime/runtime'
+
+import endpoint from '@realmjs/account-endpoint'
 
 import { app } from '../../testutils/fakeserver'
 import api from '../../../src/api/index'
@@ -55,7 +57,7 @@ test('SSO a signed in session', async() => {
   })
 
   const cookie = createCookie('uid', 'test')
-  await request(app).get(`/session/sso?a=apptest`)
+  await request(app).get(`${endpoint.SSO}?a=apptest`)
   .set('Cookie', [`${cookie[0]}=${cookie[1]}`])
   .expect(200)
   .expect('Content-Type', /text\/html/)

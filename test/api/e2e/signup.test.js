@@ -1,7 +1,9 @@
 'use strict'
 
-import 'core-js/stable';
-import 'regenerator-runtime/runtime';
+import 'core-js/stable'
+import 'regenerator-runtime/runtime'
+
+import endpoint from '@realmjs/account-endpoint'
 
 import { app } from '../../testutils/fakeserver'
 import api from '../../../src/api/index'
@@ -51,7 +53,7 @@ test('Signup a new account', async() => {
   helpers.hook.onCreatedUser.mockResolvedValue(undefined)
 
   // step 1: GET form/signup/email
-  await request(app).get('/form/signup/email?a=apptest')
+  await request(app).get(`${endpoint.Form.Signup}?a=apptest`)
   .expect(200)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -64,7 +66,7 @@ test('Signup a new account', async() => {
   let apptest = helpers.form.mock.calls[0][1].app.id
 
   // step 2: POST link/signup
-  await request(app).post('/link/signup')
+  await request(app).post(endpoint.Link.Signup)
   .set('Accept', 'application/json')
   .send({ email: 'e2e@test.ext', app: apptest })
   .expect(200)
@@ -85,7 +87,7 @@ test('Signup a new account', async() => {
   const token = /^.*&t=(.*)/.exec(helpers.hook.sendEmail.mock.calls[0][0].data.link)[1]
 
   // step 3: GET form/account/new
-  await request(app).get(`/form/account/new?e=${email}&a=${apptest}&t=${token}`)
+  await request(app).get(`${endpoint.Form.NewAccount}?e=${email}&a=${apptest}&t=${token}`)
   .expect(200)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -96,7 +98,7 @@ test('Signup a new account', async() => {
   expect(helpers.form.mock.calls[1]).toEqual(['newaccount', { email: email, app: {id: 'apptest', url: 'url'} }])
 
   // step 3: POST account
-  await request(app).post('/account')
+  await request(app).post(endpoint.Account.User)
   .set('Accept', 'application/json')
   .send({ email: email, password: 'secret', profile: { phone: '098', fullName: 'Awesome' }, app: apptest })
   .expect(200)
@@ -131,7 +133,7 @@ test('Signup with a registered email', async() => {
   helpers.hook.sendEmail.mockResolvedValue(undefined)
 
   // step 1: GET form/signup/email
-  await request(app).get('/form/signup/email?a=apptest')
+  await request(app).get(`${endpoint.Form.Signup}?a=apptest`)
   .expect(200)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -144,7 +146,7 @@ test('Signup with a registered email', async() => {
   let apptest = helpers.form.mock.calls[0][1].app.id
 
   // step 2: POST link/signup
-  await request(app).post('/link/signup')
+  await request(app).post(endpoint.Link.Signup)
   .set('Accept', 'application/json')
   .send({ email: 'registered@test.ext', app: apptest })
   .expect(409)

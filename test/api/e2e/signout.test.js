@@ -1,7 +1,9 @@
 'use strict'
 
-import 'core-js/stable';
-import 'regenerator-runtime/runtime';
+import 'core-js/stable'
+import 'regenerator-runtime/runtime'
+
+import endpoint from '@realmjs/account-endpoint'
 
 import { app } from '../../testutils/fakeserver'
 import api from '../../../src/api/index'
@@ -48,7 +50,7 @@ test('Signout a session', async() => {
   helpers.form.mockReturnValueOnce('signout_200_html_page')
 
   // step 1: GET form/signout
-  await request(app).get(`/form/signout?a=apptest`)
+  await request(app).get(`${endpoint.Form.Signout}?a=apptest`)
   .expect(200)
   .expect('Content-Type', /text\/html/)
   .then(res => {

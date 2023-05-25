@@ -1,7 +1,9 @@
 'use strict'
 
-import 'core-js/stable';
-import 'regenerator-runtime/runtime';
+import 'core-js/stable'
+import 'regenerator-runtime/runtime'
+
+import endpoint from '@realmjs/account-endpoint'
 
 import { app } from '../../testutils/fakeserver'
 import api from '../../../src/api/index'
@@ -54,7 +56,7 @@ test('Signin with a registered account', async() => {
   })
 
   // step 1: GET form/signin
-  await request(app).get(`/form/signin?a=apptest`)
+  await request(app).get(`${endpoint.Form.Signin}?a=apptest`)
   .expect(200)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -65,7 +67,7 @@ test('Signin with a registered account', async() => {
   expect(helpers.form.mock.calls[0]).toEqual(['signin', { app: { id: 'apptest', url: 'url' } }])
 
   // step 2: POST session
-  await request(app).post('/session')
+  await request(app).post(endpoint.Session)
   .set('Accept', 'application/json')
   .send({ email: 'e2e@test.ext', password: 'correct', app: 'apptest' })
   .expect(200)
@@ -105,7 +107,7 @@ test('Signin with a registered account but wrong password', async() => {
   })
 
   // step 1: GET form/signin
-  await request(app).get(`/form/signin?a=apptest`)
+  await request(app).get(`${endpoint.Form.Signin}?a=apptest`)
   .expect(200)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -116,7 +118,7 @@ test('Signin with a registered account but wrong password', async() => {
   expect(helpers.form.mock.calls[0]).toEqual(['signin', { app: {id: 'apptest', url: 'url'} }])
 
   // step 2: POST session
-  await request(app).post('/session')
+  await request(app).post(endpoint.Session)
   .set('Accept', 'application/json')
   .send({ email: 'e2e@test.ext', password: 'wrong', app: 'apptest' })
   .expect(401)
@@ -141,7 +143,7 @@ test('Signin with a not registered account', async() => {
   helpers.database.account.find.mockResolvedValue(undefined)
 
   // step 1: GET form/signin
-  await request(app).get(`/form/signin?a=apptest`)
+  await request(app).get(`${endpoint.Form.Signin}?a=apptest`)
   .expect(200)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -153,7 +155,7 @@ test('Signin with a not registered account', async() => {
 
 
   // step 2: POST session
-  await request(app).post('/session')
+  await request(app).post(endpoint.Session)
   .set('Accept', 'application/json')
   .send({ email: 'notexist@test.ext', password: 'correct', app: 'apptest' })
   .expect(401)
