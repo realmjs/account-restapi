@@ -96,7 +96,7 @@ const sendEmail = (helpers) => (req, res, next) => {
 
 const onCreatedUserCallback = (helpers) => (req, res, next) => {
   const user = res.locals.user
-  helpers.hook.onCreatedUser({
+  helpers.hook && helpers.hook.onCreatedUser && helpers.hook.onCreatedUser({
     uid: user.uid,
     email: user.email,
     profile: user.profile,
