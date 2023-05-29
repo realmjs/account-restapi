@@ -37,6 +37,13 @@ test('Validate request and response 400', async () => {
     expect(res.text).toMatch(/error_400_html_page/);
   })
 
+  await request(app).get(`${endpoint}?a=apptest`)
+  .expect(400)
+  .expect('Content-Type', /text\/html/)
+  .then(res => {
+    expect(res.text).toMatch(/error_400_html_page/);
+  })
+
   helpers.form.mockClear()
 
 })
@@ -47,7 +54,7 @@ test('Validate App and response 403', async () => {
   helpers.database.app.find.mockResolvedValueOnce(undefined)
   helpers.form.mockReturnValueOnce('error_403_html_page')
 
-  await request(app).get(`${endpoint}?a=apptest`)
+  await request(app).get(`${endpoint}?a=apptest&s=sid`)
   .expect(403)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -68,7 +75,7 @@ test('Render signout form using helpers.form and reponse 200', async () => {
   helpers.database.app.find.mockResolvedValueOnce({ id: 'apptest', url: 'url', realm: 'test', key: 'appkey' })
   helpers.form.mockReturnValueOnce('signout_200_html_page')
 
-  await request(app).get(`${endpoint}?a=apptest`)
+  await request(app).get(`${endpoint}?a=apptest&s=sid`)
   .expect(200)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -76,7 +83,7 @@ test('Render signout form using helpers.form and reponse 200', async () => {
   })
 
   expect(helpers.form).toHaveBeenCalledTimes(1)
-  expect(helpers.form.mock.calls[0]).toEqual(['signout', { app: {id: 'apptest', url: 'url'} }])
+  expect(helpers.form.mock.calls[0]).toEqual(['signout', { app: {id: 'apptest', url: 'url'}, sid: 'sid' }])
 
   helpers.form.mockClear()
   helpers.database.app.find.mockClear()
