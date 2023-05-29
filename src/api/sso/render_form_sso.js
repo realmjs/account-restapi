@@ -8,7 +8,7 @@ const validateRequest = (helpers) => (req, res, next) => {
     next()
   } else {
     res.writeHead( 400, { 'Content-Type': 'text/html' } )
-    res.end(helpers.form('error', { code: 400, reason: 'Bad Request' }))
+    res.end(helpers.form('sso', { code: 400, reason: 'Bad Request' }))
   }
 }
 
@@ -31,12 +31,12 @@ const getSessionFromCookie = (helpers) => (req, res, next) => {
       next();
     } else {
       res.writeHead( 400, { 'Content-Type': 'text/html' } )
-      res.end(helpers.form('error', { code: 400, reason: 'Bad Cookie' }))
+      res.end(helpers.form('sso', { code: 400, reason: 'Bad Cookie', app: {id: res.locals.app.id, url: res.locals.app.url}, }))
     }
   })
   .catch( err => {
     res.writeHead( 400, { 'Content-Type': 'text/html' } )
-    res.end(helpers.form('error', { code: 400, reason: 'Bad Cookie' }))
+    res.end(helpers.form('sso', { code: 400, reason: 'Bad Cookie', app: {id: res.locals.app.id, url: res.locals.app.url}, }))
   })
 
 }
@@ -49,7 +49,7 @@ const getUserAccountByUID = (helpers) => (req, res, next) => {
       next()
     } else {
       res.writeHead( 404, { 'Content-Type': 'text/html' } )
-      res.end(helpers.form('error', { code: 404, reason: 'No account' }))
+      res.end(helpers.form('sso', { code: 404, reason: 'No account', app: {id: res.locals.app.id, url: res.locals.app.url}, }))
     }
   })
   .catch( err =>
