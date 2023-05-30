@@ -72,7 +72,7 @@ test('Validate App and response 403', async () => {
 
 test('Verify cookie and response 400 for bad cookie', async () => {
 
-  helpers.database.app.find.mockResolvedValue({ realm: 'test' })
+  helpers.database.app.find.mockResolvedValue({ id: 'app', url: 'url', realm: 'test' })
   helpers.form.mockReturnValue('error_400_html_page')
 
   await request(app).get(`${endpoint}?a=app`)
@@ -114,10 +114,10 @@ test('Verify cookie and response 400 for bad cookie', async () => {
   })
 
   expect(helpers.form).toHaveBeenCalledTimes(4)
-  expect(helpers.form.mock.calls[0]).toEqual(['error', { code: 400, reason: 'Bad Cookie'}])
-  expect(helpers.form.mock.calls[1]).toEqual(['error', { code: 400, reason: 'Bad Cookie'}])
-  expect(helpers.form.mock.calls[2]).toEqual(['error', { code: 400, reason: 'Bad Cookie'}])
-  expect(helpers.form.mock.calls[3]).toEqual(['error', { code: 400, reason: 'Bad Cookie'}])
+  expect(helpers.form.mock.calls[0]).toEqual(['sso', { code: 400, reason: 'Bad Cookie', app: { id: 'app', url: 'url' } }])
+  expect(helpers.form.mock.calls[1]).toEqual(['sso', { code: 400, reason: 'Bad Cookie', app: { id: 'app', url: 'url' }}])
+  expect(helpers.form.mock.calls[2]).toEqual(['sso', { code: 400, reason: 'Bad Cookie', app: { id: 'app', url: 'url' }}])
+  expect(helpers.form.mock.calls[3]).toEqual(['sso', { code: 400, reason: 'Bad Cookie', app: { id: 'app', url: 'url' }}])
 
   helpers.form.mockClear()
   helpers.database.app.find.mockClear()
@@ -127,7 +127,7 @@ test('Verify cookie and response 400 for bad cookie', async () => {
 
 test('Verify account and response 404 for invalid user', async () => {
 
-  helpers.database.app.find.mockResolvedValue({ realm: 'test' })
+  helpers.database.app.find.mockResolvedValue({ id: 'app', url: 'url', realm: 'test' })
   helpers.form.mockReturnValue('error_404_html_page')
   helpers.database.account.find.mockResolvedValue(undefined)
 
@@ -142,7 +142,7 @@ test('Verify account and response 404 for invalid user', async () => {
   })
 
   expect(helpers.form).toHaveBeenCalledTimes(1)
-  expect(helpers.form.mock.calls[0]).toEqual(['error', { code: 404, reason: 'No account'}])
+  expect(helpers.form.mock.calls[0]).toEqual(['sso', { code: 404, reason: 'No account', app: { id: 'app', url: 'url' }}])
 
   expect(helpers.database.account.find).toHaveBeenCalledTimes(1)
   expect(helpers.database.account.find.mock.calls[0]).toEqual([{ uid: 'uid'}])
