@@ -59,7 +59,23 @@ test('Validate request and response 400', async () => {
 })
 
 
+test('Verify app and response 403', async () => {
+
+  helpers.database.app.find.mockResolvedValueOnce(undefined)
+
+  const token = jwt.sign({ uid: 'uid' }, process.env.EMAIL_VALLIDATION_SIGN_KEY)
+  await request(app).put(endpoint)
+  .set('Accept', 'application/json')
+  .send({ app: 'app', password: { current: 'current', new: 'new' }, token: token })
+  .expect(403)
+
+  helpers.database.app.find.mockClear()
+
+})
+
 test('Decode token and response 400', async () => {
+
+  helpers.database.app.find.mockResolvedValue({ id: 'app', key: 'appkey' })
 
   await request(app).put(endpoint)
   .set('Accept', 'application/json')
@@ -75,27 +91,12 @@ test('Decode token and response 400', async () => {
 })
 
 
-test('Verify app and response 403', async () => {
-
-  helpers.database.app.find.mockResolvedValueOnce(undefined)
-
-  const token = jwt.sign({ uid: 'uid' }, process.env.EMAIL_VALLIDATION_SIGN_KEY)
-  await request(app).put(endpoint)
-  .set('Accept', 'application/json')
-  .send({ app: 'app', password: { current: 'current', new: 'new' }, token: token })
-  .expect(403)
-
-  helpers.database.app.find.mockClear()
-
-})
-
-
 test('Verify uid existence and response 404', async () => {
 
-  helpers.database.app.find.mockResolvedValueOnce({})
+  helpers.database.app.find.mockResolvedValue({ id: 'app', key: 'appkey' })
   helpers.database.account.find.mockResolvedValueOnce(undefined)
 
-  const token = jwt.sign({ uid: 'uid' }, process.env.EMAIL_VALLIDATION_SIGN_KEY)
+  const token = jwt.sign({ uid: 'uid' }, 'appkey')
   await request(app).put(endpoint)
   .set('Accept', 'application/json')
   .send({ app: 'app', password: { current: 'current', new: 'new' }, token: token })
@@ -112,13 +113,13 @@ test('Verify uid existence and response 404', async () => {
 
 test('Verify user realm and response 403', async () => {
 
-  helpers.database.app.find.mockResolvedValueOnce({ realm: 'test' })
+  helpers.database.app.find.mockResolvedValue({ id: 'app', key: 'appkey', realm: 'test' })
   helpers.database.account.find.mockResolvedValueOnce({
     uid: 'uid',
     realms: { other: { roles: ['member'] } }
   })
 
-  const token = jwt.sign({ uid: 'uid' }, process.env.EMAIL_VALLIDATION_SIGN_KEY)
+  const token = jwt.sign({ uid: 'uid' }, 'appkey')
   await request(app).put(endpoint)
   .set('Accept', 'application/json')
   .send({ app: 'app', password: { current: 'current', new: 'new' }, token: token })
@@ -136,7 +137,7 @@ test('Verify user realm and response 403', async () => {
 test('Check current password and response 403', async () => {
 
   const salty = { head: 'head', tail: 'tail' }
-  helpers.database.app.find.mockResolvedValue({ realm: 'test' })
+  helpers.database.app.find.mockResolvedValue({ id: 'app', key: 'appkey', realm: 'test' })
   helpers.database.account.find.mockResolvedValue({
     uid: 'uid',
     salty,
@@ -144,7 +145,7 @@ test('Check current password and response 403', async () => {
     credentials: { password: hashPassword('current', salty) },
   })
 
-  const token = jwt.sign({ uid: 'uid' }, process.env.EMAIL_VALLIDATION_SIGN_KEY)
+  const token = jwt.sign({ uid: 'uid' }, 'appkey')
   await request(app).put(endpoint)
   .set('Accept', 'application/json')
   .send({ app: 'app', password: { current: 'wrong', new: 'new' }, token: token })
@@ -161,7 +162,7 @@ test('Check current password and response 403', async () => {
 test('Change password and response 200', async () => {
 
   const salty = { head: 'head', tail: 'tail' }
-  helpers.database.app.find.mockResolvedValue({ realm: 'test' })
+  helpers.database.app.find.mockResolvedValue({ id: 'app', key: 'appkey', realm: 'test' })
   helpers.database.account.find.mockResolvedValue({
     uid: 'uid',
     salty,
@@ -170,7 +171,7 @@ test('Change password and response 200', async () => {
   })
   helpers.database.account.update.mockResolvedValue()
 
-  const token = jwt.sign({ uid: 'uid' }, process.env.EMAIL_VALLIDATION_SIGN_KEY)
+  const token = jwt.sign({ uid: 'uid' }, 'appkey')
   await request(app).put(endpoint)
   .set('Accept', 'application/json')
   .send({ app: 'app', password: { current: 'current', new: 'new' }, token: token })

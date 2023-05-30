@@ -55,8 +55,10 @@ test('Request change password and update the new one', async() => {
   })
   helpers.database.account.update.mockResolvedValue()
 
+  const token = jwt.sign({ uid: 'uid' }, 'appkey')
+
   // step 1: Get form/account/changepassword
-  await request(app).get(`${endpoint.Form.ChangePassword}?a=apptest`)
+  await request(app).get(`${endpoint.Form.ChangePassword}?a=apptest&t=${token}`)
   .expect(200)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -64,10 +66,9 @@ test('Request change password and update the new one', async() => {
   })
 
   expect(helpers.form).toHaveBeenCalledTimes(1)
-  expect(helpers.form.mock.calls[0]).toEqual(['changepassword', { app: {id: 'apptest', url: 'url'} }])
+  expect(helpers.form.mock.calls[0]).toEqual(['changepassword', { app: {id: 'apptest', url: 'url'}, token }])
 
   // step 2: PUT me/password
-  const token = jwt.sign({ uid: 'uid' }, process.env.EMAIL_VALLIDATION_SIGN_KEY)
   await request(app).put('/me/password')
   .set('Accept', 'application/json')
   .send({ app: 'apptest', password: { current: 'current', new: 'new' }, token: token })
@@ -83,7 +84,7 @@ test('Request change password and update the new one', async() => {
 })
 
 
-test('Prevent update password if currunt password is not matched', async() => {
+test('Prevent update password if current password is not matched', async() => {
 
   helpers.form.mockReturnValue('200_html_page')
   helpers.database.app.find.mockImplementation(
@@ -101,8 +102,10 @@ test('Prevent update password if currunt password is not matched', async() => {
   })
   helpers.database.account.update.mockResolvedValue()
 
+  const token = jwt.sign({ uid: 'uid' }, 'appkey')
+
   // step 1: Get form/account/changepassword
-  await request(app).get(`${endpoint.Form.ChangePassword}?a=apptest`)
+  await request(app).get(`${endpoint.Form.ChangePassword}?a=apptest&t=${token}`)
   .expect(200)
   .expect('Content-Type', /text\/html/)
   .then(res => {
@@ -110,15 +113,14 @@ test('Prevent update password if currunt password is not matched', async() => {
   })
 
   expect(helpers.form).toHaveBeenCalledTimes(1)
-  expect(helpers.form.mock.calls[0]).toEqual(['changepassword', { app: {id: 'apptest', url: 'url'} }])
+  expect(helpers.form.mock.calls[0]).toEqual(['changepassword', { app: {id: 'apptest', url: 'url'}, token }])
 
   // step 2: PUT me/password
-  const token = jwt.sign({ uid: 'uid' }, process.env.EMAIL_VALLIDATION_SIGN_KEY)
   await request(app).put('/me/password')
   .set('Accept', 'application/json')
   .send({ app: 'apptest', password: { current: 'wrong', new: 'new' }, token: token })
   .expect(403)
 
   expect(helpers.database.account.update).not.toHaveBeenCalled()
-  
+
 })

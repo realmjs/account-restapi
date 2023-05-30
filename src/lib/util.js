@@ -9,6 +9,27 @@ function isEmail(str) {
   return re.test(str);
 }
 
+function authenticateRequestMiddleware() {
+  return (req, res, next) => {
+    const bearerHeader = req.headers['authorization']
+    if (typeof bearerHeader === 'undefined') {
+      res.status(401).send('Unauthorized')
+      return;
+    }
+    const bearer = bearerHeader.split(" ")
+    const token = bearer[1]
+    res.locals.token = token
+    jwt.verify(token, res.locals.app.key, (err, decoded) => {
+      if (err) {
+        res.status(401).send('Unauthorized')
+      } else {
+        res.locals.uid = decoded.uid
+        next();
+      }
+    });
+  }
+}
+
 function createSessionToken(user, app) {
   const data = { uid: user.uid };
   if (user.realms[app.realm] && user.realms[app.realm].roles) {
@@ -113,6 +134,7 @@ function verifyRealm(app, user) {
 
 module.exports = {
   isEmail,
+  authenticateRequestMiddleware,
   maskUser,
   cleanCookieMiddleware,
   createCookie,

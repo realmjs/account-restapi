@@ -3,7 +3,7 @@
 const middlewareFactory = require('../../lib/middleware_factory')
 
 const validateRequest = (helpers) => (req, res, next) => {
-  if (req.query.a) {
+  if (req.query.a && req.query.t) {
     next()
   } else {
     res.writeHead( 400, { "Content-Type": "text/html" } )
@@ -19,7 +19,7 @@ const validateAppThenStoreToLocals = middlewareFactory.create(
 
 const final = (helpers) => (req, res) => {
   res.writeHead( 200, { "Content-Type": "text/html" } )
-  res.end(helpers.form('changepassword', { app: {id: res.locals.app.id, url: res.locals.app.url} }))
+  res.end(helpers.form('changepassword', { app: {id: res.locals.app.id, url: res.locals.app.url}, token: req.query.t }))
 }
 
 module.exports = [

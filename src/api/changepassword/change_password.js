@@ -12,8 +12,14 @@ const validateRequest = () => (req, res, next) => {
   }
 }
 
+const validateAppThenStoreToLocals = middlewareFactory.create(
+  'validateAppThenStoreToLocals',
+  'byRequestBody',
+  'change_password.js'
+)
+
 const decodeToken = (helpers) => (req, res, next) => {
-  jwt.verify(req.body.token, process.env.EMAIL_VALLIDATION_SIGN_KEY, (err, decoded) => {
+  jwt.verify(req.body.token, res.locals.app.key, (err, decoded) => {
     if (err || !decoded || !decoded.uid) {
       res.status(400).send('Bad Request')
     } else {
@@ -22,12 +28,6 @@ const decodeToken = (helpers) => (req, res, next) => {
     }
   })
 }
-
-const validateAppThenStoreToLocals = middlewareFactory.create(
-  'validateAppThenStoreToLocals',
-  'byRequestBody',
-  'change_password.js'
-)
 
 const getUserAccountByUid = (helpers) => (req, res, next) => {
   helpers.database.account.find({ uid: res.locals.uid })
@@ -66,8 +66,8 @@ const final = () => (req, res) => res.status(200).json({ message: 'password chan
 
 module.exports = [
   validateRequest,
-  decodeToken,
   validateAppThenStoreToLocals,
+  decodeToken,
   getUserAccountByUid,
   checkPassword,
   changePassword,
