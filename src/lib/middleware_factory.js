@@ -29,7 +29,7 @@ function validateAppThenStoreToLocals(checkInRequestType = 'byRequestQuery', fil
 
   function validateAppInRequestQueryMiddleware(filename) {
     return (helpers) => (req, res, next) => {
-      helpers.database.app.find({ id: req.query.a })
+      helpers.Database.App.find({ id: req.query.a })
       .then(app => {
         if (app) {
           res.locals.app = app
@@ -47,7 +47,7 @@ function validateAppThenStoreToLocals(checkInRequestType = 'byRequestQuery', fil
 
   function validateAppInRequestBodyByMiddleware(filename) {
     return (helpers) => (req, res, next) => {
-      helpers.database.app.find({ id: req.body.app })
+      helpers.Database.App.find({ id: req.body.app })
       .then(app => {
         if (app) {
           res.locals.app = app

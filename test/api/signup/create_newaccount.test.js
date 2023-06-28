@@ -14,11 +14,11 @@ api.add(endpoint, { post: funcs })
 app.use('/', api.generate());
 
 const helpers = {
-  database: {
-    app: {
+  Database: {
+    App: {
       find: jest.fn(),
     },
-    account: {
+    Account: {
       find: jest.fn(),
       insert: jest.fn(),
     }
@@ -71,45 +71,45 @@ test('Validate request and response 400 if missing parameters', async () => {
 
 test('Response 403 if verify app failed', async () => {
 
-  helpers.database.app.find.mockResolvedValueOnce(undefined)
+  helpers.Database.App.find.mockResolvedValueOnce(undefined)
 
   await request(app).post(endpoint)
   .set('Accept', 'application/json')
   .send({ email: 'email@exists.test', password: 'secret', profile: { fullName: 'Awesome' }, app: 'invalid' })
   .expect(403)
 
-  expect(helpers.database.app.find).toHaveBeenCalledTimes(1)
-  expect(helpers.database.app.find.mock.calls[0]).toEqual([{id: 'invalid'}])
+  expect(helpers.Database.App.find).toHaveBeenCalledTimes(1)
+  expect(helpers.Database.App.find.mock.calls[0]).toEqual([{id: 'invalid'}])
 
-  helpers.database.app.find.mockClear()
+  helpers.Database.App.find.mockClear()
 
 })
 
 
 test('Response 409 if email is already registered', async () => {
 
-  helpers.database.app.find.mockResolvedValueOnce({})
-  helpers.database.account.find.mockResolvedValueOnce({ email: 'email@exists.test' })
+  helpers.Database.App.find.mockResolvedValueOnce({})
+  helpers.Database.Account.find.mockResolvedValueOnce({ email: 'email@exists.test' })
 
   await request(app).post(endpoint)
   .set('Accept', 'application/json')
   .send({ email: 'email@exists.test', password: 'secret', profile: { phone: '098', fullName: 'Awesome' }, app: 'test' })
   .expect(409)
 
-  expect(helpers.database.account.find).toHaveBeenCalledTimes(1)
-  expect(helpers.database.account.find.mock.calls[0]).toEqual([{ email: 'email@exists.test' }])
+  expect(helpers.Database.Account.find).toHaveBeenCalledTimes(1)
+  expect(helpers.Database.Account.find.mock.calls[0]).toEqual([{ email: 'email@exists.test' }])
 
-  helpers.database.account.find.mockClear()
-  helpers.database.app.find.mockClear()
+  helpers.Database.Account.find.mockClear()
+  helpers.Database.App.find.mockClear()
 
 })
 
 
 test('Create new account, call helpers.hook to send email and callback', async () => {
 
-  helpers.database.app.find.mockResolvedValueOnce({ realm: 'test', key: 'appkey' })
-  helpers.database.account.find.mockResolvedValue(undefined)
-  helpers.database.account.insert.mockResolvedValue(undefined)
+  helpers.Database.App.find.mockResolvedValueOnce({ realm: 'test', key: 'appkey' })
+  helpers.Database.Account.find.mockResolvedValue(undefined)
+  helpers.Database.Account.insert.mockResolvedValue(undefined)
 
   await request(app).post(endpoint)
   .set('Accept', 'application/json')
@@ -128,8 +128,8 @@ test('Create new account, call helpers.hook to send email and callback', async (
     })
   )
 
-  expect(helpers.database.account.insert).toHaveBeenCalledTimes(1)
-  expect(helpers.database.account.insert.mock.calls[0]).toEqual([{
+  expect(helpers.Database.Account.insert).toHaveBeenCalledTimes(1)
+  expect(helpers.Database.Account.insert.mock.calls[0]).toEqual([{
     uid: expect.any(String),
     email: 'email@test.ext',
     credentials: { password: expect.any(String) },
@@ -154,37 +154,37 @@ test('Create new account, call helpers.hook to send email and callback', async (
     realms: { test: { roles: ['member'] } }
   }])
 
-  helpers.database.account.find.mockClear()
-  helpers.database.account.insert.mockClear()
+  helpers.Database.Account.find.mockClear()
+  helpers.Database.Account.insert.mockClear()
   helpers.hook.sendEmail.mockClear()
   helpers.hook.onCreatedUser.mockClear()
-  helpers.database.app.find.mockClear()
+  helpers.Database.App.find.mockClear()
 
 })
 
 
 test('Guarantee no dupplicate uid when creating account', async () => {
 
-  helpers.database.app.find.mockResolvedValueOnce({ realm: 'test', key: 'appkey' })
-  helpers.database.account.find
+  helpers.Database.App.find.mockResolvedValueOnce({ realm: 'test', key: 'appkey' })
+  helpers.Database.Account.find
   .mockResolvedValueOnce(undefined)  // find email
   .mockResolvedValueOnce({})         // find uid
   .mockResolvedValueOnce(undefined)  // second try with another uid
-  helpers.database.account.insert.mockResolvedValue(undefined)
+  helpers.Database.Account.insert.mockResolvedValue(undefined)
 
   await request(app).post(endpoint)
   .set('Accept', 'application/json')
   .send({ email: 'email@test.ext', password: 'secret', profile: { phone: '098', fullName: 'Awesome' }, app: 'test' })
   .expect(200)
 
-  expect(helpers.database.account.find).toHaveBeenCalledTimes(3)
-  expect(helpers.database.account.find.mock.calls[1]).toEqual([{ uid: expect.any(String) }])
-  expect(helpers.database.account.find.mock.calls[2]).toEqual([{ uid: expect.any(String) }])
+  expect(helpers.Database.Account.find).toHaveBeenCalledTimes(3)
+  expect(helpers.Database.Account.find.mock.calls[1]).toEqual([{ uid: expect.any(String) }])
+  expect(helpers.Database.Account.find.mock.calls[2]).toEqual([{ uid: expect.any(String) }])
 
-  helpers.database.account.find.mockClear()
-  helpers.database.account.insert.mockClear()
+  helpers.Database.Account.find.mockClear()
+  helpers.Database.Account.insert.mockClear()
   helpers.hook.sendEmail.mockClear()
   helpers.hook.onCreatedUser.mockClear()
-  helpers.database.app.find.mockClear()
+  helpers.Database.App.find.mockClear()
 
 })

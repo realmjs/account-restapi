@@ -42,7 +42,7 @@ const getSessionFromCookie = (helpers) => (req, res, next) => {
 }
 
 const getUserAccountByUID = (helpers) => (req, res, next) => {
-  helpers.database.account.find({ uid: res.locals.uid })
+  helpers.Database.Account.find({ uid: res.locals.uid })
   .then( user => {
     if (user) {
       res.locals.user = user

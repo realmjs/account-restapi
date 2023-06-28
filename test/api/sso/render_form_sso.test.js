@@ -19,11 +19,11 @@ beforeAll( () => setupEnvironmentVariables() )
 afterAll( () => clearEnvironmentVariables() )
 
 const helpers = {
-  database: {
-    app: {
+  Database: {
+    App: {
       find: jest.fn()
     },
-    account: {
+    Account: {
       find: jest.fn()
     }
   },
@@ -51,7 +51,7 @@ test('Validate request and response 400', async () => {
 
 test('Validate App and response 403', async () => {
 
-  helpers.database.app.find.mockResolvedValueOnce(undefined)
+  helpers.Database.App.find.mockResolvedValueOnce(undefined)
   helpers.form.mockReturnValueOnce('error_403_html_page')
 
   await request(app).get(`${endpoint}?a=app`)
@@ -65,14 +65,14 @@ test('Validate App and response 403', async () => {
   expect(helpers.form.mock.calls[0]).toEqual(['error', { code: 403, reason: 'Permission Denied'}])
 
   helpers.form.mockClear()
-  helpers.database.app.find.mockClear()
+  helpers.Database.App.find.mockClear()
 
 })
 
 
 test('Verify cookie and response 400 for bad cookie', async () => {
 
-  helpers.database.app.find.mockResolvedValue({ id: 'app', url: 'url', realm: 'test' })
+  helpers.Database.App.find.mockResolvedValue({ id: 'app', url: 'url', realm: 'test' })
   helpers.form.mockReturnValue('error_400_html_page')
 
   await request(app).get(`${endpoint}?a=app`)
@@ -120,16 +120,16 @@ test('Verify cookie and response 400 for bad cookie', async () => {
   expect(helpers.form.mock.calls[3]).toEqual(['sso', { code: 400, reason: 'Bad Cookie', app: { id: 'app', url: 'url' }}])
 
   helpers.form.mockClear()
-  helpers.database.app.find.mockClear()
+  helpers.Database.App.find.mockClear()
 
 })
 
 
 test('Verify account and response 404 for invalid user', async () => {
 
-  helpers.database.app.find.mockResolvedValue({ id: 'app', url: 'url', realm: 'test' })
+  helpers.Database.App.find.mockResolvedValue({ id: 'app', url: 'url', realm: 'test' })
   helpers.form.mockReturnValue('error_404_html_page')
-  helpers.database.account.find.mockResolvedValue(undefined)
+  helpers.Database.Account.find.mockResolvedValue(undefined)
 
   const cookie = createCookie('uid', 'test')
   await request(app).get(`${endpoint}?a=app`)
@@ -144,12 +144,12 @@ test('Verify account and response 404 for invalid user', async () => {
   expect(helpers.form).toHaveBeenCalledTimes(1)
   expect(helpers.form.mock.calls[0]).toEqual(['sso', { code: 404, reason: 'No account', app: { id: 'app', url: 'url' }}])
 
-  expect(helpers.database.account.find).toHaveBeenCalledTimes(1)
-  expect(helpers.database.account.find.mock.calls[0]).toEqual([{ uid: 'uid'}])
+  expect(helpers.Database.Account.find).toHaveBeenCalledTimes(1)
+  expect(helpers.Database.Account.find.mock.calls[0]).toEqual([{ uid: 'uid'}])
 
   helpers.form.mockClear()
-  helpers.database.app.find.mockClear()
-  helpers.database.account.find.mockClear()
+  helpers.Database.App.find.mockClear()
+  helpers.Database.Account.find.mockClear()
 
 })
 
@@ -157,9 +157,9 @@ test('Verify account and response 404 for invalid user', async () => {
 import jwt from 'jsonwebtoken'
 test('Reponse signin session for valid request', async () => {
 
-  helpers.database.app.find.mockResolvedValue({ id: 'apptest', url: 'url', realm: 'test', key: 'appkey' })
+  helpers.Database.App.find.mockResolvedValue({ id: 'apptest', url: 'url', realm: 'test', key: 'appkey' })
   helpers.form.mockReturnValue('sso_200_html_page')
-  helpers.database.account.find.mockResolvedValue({
+  helpers.Database.Account.find.mockResolvedValue({
     uid: 'uid',
     email: 'email@test.ext',
     profile: { phone: '098', fullName: 'Awesome' },
@@ -191,7 +191,7 @@ test('Reponse signin session for valid request', async () => {
   }])
 
   helpers.form.mockClear()
-  helpers.database.app.find.mockClear()
-  helpers.database.account.find.mockClear()
+  helpers.Database.App.find.mockClear()
+  helpers.Database.Account.find.mockClear()
 
 })

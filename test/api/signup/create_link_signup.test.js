@@ -14,11 +14,11 @@ api.add(endpoint, { post: funcs })
 app.use('/', api.generate());
 
 const helpers = {
-  database: {
-    app: {
+  Database: {
+    App: {
       find: jest.fn()
     },
-    account: {
+    Account: {
       find: jest.fn()
     }
   },
@@ -73,17 +73,17 @@ test('Validate request and response 400 for invalid email', async () => {
 
 test('Response 403 if verify app failed', async () => {
 
-  helpers.database.app.find.mockResolvedValueOnce(undefined)
+  helpers.Database.App.find.mockResolvedValueOnce(undefined)
 
   await request(app).post(endpoint)
   .set('Accept', 'application/json')
   .send({ email: 'email@exists.test', app: 'invalid' })
   .expect(403)
 
-  expect(helpers.database.app.find).toHaveBeenCalledTimes(1)
-  expect(helpers.database.app.find.mock.calls[0]).toEqual([{id: 'invalid'}])
+  expect(helpers.Database.App.find).toHaveBeenCalledTimes(1)
+  expect(helpers.Database.App.find.mock.calls[0]).toEqual([{id: 'invalid'}])
 
-  helpers.database.app.find.mockClear()
+  helpers.Database.App.find.mockClear()
 
 })
 
@@ -91,20 +91,20 @@ test('Response 403 if verify app failed', async () => {
 test('Verify email and reponse 409 if already exists', async () => {
 
   // setup
-  helpers.database.app.find.mockResolvedValueOnce({ url: 'url' })
-  helpers.database.account.find.mockResolvedValueOnce({ email: 'email@exists.test' })
+  helpers.Database.App.find.mockResolvedValueOnce({ url: 'url' })
+  helpers.Database.Account.find.mockResolvedValueOnce({ email: 'email@exists.test' })
 
   await request(app).post(endpoint)
   .set('Accept', 'application/json')
   .send({ email: 'email@exists.test', app: 'app' })
   .expect(409)
 
-  expect(helpers.database.account.find).toHaveBeenCalledTimes(1)
-  expect(helpers.database.account.find.mock.calls[0]).toEqual([{ email: 'email@exists.test' }])
+  expect(helpers.Database.Account.find).toHaveBeenCalledTimes(1)
+  expect(helpers.Database.Account.find.mock.calls[0]).toEqual([{ email: 'email@exists.test' }])
 
   // tear down
-  helpers.database.account.find.mockClear()
-  helpers.database.app.find.mockClear()
+  helpers.Database.Account.find.mockClear()
+  helpers.Database.App.find.mockClear()
 
 })
 
@@ -115,8 +115,8 @@ import { hashEmail } from '../../../src/lib/util';
 test('Create register link and pass it to helpers.hook.sendEmail, then reponse 200', async () => {
 
   //  setup
-  helpers.database.app.find.mockResolvedValue({ url: 'url' })
-  helpers.database.account.find.mockResolvedValueOnce(undefined)
+  helpers.Database.App.find.mockResolvedValue({ url: 'url' })
+  helpers.Database.Account.find.mockResolvedValueOnce(undefined)
   helpers.hook.sendEmail.mockResolvedValueOnce(undefined)
 
   const email = 'email@unit.test'
@@ -141,8 +141,8 @@ test('Create register link and pass it to helpers.hook.sendEmail, then reponse 2
   }])
 
   // tear down
-  helpers.database.account.find.mockClear()
+  helpers.Database.Account.find.mockClear()
   helpers.hook.sendEmail.mockClear()
-  helpers.database.app.find.mockClear()
+  helpers.Database.App.find.mockClear()
 
 })

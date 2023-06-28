@@ -24,7 +24,7 @@ const validateAppThenStoreToLocals = middlewareFactory.create(
 )
 
 const checkEmailExistence = (helpers) => (req, res, next) => {
-  helpers.database.account.find({ email: req.body.email })
+  helpers.Database.Account.find({ email: req.body.email })
   .then( user => {
     if (user) {
       res.status(409).send('Email is registered')
@@ -41,7 +41,7 @@ const createUID = (helpers) => (req, res, next) => {
   generateUID()
   function generateUID() {
     const uid = uuid()
-    helpers.database.account.find({ uid })
+    helpers.Database.Account.find({ uid })
     .then(user => {
       if (user) {
         generateUID()
@@ -70,7 +70,7 @@ const createUser = (helpers) => (req, res, next) => {
   }
   res.locals.user = user
 
-  helpers.database.account.insert(user)
+  helpers.Database.Account.insert(user)
   .then(user => next())
   .catch( err =>
     helpers.alert && alertCrashedEvent(helpers.alert, 'create_newaccount.js', 'createUser', err)

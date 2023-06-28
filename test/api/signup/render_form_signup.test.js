@@ -17,8 +17,8 @@ beforeEach(
 );
 
 const helpers = {
-  database: {
-    app: {
+  Database: {
+    App: {
       find: jest.fn()
     },
   },
@@ -49,7 +49,7 @@ test('Validate Request parameter', async () => {
 
 test('Response 403 if validating app failed', async () => {
 
-  helpers.database.app.find.mockResolvedValueOnce(undefined)
+  helpers.Database.App.find.mockResolvedValueOnce(undefined)
   helpers.form.mockReturnValueOnce('error_403_html_page')
 
   await request(app).get(`${endpoint}?a=apptest`)
@@ -63,14 +63,14 @@ test('Response 403 if validating app failed', async () => {
   expect(helpers.form.mock.calls[0]).toEqual(['error', { code: 403, reason: 'Permission Denied'}])
 
   helpers.form.mockClear()
-  helpers.database.app.find.mockClear()
+  helpers.Database.App.find.mockClear()
 
 })
 
 
 test('Response signup form returned by helpers.form', async () => {
 
-  helpers.database.app.find.mockResolvedValueOnce({ id: 'apptest', url: 'url', realm: 'test', key: 'appkey' })
+  helpers.Database.App.find.mockResolvedValueOnce({ id: 'apptest', url: 'url', realm: 'test', key: 'appkey' })
   helpers.form.mockReturnValueOnce('mock_html_page')
 
   await request(app).get(`${endpoint}?a=apptest`)
@@ -84,6 +84,6 @@ test('Response signup form returned by helpers.form', async () => {
   expect(helpers.form.mock.calls[0]).toEqual(['signup', { app: { id: 'apptest', url: 'url' } }])
 
   helpers.form.mockClear()
-  helpers.database.app.find.mockClear()
+  helpers.Database.App.find.mockClear()
 
 })

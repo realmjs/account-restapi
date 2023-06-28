@@ -15,11 +15,11 @@ api.add(endpoint, { put: funcs })
 app.use('/', api.generate());
 
 const helpers = {
-  database: {
-    app: {
+  Database: {
+    App: {
       find: jest.fn(),
     },
-    account: {
+    Account: {
       find: jest.fn(),
       update: jest.fn(),
     }
@@ -74,7 +74,7 @@ test('Decode token and reponse 400', async () => {
 
 test('Verify app and response 403', async () => {
 
-  helpers.database.app.find.mockResolvedValueOnce(undefined)
+  helpers.Database.App.find.mockResolvedValueOnce(undefined)
 
   const token = jwt.sign({ uid: 'uid' }, process.env.EMAIL_VALLIDATION_SIGN_KEY)
   await request(app).put(endpoint)
@@ -82,15 +82,15 @@ test('Verify app and response 403', async () => {
   .send({ app: 'app', password: 'password', token: token })
   .expect(403)
 
-  helpers.database.app.find.mockClear()
+  helpers.Database.App.find.mockClear()
 
 })
 
 
 test('Verify uid existence and response 404', async () => {
 
-  helpers.database.app.find.mockResolvedValueOnce({})
-  helpers.database.account.find.mockResolvedValueOnce(undefined)
+  helpers.Database.App.find.mockResolvedValueOnce({})
+  helpers.Database.Account.find.mockResolvedValueOnce(undefined)
 
   const token = jwt.sign({ uid: 'uid' }, process.env.EMAIL_VALLIDATION_SIGN_KEY)
   await request(app).put(endpoint)
@@ -98,19 +98,19 @@ test('Verify uid existence and response 404', async () => {
   .send({ app: 'app', password: 'password', token: token })
   .expect(404)
 
-  expect(helpers.database.account.find).toHaveBeenCalledTimes(1)
-  expect(helpers.database.account.find.mock.calls[0]).toEqual([{ uid: 'uid' }])
+  expect(helpers.Database.Account.find).toHaveBeenCalledTimes(1)
+  expect(helpers.Database.Account.find.mock.calls[0]).toEqual([{ uid: 'uid' }])
 
-  helpers.database.app.find.mockClear()
-  helpers.database.account.find.mockClear()
+  helpers.Database.App.find.mockClear()
+  helpers.Database.Account.find.mockClear()
 
 })
 
 
 test('Verify user realm and response 403', async () => {
 
-  helpers.database.app.find.mockResolvedValueOnce({ realm: 'test' })
-  helpers.database.account.find.mockResolvedValueOnce({
+  helpers.Database.App.find.mockResolvedValueOnce({ realm: 'test' })
+  helpers.Database.Account.find.mockResolvedValueOnce({
     uid: 'uid',
     realms: { other: { roles: ['member'] } }
   })
@@ -121,8 +121,8 @@ test('Verify user realm and response 403', async () => {
   .send({ app: 'app', password: 'password', token: token })
   .expect(404)
 
-  helpers.database.app.find.mockClear()
-  helpers.database.account.find.mockClear()
+  helpers.Database.App.find.mockClear()
+  helpers.Database.Account.find.mockClear()
 
 })
 
@@ -130,13 +130,13 @@ import { hashPassword } from '../../../src/lib/util'
 test('Change password and response 200', async () => {
 
   const salty = { head: 'head', tail: 'tail' }
-  helpers.database.app.find.mockResolvedValue({ realm: 'test' })
-  helpers.database.account.find.mockResolvedValue({
+  helpers.Database.App.find.mockResolvedValue({ realm: 'test' })
+  helpers.Database.Account.find.mockResolvedValue({
     uid: 'uid',
     salty,
     realms: { test: { roles: ['member'] } }
   })
-  helpers.database.account.update.mockResolvedValue()
+  helpers.Database.Account.update.mockResolvedValue()
 
   const token = jwt.sign({ uid: 'uid' }, process.env.EMAIL_VALLIDATION_SIGN_KEY)
   await request(app).put(endpoint)
@@ -144,15 +144,15 @@ test('Change password and response 200', async () => {
   .send({ app: 'app', password: 'password', token: token })
   .expect(200)
 
-  expect(helpers.database.account.update).toHaveBeenCalledTimes(1)
-  expect(helpers.database.account.update.mock.calls[0]).toEqual([
+  expect(helpers.Database.Account.update).toHaveBeenCalledTimes(1)
+  expect(helpers.Database.Account.update.mock.calls[0]).toEqual([
     { uid: 'uid' },
     'credentials.password',
     hashPassword('password', salty)
   ])
 
-  helpers.database.app.find.mockClear()
-  helpers.database.account.find.mockClear()
-  helpers.database.account.update.mockClear()
+  helpers.Database.App.find.mockClear()
+  helpers.Database.Account.find.mockClear()
+  helpers.Database.Account.update.mockClear()
 
 })

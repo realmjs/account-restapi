@@ -14,11 +14,11 @@ api.add(endpoint, { post: funcs })
 app.use('/', api.generate());
 
 const helpers = {
-  database: {
-    app: {
+  Database: {
+    App: {
       find: jest.fn()
     },
-    account: {
+    Account: {
       find: jest.fn()
     }
   },
@@ -54,22 +54,22 @@ test('Validate request and response 400', async () => {
 
 test('Validate app and response 403', async () => {
 
-  helpers.database.app.find.mockResolvedValueOnce(undefined)
+  helpers.Database.App.find.mockResolvedValueOnce(undefined)
 
   await request(app).post(endpoint)
   .set('Accept', 'application/json')
   .send({ app: 'app', email: 'email@domain.ext' })
   .expect(403)
 
-  helpers.database.app.find.mockClear()
+  helpers.Database.App.find.mockClear()
 
 })
 
 
 test('Verify email and response 404', async () => {
 
-  helpers.database.app.find.mockResolvedValueOnce({})
-  helpers.database.account.find.mockResolvedValueOnce(undefined)
+  helpers.Database.App.find.mockResolvedValueOnce({})
+  helpers.Database.Account.find.mockResolvedValueOnce(undefined)
 
 
   await request(app).post(endpoint)
@@ -77,16 +77,16 @@ test('Verify email and response 404', async () => {
   .send({ app: 'app', email: 'notexistemail@domain.ext' })
   .expect(404)
 
-  helpers.database.app.find.mockClear()
-  helpers.database.account.find.mockClear()
+  helpers.Database.App.find.mockClear()
+  helpers.Database.Account.find.mockClear()
 
 })
 
 
 test('Verify realms and response 403', async () => {
 
-  helpers.database.app.find.mockResolvedValueOnce({realm: 'test', key: 'appkey'})
-  helpers.database.account.find.mockResolvedValueOnce({
+  helpers.Database.App.find.mockResolvedValueOnce({realm: 'test', key: 'appkey'})
+  helpers.Database.Account.find.mockResolvedValueOnce({
     uid: 'uid',
     realms: { other: { roles: ['member'] } }
   })
@@ -97,8 +97,8 @@ test('Verify realms and response 403', async () => {
   .send({ app: 'app', email: 'notexistemail@domain.ext' })
   .expect(403)
 
-  helpers.database.app.find.mockClear()
-  helpers.database.account.find.mockClear()
+  helpers.Database.App.find.mockClear()
+  helpers.Database.Account.find.mockClear()
 
 })
 
@@ -108,8 +108,8 @@ test('Generate reset link and call send email hook', async () => {
 
   const email = 'email@unit.test'
 
-  helpers.database.app.find.mockResolvedValue({realm: 'test', url: 'url'})
-  helpers.database.account.find.mockResolvedValue({
+  helpers.Database.App.find.mockResolvedValue({realm: 'test', url: 'url'})
+  helpers.Database.Account.find.mockResolvedValue({
     uid: 'uid',
     profile: { fullName: 'Awesome' },
     realms: { test: { roles: ['member'] } }
@@ -134,8 +134,8 @@ test('Generate reset link and call send email hook', async () => {
     data: { link: expect.stringMatching(`a=app&t=${token}`) },
   }])
 
-  helpers.database.app.find.mockClear()
-  helpers.database.account.find.mockClear()
+  helpers.Database.App.find.mockClear()
+  helpers.Database.Account.find.mockClear()
   helpers.hook.sendEmail.mockClear()
 
 })

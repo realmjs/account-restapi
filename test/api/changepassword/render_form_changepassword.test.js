@@ -18,11 +18,11 @@ beforeAll( () => setupEnvironmentVariables() )
 afterAll( () => clearEnvironmentVariables() )
 
 const helpers = {
-  database: {
-    app: {
+  Database: {
+    App: {
       find: jest.fn()
     },
-    account: {
+    Account: {
       find: jest.fn()
     }
   },
@@ -70,7 +70,7 @@ test('Validate request and response 400', async () => {
 test('Verify app and response 403', async () => {
 
   helpers.form.mockReturnValue('error_403_html_page')
-  helpers.database.app.find.mockResolvedValueOnce(undefined)
+  helpers.Database.App.find.mockResolvedValueOnce(undefined)
 
   await request(app).get(`${endpoint}?a=apptest&t=token`)
   .expect(403)
@@ -83,7 +83,7 @@ test('Verify app and response 403', async () => {
   expect(helpers.form.mock.calls[0]).toEqual(['error', { code: 403, reason: 'Permission Denied'}])
 
   helpers.form.mockClear()
-  helpers.database.app.find.mockClear()
+  helpers.Database.App.find.mockClear()
 
 })
 
@@ -91,7 +91,7 @@ test('Verify app and response 403', async () => {
 test('Render from and response 200', async () => {
 
   helpers.form.mockReturnValue('200_html_page')
-  helpers.database.app.find.mockResolvedValueOnce({ id: 'apptest', url: 'url', realm: 'test', key: 'appkey' })
+  helpers.Database.App.find.mockResolvedValueOnce({ id: 'apptest', url: 'url', realm: 'test', key: 'appkey' })
 
   await request(app).get(`${endpoint}?a=apptest&t=token`)
   .expect(200)
@@ -104,7 +104,7 @@ test('Render from and response 200', async () => {
   expect(helpers.form.mock.calls[0]).toEqual(['changepassword', { app: {id: 'apptest', url: 'url'}, token: 'token' }])
 
   helpers.form.mockClear()
-  helpers.database.app.find.mockClear()
+  helpers.Database.App.find.mockClear()
 
 })
 

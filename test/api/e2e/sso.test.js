@@ -11,11 +11,11 @@ import api from '../../../src/api/index'
 import { hashPassword } from '../../../src/lib/util'
 
 const helpers = {
-  database: {
-    app: {
+  Database: {
+    App: {
       find: jest.fn()
     },
-    account: {
+    Account: {
       find: jest.fn()
     },
   },
@@ -39,14 +39,14 @@ afterAll( () => clearEnvironmentVariables() )
 
 test('SSO a signed in session', async() => {
 
-  helpers.database.app.find.mockImplementation(
+  helpers.Database.App.find.mockImplementation(
     ({id}) => id === 'apptest' || id === 'account' ?
                 Promise.resolve({ id: id, url: 'url', realm: 'test', key: 'appkey' })
               :
                 Promise.resolve(undefined)
   )
   helpers.form.mockReturnValue('sso_200_html_page')
-  helpers.database.account.find.mockResolvedValue({
+  helpers.Database.Account.find.mockResolvedValue({
     uid: 'uid',
     email: 'e2e@test.ext',
     profile: { phone: '098', fullName: 'Awesome' },

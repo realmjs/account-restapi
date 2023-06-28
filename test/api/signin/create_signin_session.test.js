@@ -18,11 +18,11 @@ beforeAll( () => setupEnvironmentVariables() )
 afterAll( () => clearEnvironmentVariables() )
 
 const helpers = {
-  database: {
-    app: {
+  Database: {
+    App: {
       find: jest.fn()
     },
-    account: {
+    Account: {
       find: jest.fn()
     },
   },
@@ -55,25 +55,25 @@ test('Validate request and response 400', async () => {
 
 test('Validate app and response 403', async () => {
 
-  helpers.database.app.find.mockResolvedValueOnce(undefined)
+  helpers.Database.App.find.mockResolvedValueOnce(undefined)
 
   await request(app).post(endpoint)
   .set('Accept', 'application/json')
   .send({ email: 'email@exists.test', password: 'secret', app: 'invalid' })
   .expect(403)
 
-  expect(helpers.database.app.find).toHaveBeenCalledTimes(1)
-  expect(helpers.database.app.find.mock.calls[0]).toEqual([{id: 'invalid'}])
+  expect(helpers.Database.App.find).toHaveBeenCalledTimes(1)
+  expect(helpers.Database.App.find.mock.calls[0]).toEqual([{id: 'invalid'}])
 
-  helpers.database.app.find.mockClear()
+  helpers.Database.App.find.mockClear()
 
 })
 
 
 test('Check account existance and response 401', async () => {
 
-  helpers.database.app.find.mockResolvedValueOnce({})
-  helpers.database.account.find.mockResolvedValueOnce(undefined)
+  helpers.Database.App.find.mockResolvedValueOnce({})
+  helpers.Database.Account.find.mockResolvedValueOnce(undefined)
 
   await request(app).post(endpoint)
   .set('Accept', 'application/json')
@@ -84,18 +84,18 @@ test('Check account existance and response 401', async () => {
     expect(res.header).not.toHaveProperty('set-cookie')
   })
 
-  expect(helpers.database.account.find).toHaveBeenCalledTimes(1)
-  expect(helpers.database.account.find.mock.calls[0]).toEqual([{ email: 'email@exists.test' }])
+  expect(helpers.Database.Account.find).toHaveBeenCalledTimes(1)
+  expect(helpers.Database.Account.find.mock.calls[0]).toEqual([{ email: 'email@exists.test' }])
 
-  helpers.database.app.find.mockClear()
-  helpers.database.account.find.mockClear()
+  helpers.Database.App.find.mockClear()
+  helpers.Database.Account.find.mockClear()
 
 })
 
 test('Check user realms and response 401', async () => {
 
-  helpers.database.app.find.mockResolvedValue({ realm: 'test' })
-  helpers.database.account.find.mockResolvedValueOnce({ realms: {} })
+  helpers.Database.App.find.mockResolvedValue({ realm: 'test' })
+  helpers.Database.Account.find.mockResolvedValueOnce({ realms: {} })
                                .mockResolvedValueOnce({ realms: { dev: ['member'] } })
 
   await request(app).post(endpoint)
@@ -112,16 +112,16 @@ test('Check user realms and response 401', async () => {
     expect(res.header).not.toHaveProperty('set-cookie')
   })
 
-  helpers.database.app.find.mockClear()
-  helpers.database.account.find.mockClear()
+  helpers.Database.App.find.mockClear()
+  helpers.Database.Account.find.mockClear()
 
 })
 
 
 test('Check password and response 401', async () => {
 
-  helpers.database.app.find.mockResolvedValue({ realm: 'test' })
-  helpers.database.account.find.mockResolvedValueOnce({
+  helpers.Database.App.find.mockResolvedValue({ realm: 'test' })
+  helpers.Database.Account.find.mockResolvedValueOnce({
     realms: { test: ['member'] },
     credentials: { password: 'hashed' },
     salty: { head: 'head', tail: 'tail' }
@@ -136,8 +136,8 @@ test('Check password and response 401', async () => {
     expect(res.header).not.toHaveProperty('set-cookie')
   })
 
-  helpers.database.app.find.mockClear()
-  helpers.database.account.find.mockClear()
+  helpers.Database.App.find.mockClear()
+  helpers.Database.Account.find.mockClear()
 
 })
 
@@ -146,8 +146,8 @@ import jwt from 'jsonwebtoken'
 import { hashPassword } from '../../../src/lib/util'
 test('Authenticate with response code 201', async () => {
 
-  helpers.database.app.find.mockResolvedValue({ realm: 'test', key: 'key' })
-  helpers.database.account.find.mockResolvedValueOnce({
+  helpers.Database.App.find.mockResolvedValue({ realm: 'test', key: 'key' })
+  helpers.Database.Account.find.mockResolvedValueOnce({
     uid: 'uid',
     email: 'email@test.ext',
     profile: { phone: '098', fullName: 'Awesome' },
@@ -174,7 +174,7 @@ test('Authenticate with response code 201', async () => {
     })
   )
 
-  helpers.database.app.find.mockClear()
-  helpers.database.account.find.mockClear()
+  helpers.Database.App.find.mockClear()
+  helpers.Database.Account.find.mockClear()
 
 })

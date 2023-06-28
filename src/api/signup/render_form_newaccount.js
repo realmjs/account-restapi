@@ -41,7 +41,7 @@ const validateAppThenStoreToLocals = middlewareFactory.create(
 )
 
 const checkEmailExistence = (helpers) => (req, res, next) => {
-  helpers.database.account.find({ email: req.query.e })
+  helpers.Database.Account.find({ email: req.query.e })
   .then( user => {
     if (user) {
       res.writeHead( 409, { "Content-Type": "text/html" } )

@@ -17,11 +17,11 @@ api.add(endpoint, { put: funcs })
 app.use('/', api.generate());
 
 const helpers = {
-  database: {
-    app: {
+  Database: {
+    App: {
       find: jest.fn(),
     },
-    account: {
+    Account: {
       find: jest.fn(),
       update: jest.fn(),
     }
@@ -61,7 +61,7 @@ test('Validate request and response 400', async () => {
 
 test('Verify app and response 403', async () => {
 
-  helpers.database.app.find.mockResolvedValueOnce(undefined)
+  helpers.Database.App.find.mockResolvedValueOnce(undefined)
 
   const token = jwt.sign({ uid: 'uid' }, process.env.EMAIL_VALLIDATION_SIGN_KEY)
   await request(app).put(endpoint)
@@ -69,13 +69,13 @@ test('Verify app and response 403', async () => {
   .send({ app: 'app', password: { current: 'current', new: 'new' }, token: token })
   .expect(403)
 
-  helpers.database.app.find.mockClear()
+  helpers.Database.App.find.mockClear()
 
 })
 
 test('Decode token and response 400', async () => {
 
-  helpers.database.app.find.mockResolvedValue({ id: 'app', key: 'appkey' })
+  helpers.Database.App.find.mockResolvedValue({ id: 'app', key: 'appkey' })
 
   await request(app).put(endpoint)
   .set('Accept', 'application/json')
@@ -93,8 +93,8 @@ test('Decode token and response 400', async () => {
 
 test('Verify uid existence and response 404', async () => {
 
-  helpers.database.app.find.mockResolvedValue({ id: 'app', key: 'appkey' })
-  helpers.database.account.find.mockResolvedValueOnce(undefined)
+  helpers.Database.App.find.mockResolvedValue({ id: 'app', key: 'appkey' })
+  helpers.Database.Account.find.mockResolvedValueOnce(undefined)
 
   const token = jwt.sign({ uid: 'uid' }, 'appkey')
   await request(app).put(endpoint)
@@ -102,19 +102,19 @@ test('Verify uid existence and response 404', async () => {
   .send({ app: 'app', password: { current: 'current', new: 'new' }, token: token })
   .expect(404)
 
-  expect(helpers.database.account.find).toHaveBeenCalledTimes(1)
-  expect(helpers.database.account.find.mock.calls[0]).toEqual([{ uid: 'uid' }])
+  expect(helpers.Database.Account.find).toHaveBeenCalledTimes(1)
+  expect(helpers.Database.Account.find.mock.calls[0]).toEqual([{ uid: 'uid' }])
 
-  helpers.database.app.find.mockClear()
-  helpers.database.account.find.mockClear()
+  helpers.Database.App.find.mockClear()
+  helpers.Database.Account.find.mockClear()
 
 })
 
 
 test('Verify user realm and response 403', async () => {
 
-  helpers.database.app.find.mockResolvedValue({ id: 'app', key: 'appkey', realm: 'test' })
-  helpers.database.account.find.mockResolvedValueOnce({
+  helpers.Database.App.find.mockResolvedValue({ id: 'app', key: 'appkey', realm: 'test' })
+  helpers.Database.Account.find.mockResolvedValueOnce({
     uid: 'uid',
     realms: { other: { roles: ['member'] } }
   })
@@ -125,11 +125,11 @@ test('Verify user realm and response 403', async () => {
   .send({ app: 'app', password: { current: 'current', new: 'new' }, token: token })
   .expect(404)
 
-  expect(helpers.database.account.find).toHaveBeenCalledTimes(1)
-  expect(helpers.database.account.find.mock.calls[0]).toEqual([{ uid: 'uid' }])
+  expect(helpers.Database.Account.find).toHaveBeenCalledTimes(1)
+  expect(helpers.Database.Account.find.mock.calls[0]).toEqual([{ uid: 'uid' }])
 
-  helpers.database.app.find.mockClear()
-  helpers.database.account.find.mockClear()
+  helpers.Database.App.find.mockClear()
+  helpers.Database.Account.find.mockClear()
 
 })
 
@@ -137,8 +137,8 @@ test('Verify user realm and response 403', async () => {
 test('Check current password and response 403', async () => {
 
   const salty = { head: 'head', tail: 'tail' }
-  helpers.database.app.find.mockResolvedValue({ id: 'app', key: 'appkey', realm: 'test' })
-  helpers.database.account.find.mockResolvedValue({
+  helpers.Database.App.find.mockResolvedValue({ id: 'app', key: 'appkey', realm: 'test' })
+  helpers.Database.Account.find.mockResolvedValue({
     uid: 'uid',
     salty,
     realms: { test: { roles: ['member'] } },
@@ -151,10 +151,10 @@ test('Check current password and response 403', async () => {
   .send({ app: 'app', password: { current: 'wrong', new: 'new' }, token: token })
   .expect(403)
 
-  expect(helpers.database.account.update).not.toHaveBeenCalled()
+  expect(helpers.Database.Account.update).not.toHaveBeenCalled()
 
-  helpers.database.app.find.mockClear()
-  helpers.database.account.find.mockClear()
+  helpers.Database.App.find.mockClear()
+  helpers.Database.Account.find.mockClear()
 
 })
 
@@ -162,14 +162,14 @@ test('Check current password and response 403', async () => {
 test('Change password and response 200', async () => {
 
   const salty = { head: 'head', tail: 'tail' }
-  helpers.database.app.find.mockResolvedValue({ id: 'app', key: 'appkey', realm: 'test' })
-  helpers.database.account.find.mockResolvedValue({
+  helpers.Database.App.find.mockResolvedValue({ id: 'app', key: 'appkey', realm: 'test' })
+  helpers.Database.Account.find.mockResolvedValue({
     uid: 'uid',
     salty,
     realms: { test: { roles: ['member'] } },
     credentials: { password: hashPassword('current', salty) },
   })
-  helpers.database.account.update.mockResolvedValue()
+  helpers.Database.Account.update.mockResolvedValue()
 
   const token = jwt.sign({ uid: 'uid' }, 'appkey')
   await request(app).put(endpoint)
@@ -177,16 +177,16 @@ test('Change password and response 200', async () => {
   .send({ app: 'app', password: { current: 'current', new: 'new' }, token: token })
   .expect(200)
 
-  expect(helpers.database.account.update).toHaveBeenCalledTimes(1)
-  expect(helpers.database.account.update.mock.calls[0]).toEqual([
+  expect(helpers.Database.Account.update).toHaveBeenCalledTimes(1)
+  expect(helpers.Database.Account.update.mock.calls[0]).toEqual([
     { uid: 'uid' },
     'credentials.password',
     hashPassword('new', salty)
   ])
 
-  helpers.database.app.find.mockClear()
-  helpers.database.account.find.mockClear()
-  helpers.database.account.update.mockClear()
+  helpers.Database.App.find.mockClear()
+  helpers.Database.Account.find.mockClear()
+  helpers.Database.Account.update.mockClear()
 
 })
 

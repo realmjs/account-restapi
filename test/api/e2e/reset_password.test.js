@@ -11,11 +11,11 @@ import api from '../../../src/api/index'
 import { hashPassword } from '../../../src/lib/util'
 
 const helpers = {
-  database: {
-    app: {
+  Database: {
+    App: {
       find: jest.fn()
     },
-    account: {
+    Account: {
       find: jest.fn(),
       update: jest.fn()
     },
@@ -43,20 +43,20 @@ test('Request reset password and update the new one', async() => {
 
   const email = 'e2e@test.ext'
 
-  helpers.database.app.find.mockImplementation(
+  helpers.Database.App.find.mockImplementation(
     ({id}) => id === 'apptest' || id === 'account' ?
                 Promise.resolve({ id: id, url: 'url', realm: 'test', key: 'appkey' })
               :
                 Promise.resolve(undefined)
   )
   const salty = { head: 'head', tail: 'tail' }
-  helpers.database.account.find.mockResolvedValue({
+  helpers.Database.Account.find.mockResolvedValue({
     uid: 'uid',
     salty,
     profile: { fullName: 'Awesome' },
     realms: { test: { roles: ['member'] } }
   })
-  helpers.database.account.update.mockResolvedValue()
+  helpers.Database.Account.update.mockResolvedValue()
   helpers.hook.sendEmail.mockResolvedValue(undefined)
   helpers.form.mockReturnValue('200_html_page')
 
@@ -87,14 +87,14 @@ test('Request reset password and update the new one', async() => {
   expect(helpers.form).toHaveBeenCalledTimes(1)
   expect(helpers.form.mock.calls[0]).toEqual(['newpassword', { token: token, app: {id: 'apptest', url: 'url'} } ])
 
-  // step 3: PUT account/password 
+  // step 3: PUT account/password
   await request(app).put(endpoint.Account.Password)
   .set('Accept', 'application/json')
   .send({ app: 'apptest', password: 'password', token: token })
   .expect(200)
 
-  expect(helpers.database.account.update).toHaveBeenCalledTimes(1)
-  expect(helpers.database.account.update.mock.calls[0]).toEqual([
+  expect(helpers.Database.Account.update).toHaveBeenCalledTimes(1)
+  expect(helpers.Database.Account.update.mock.calls[0]).toEqual([
     { uid: 'uid' },
     'credentials.password',
     hashPassword('password', salty)

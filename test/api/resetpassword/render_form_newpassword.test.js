@@ -15,8 +15,8 @@ app.use('/', api.generate());
 beforeEach( () => jest.clearAllMocks() )
 
 const helpers = {
-  database: {
-    app: {
+  Database: {
+    App: {
       find: jest.fn()
     }
   },
@@ -63,7 +63,7 @@ test('Validate request and response 400', async () => {
 test('Reponse 200 with reset password form', async () => {
 
   helpers.form.mockReturnValue('200_html_page')
-  helpers.database.app.find.mockResolvedValueOnce({ id: 'apptest', url: 'url', realm: 'test', key: 'appkey' })
+  helpers.Database.App.find.mockResolvedValueOnce({ id: 'apptest', url: 'url', realm: 'test', key: 'appkey' })
 
   await request(app).get(`${endpoint}?a=apptest&t=token`)
   .expect(200)

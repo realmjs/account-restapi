@@ -9,11 +9,11 @@ import { app } from '../../testutils/fakeserver'
 import api from '../../../src/api/index'
 
 const helpers = {
-  database: {
-    app: {
+  Database: {
+    App: {
       find: jest.fn()
     },
-    account: {
+    Account: {
       find: jest.fn(),
       insert: jest.fn()
     },
@@ -40,15 +40,15 @@ afterAll( () => clearEnvironmentVariables() )
 
 test('Signup a new account', async() => {
 
-  helpers.database.app.find.mockImplementation(
+  helpers.Database.App.find.mockImplementation(
     ({id}) => id === 'apptest' || id === 'account' ?
                 Promise.resolve({ id: id, url: 'url', realm: 'test', key: 'appkey' })
               :
                 Promise.resolve(undefined)
   )
   helpers.form.mockReturnValue('mock_html_page')
-  helpers.database.account.find.mockResolvedValue(undefined)
-  helpers.database.account.insert.mockResolvedValue(undefined)
+  helpers.Database.Account.find.mockResolvedValue(undefined)
+  helpers.Database.Account.insert.mockResolvedValue(undefined)
   helpers.hook.sendEmail.mockResolvedValue(undefined)
   helpers.hook.onCreatedUser.mockResolvedValue(undefined)
 
@@ -120,14 +120,14 @@ test('Signup a new account', async() => {
 
 test('Signup with a registered email', async() => {
 
-  helpers.database.app.find.mockImplementation(
+  helpers.Database.App.find.mockImplementation(
     ({id}) => id === 'apptest' || id === 'account' ?
                 Promise.resolve({ id: id, url: 'url', realm: 'test', key: 'appkey' })
               :
                 Promise.resolve(undefined)
   )
   helpers.form.mockReturnValue('mock_html_page')
-  helpers.database.account.find.mockImplementation(
+  helpers.Database.Account.find.mockImplementation(
     ({email}) => email === 'registered@test.ext' ? Promise.resolve({ uid: 'uid' }) : Promise.resolve(undefined)
   )
   helpers.hook.sendEmail.mockResolvedValue(undefined)

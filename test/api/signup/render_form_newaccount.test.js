@@ -21,11 +21,11 @@ beforeAll( () => setupEnvironmentVariables() )
 afterAll( () => clearEnvironmentVariables() )
 
 const helpers = {
-  database: {
-    app: {
+  Database: {
+    App: {
       find: jest.fn()
     },
-    account: {
+    Account: {
       find: jest.fn()
     }
   },
@@ -125,7 +125,7 @@ test('Verify email and reponses 400 if not match with decoded from token', async
 
 test('Validate App and response 403', async () => {
 
-  helpers.database.app.find.mockResolvedValueOnce(undefined)
+  helpers.Database.App.find.mockResolvedValueOnce(undefined)
   helpers.form.mockReturnValueOnce('error_403_html_page')
 
   const email = hashEmail('email@test.ext')
@@ -143,7 +143,7 @@ test('Validate App and response 403', async () => {
   expect(helpers.form.mock.calls[0]).toEqual(['error', { code: 403, reason: 'Permission Denied'}])
 
   helpers.form.mockClear()
-  helpers.database.app.find.mockClear()
+  helpers.Database.App.find.mockClear()
 
 })
 
@@ -151,8 +151,8 @@ test('Validate App and response 403', async () => {
 test('Verify email and reponses 409 if already exists in database', async () => {
 
   helpers.form.mockReturnValue('error_409_html_page')
-  helpers.database.account.find.mockResolvedValue({ email: 'email@test.ext'})
-  helpers.database.app.find.mockResolvedValueOnce({ id: 'apptest', url: 'url', realm: 'test', key: 'appkey' })
+  helpers.Database.Account.find.mockResolvedValue({ email: 'email@test.ext'})
+  helpers.Database.App.find.mockResolvedValueOnce({ id: 'apptest', url: 'url', realm: 'test', key: 'appkey' })
 
   const email = hashEmail('email@test.ext')
 
@@ -165,14 +165,14 @@ test('Verify email and reponses 409 if already exists in database', async () => 
     expect(res.text).toMatch(/error_409_html_page/);
   })
 
-  expect(helpers.database.account.find).toHaveBeenCalledTimes(1)
-  expect(helpers.database.account.find.mock.calls[0]).toEqual([{ email: 'email@test.ext' }])
+  expect(helpers.Database.Account.find).toHaveBeenCalledTimes(1)
+  expect(helpers.Database.Account.find.mock.calls[0]).toEqual([{ email: 'email@test.ext' }])
   expect(helpers.form).toHaveBeenCalledTimes(1)
   expect(helpers.form.mock.calls[0]).toEqual(['error', { code: 409, reason: 'Registered Email'}])
 
   helpers.form.mockClear()
-  helpers.database.account.find.mockClear()
-  helpers.database.app.find.mockClear()
+  helpers.Database.Account.find.mockClear()
+  helpers.Database.App.find.mockClear()
 
 })
 
@@ -180,8 +180,8 @@ test('Verify email and reponses 409 if already exists in database', async () => 
 test('Reponses 200 with newaccount form return from helpers.form ', async () => {
 
   helpers.form.mockReturnValue('200_new_account_html_page')
-  helpers.database.account.find.mockResolvedValue(undefined)
-  helpers.database.app.find.mockResolvedValueOnce({ id: 'apptest', url: 'url', realm: 'test', key: 'appkey' })
+  helpers.Database.Account.find.mockResolvedValue(undefined)
+  helpers.Database.App.find.mockResolvedValueOnce({ id: 'apptest', url: 'url', realm: 'test', key: 'appkey' })
 
   const email = hashEmail('email@test.ext')
 
@@ -198,7 +198,7 @@ test('Reponses 200 with newaccount form return from helpers.form ', async () => 
   expect(helpers.form.mock.calls[0]).toEqual(['newaccount', { email: 'email@test.ext', app: { id: 'apptest', url: 'url' } }])
 
   helpers.form.mockClear()
-  helpers.database.account.find.mockClear()
-  helpers.database.app.find.mockClear()
+  helpers.Database.Account.find.mockClear()
+  helpers.Database.App.find.mockClear()
 
 })

@@ -30,7 +30,7 @@ const decodeToken = (helpers) => (req, res, next) => {
 }
 
 const getUserAccountByUid = (helpers) => (req, res, next) => {
-  helpers.database.account.find({ uid: res.locals.uid })
+  helpers.Database.Account.find({ uid: res.locals.uid })
   .then( user => {
     if (user && verifyRealm(res.locals.app, user)) {
       res.locals.user = user
@@ -55,7 +55,7 @@ const checkPassword = () => (req, res, next) => {
 const changePassword = (helpers) => (req, res, next) => {
   const password = req.body.password.new
   const salty = res.locals.user.salty
-  helpers.database.account.update({ uid: res.locals.uid }, 'credentials.password', hashPassword(password, salty))
+  helpers.Database.Account.update({ uid: res.locals.uid }, 'credentials.password', hashPassword(password, salty))
   .then(() => next())
   .catch( err =>
     helpers.alert && alertCrashedEvent(helpers.alert, 'change_password.js', 'changePassword', err)

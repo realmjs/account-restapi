@@ -11,11 +11,11 @@ import api from '../../../src/api/index'
 import { hashPassword } from '../../../src/lib/util'
 
 const helpers = {
-  database: {
-    app: {
+  Database: {
+    App: {
       find: jest.fn()
     },
-    account: {
+    Account: {
       find: jest.fn(),
       update: jest.fn()
     },
@@ -40,20 +40,20 @@ afterAll( () => clearEnvironmentVariables() )
 test('Request change password and update the new one', async() => {
 
   helpers.form.mockReturnValue('200_html_page')
-  helpers.database.app.find.mockImplementation(
+  helpers.Database.App.find.mockImplementation(
     ({id}) => id === 'apptest' || id === 'account' ?
                 Promise.resolve({ id: id, url: 'url', realm: 'test', key: 'appkey' })
               :
                 Promise.resolve(undefined)
   )
   const salty = { head: 'head', tail: 'tail' }
-  helpers.database.account.find.mockResolvedValue({
+  helpers.Database.Account.find.mockResolvedValue({
     uid: 'uid',
     salty,
     realms: { test: { roles: ['member'] } },
     credentials: { password: hashPassword('current', salty) },
   })
-  helpers.database.account.update.mockResolvedValue()
+  helpers.Database.Account.update.mockResolvedValue()
 
   const token = jwt.sign({ uid: 'uid' }, 'appkey')
 
@@ -74,8 +74,8 @@ test('Request change password and update the new one', async() => {
   .send({ app: 'apptest', password: { current: 'current', new: 'new' }, token: token })
   .expect(200)
 
-  expect(helpers.database.account.update).toHaveBeenCalledTimes(1)
-  expect(helpers.database.account.update.mock.calls[0]).toEqual([
+  expect(helpers.Database.Account.update).toHaveBeenCalledTimes(1)
+  expect(helpers.Database.Account.update.mock.calls[0]).toEqual([
     { uid: 'uid' },
     'credentials.password',
     hashPassword('new', salty)
@@ -87,20 +87,20 @@ test('Request change password and update the new one', async() => {
 test('Prevent update password if current password is not matched', async() => {
 
   helpers.form.mockReturnValue('200_html_page')
-  helpers.database.app.find.mockImplementation(
+  helpers.Database.App.find.mockImplementation(
     ({id}) => id === 'apptest' || id === 'account' ?
                 Promise.resolve({ id: id, url: 'url', realm: 'test', key: 'appkey' })
               :
                 Promise.resolve(undefined)
   )
   const salty = { head: 'head', tail: 'tail' }
-  helpers.database.account.find.mockResolvedValue({
+  helpers.Database.Account.find.mockResolvedValue({
     uid: 'uid',
     salty,
     realms: { test: { roles: ['member'] } },
     credentials: { password: hashPassword('current', salty) },
   })
-  helpers.database.account.update.mockResolvedValue()
+  helpers.Database.Account.update.mockResolvedValue()
 
   const token = jwt.sign({ uid: 'uid' }, 'appkey')
 
@@ -121,6 +121,6 @@ test('Prevent update password if current password is not matched', async() => {
   .send({ app: 'apptest', password: { current: 'wrong', new: 'new' }, token: token })
   .expect(403)
 
-  expect(helpers.database.account.update).not.toHaveBeenCalled()
+  expect(helpers.Database.Account.update).not.toHaveBeenCalled()
 
 })

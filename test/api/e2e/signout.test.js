@@ -9,11 +9,11 @@ import { app } from '../../testutils/fakeserver'
 import api from '../../../src/api/index'
 
 const helpers = {
-  database: {
-    app: {
+  Database: {
+    App: {
       find: jest.fn()
     },
-    account: {
+    Account: {
       find: jest.fn(),
       insert: jest.fn()
     },
@@ -41,7 +41,7 @@ afterAll( () => clearEnvironmentVariables() )
 
 test('Signout a session', async() => {
 
-  helpers.database.app.find.mockImplementation(
+  helpers.Database.App.find.mockImplementation(
     ({id}) => id === 'apptest' || id === 'account' ?
                 Promise.resolve({ id: id, url: 'url', realm: 'test', key: 'appkey' })
               :

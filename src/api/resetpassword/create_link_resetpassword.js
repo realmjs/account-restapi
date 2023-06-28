@@ -20,7 +20,7 @@ const validateAppThenStoreToLocals = middlewareFactory.create(
 )
 
 const checkEmailExistence = (helpers) => (req, res, next) => {
-  helpers.database.account.find({ email: req.body.email })
+  helpers.Database.Account.find({ email: req.body.email })
   .then( user => {
     if (user) {
       res.locals.user = user
@@ -55,7 +55,7 @@ const sendEmail = (helpers) => (req, res, next) => {
   const email = req.body.email
   const token = res.locals.token
   const app = req.body.app
-  helpers.database.app.find({id: 'account'})
+  helpers.Database.App.find({id: 'account'})
   .then(account => {
     helpers.hook.sendEmail({
       to: { address: email, name: res.locals.user.profile.fullName },

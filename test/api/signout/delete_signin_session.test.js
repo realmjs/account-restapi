@@ -19,11 +19,11 @@ beforeAll( () => setupEnvironmentVariables() )
 afterAll( () => clearEnvironmentVariables() )
 
 const helpers = {
-  database: {
-    app: {
+  Database: {
+    App: {
       find: jest.fn()
     },
-    account: {
+    Account: {
       find: jest.fn()
     },
   },
@@ -52,24 +52,24 @@ test('Validate request and response 400', async () => {
 
 test('Validate app and response 403', async () => {
 
-  helpers.database.app.find.mockResolvedValueOnce(undefined)
+  helpers.Database.App.find.mockResolvedValueOnce(undefined)
 
   await request(app).delete(endpoint)
   .set('Accept', 'application/json')
   .send({ app: 'invalid', sid: 'sid' })
   .expect(403)
 
-  expect(helpers.database.app.find).toHaveBeenCalledTimes(1)
-  expect(helpers.database.app.find.mock.calls[0]).toEqual([{id: 'invalid'}])
+  expect(helpers.Database.App.find).toHaveBeenCalledTimes(1)
+  expect(helpers.Database.App.find.mock.calls[0]).toEqual([{id: 'invalid'}])
 
-  helpers.database.app.find.mockClear()
+  helpers.Database.App.find.mockClear()
 
 })
 
 
 test('Verify cookie and response 400 for bad cookie', async () => {
 
-  helpers.database.app.find.mockResolvedValue({ realm: 'test', key: 'key' })
+  helpers.Database.App.find.mockResolvedValue({ realm: 'test', key: 'key' })
 
   await request(app).delete(endpoint)
   .set('Accept', 'application/json')
@@ -110,14 +110,14 @@ test('Verify cookie and response 400 for bad cookie', async () => {
   })
 
 
-  helpers.database.app.find.mockClear()
+  helpers.Database.App.find.mockClear()
 
 })
 
 
 test('Verify cookie session id and response 400', async () => {
 
-  helpers.database.app.find.mockResolvedValue({ realm: 'test', key: 'key' })
+  helpers.Database.App.find.mockResolvedValue({ realm: 'test', key: 'key' })
 
   const cookie = createCookie('uid', 'test')
   await request(app).delete(endpoint)
@@ -133,7 +133,7 @@ test('Verify cookie session id and response 400', async () => {
 
 test('Clear cookie for valid request', async () => {
 
-  helpers.database.app.find.mockResolvedValue({ realm: 'test', key: 'key' })
+  helpers.Database.App.find.mockResolvedValue({ realm: 'test', key: 'key' })
 
   const cookie = createCookie('uid', 'test')
   await request(app).delete(endpoint)

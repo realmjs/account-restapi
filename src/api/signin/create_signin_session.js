@@ -18,7 +18,7 @@ const validateAppThenStoreToLocals = middlewareFactory.create(
 )
 
 const getUserAccountByEmail = (helpers) => (req, res, next) => {
-  helpers.database.account.find({ email: req.body.email })
+  helpers.Database.Account.find({ email: req.body.email })
   .then( user => {
     if (user && verifyRealm(res.locals.app, user)) {
       res.locals.user = user
