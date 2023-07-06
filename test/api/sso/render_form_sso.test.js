@@ -70,34 +70,34 @@ test('Validate App and response 403', async () => {
 })
 
 
-test('Verify cookie and response 400 for bad cookie', async () => {
+test('Verify cookie and response 404 for bad cookie', async () => {
 
   helpers.Database.App.find.mockResolvedValue({ id: 'app', url: 'url', realm: 'test' })
-  helpers.form.mockReturnValue('error_400_html_page')
+  helpers.form.mockReturnValue('error_404_html_page')
 
   await request(app).get(`${endpoint}?a=app`)
-  .expect(400)
+  .expect(404)
   .expect('Content-Type', /text\/html/)
   .then(res => {
-    expect(res.text).toMatch(/error_400_html_page/)
+    expect(res.text).toMatch(/error_404_html_page/)
     expect(res.headers['set-cookie']).toBeUndefined()
   })
 
   await request(app).get(`${endpoint}?a=app`)
   .set('Cookie', [`${process.env.COOKIE_SESSION}_test=invalid_json`])
-  .expect(400)
+  .expect(404)
   .expect('Content-Type', /text\/html/)
   .then(res => {
-    expect(res.text).toMatch(/error_400_html_page/)
+    expect(res.text).toMatch(/error_404_html_page/)
     expect(res.headers['set-cookie']).toBeUndefined()
   })
 
   await request(app).get(`${endpoint}?a=app`)
   .set('Cookie', [`${process.env.COOKIE_SESSION}_test="{"uid":"not-encode-cookie"}"`])
-  .expect(400)
+  .expect(404)
   .expect('Content-Type', /text\/html/)
   .then(res => {
-    expect(res.text).toMatch(/error_400_html_page/)
+    expect(res.text).toMatch(/error_404_html_page/)
     expect(res.headers['set-cookie']).toBeUndefined()
   })
 
@@ -106,18 +106,18 @@ test('Verify cookie and response 400 for bad cookie', async () => {
   setupEnvironmentVariables()                   // restore key sothat valid is used when decode cookie
   await request(app).get(`${endpoint}?a=app`)
   .set('Cookie', [`${cookie[0]}=${cookie[1]}`])
-  .expect(400)
+  .expect(404)
   .expect('Content-Type', /text\/html/)
   .then(res => {
-    expect(res.text).toMatch(/error_400_html_page/)
+    expect(res.text).toMatch(/error_404_html_page/)
     expect(res.headers['set-cookie']).toBeUndefined()
   })
 
   expect(helpers.form).toHaveBeenCalledTimes(4)
-  expect(helpers.form.mock.calls[0]).toEqual(['sso', { code: 400, reason: 'Bad Cookie', app: { id: 'app', url: 'url' } }])
-  expect(helpers.form.mock.calls[1]).toEqual(['sso', { code: 400, reason: 'Bad Cookie', app: { id: 'app', url: 'url' }}])
-  expect(helpers.form.mock.calls[2]).toEqual(['sso', { code: 400, reason: 'Bad Cookie', app: { id: 'app', url: 'url' }}])
-  expect(helpers.form.mock.calls[3]).toEqual(['sso', { code: 400, reason: 'Bad Cookie', app: { id: 'app', url: 'url' }}])
+  expect(helpers.form.mock.calls[0]).toEqual(['sso', { code: 404, reason: 'No or Bad Cookie', app: { id: 'app', url: 'url' } }])
+  expect(helpers.form.mock.calls[1]).toEqual(['sso', { code: 404, reason: 'No or Bad Cookie', app: { id: 'app', url: 'url' }}])
+  expect(helpers.form.mock.calls[2]).toEqual(['sso', { code: 404, reason: 'No or Bad Cookie', app: { id: 'app', url: 'url' }}])
+  expect(helpers.form.mock.calls[3]).toEqual(['sso', { code: 404, reason: 'No or Bad Cookie', app: { id: 'app', url: 'url' }}])
 
   helpers.form.mockClear()
   helpers.Database.App.find.mockClear()

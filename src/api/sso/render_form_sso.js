@@ -30,14 +30,15 @@ const getSessionFromCookie = (helpers) => (req, res, next) => {
       res.locals.sid = session.sessionId
       next();
     } else {
-      res.writeHead( 400, { 'Content-Type': 'text/html' } )
-      res.end(helpers.form('sso', { code: 400, reason: 'Bad Cookie', app: {id: res.locals.app.id, url: res.locals.app.url}, }))
+      res.writeHead( 404, { 'Content-Type': 'text/html' } )
+      res.end(helpers.form('sso', { code: 404, reason: 'No or Bad Cookie', app: {id: res.locals.app.id, url: res.locals.app.url}, }))
     }
   })
   .catch( err => {
-    res.writeHead( 400, { 'Content-Type': 'text/html' } )
-    res.end(helpers.form('sso', { code: 400, reason: 'Bad Cookie', app: {id: res.locals.app.id, url: res.locals.app.url}, }))
+    res.writeHead( 404, { 'Content-Type': 'text/html' } )
+    res.end(helpers.form('sso', { code: 404, reason: 'No or Bad Cookie', app: {id: res.locals.app.id, url: res.locals.app.url}, }))
   })
+
 
 }
 

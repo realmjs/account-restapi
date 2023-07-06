@@ -1,6 +1,6 @@
 {
   "name": "@realmjs/account-restapi",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "REST APIs for Account serverless application",
   "main": "src/api/index.js",
   "scripts": {
