@@ -7,6 +7,7 @@ export function setupEnvironmentVariables() {
   process.env.EMAIL_DOMAIN_SALTY = 'emaildomainsalty'
   process.env.EMAIL_VALLIDATION_SIGN_KEY = 'email-sign-key'
   process.env.EMAIL_EXPIRE_VALIDATION_LINK = '24h'
+  process.env.REALM_SECURE_KEY = 'realm-secure-key'
 }
 
 export function clearEnvironmentVariables() {
@@ -16,4 +17,5 @@ export function clearEnvironmentVariables() {
   process.env.EMAIL_DOMAIN_SALTY = undefined
   process.env.EMAIL_VALLIDATION_SIGN_KEY = undefined
   process.env.EMAIL_EXPIRE_VALIDATION_LINK = undefined
+  process.env.REALM_SECURE_KEY = undefined
 }

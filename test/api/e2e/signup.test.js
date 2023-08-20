@@ -98,7 +98,7 @@ test('Signup a new account', async() => {
   expect(helpers.form.mock.calls[1]).toEqual(['newaccount', { email: email, app: {id: 'apptest', url: 'url'} }])
 
   // step 3: POST account
-  await request(app).post(endpoint.Account.User)
+  await request(app).post(endpoint.Account.New)
   .set('Accept', 'application/json')
   .send({ email: email, password: 'secret', profile: { phone: '098', fullName: 'Awesome' }, app: apptest })
   .expect(200)

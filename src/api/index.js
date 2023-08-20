@@ -26,7 +26,7 @@ api.add(endpoint.Form.NewAccount, {
   get: require('./signup/render_form_newaccount')
 })
 
-api.add(endpoint.Account.User, {
+api.add(endpoint.Account.New, {
   post: require('./signup/create_newaccount')
 })
 

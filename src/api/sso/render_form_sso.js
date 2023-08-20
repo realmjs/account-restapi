@@ -54,7 +54,7 @@ const getUserAccountByUID = (helpers) => (req, res, next) => {
     }
   })
   .catch( err =>
-    helpers.alert && alertCrashedEvent(helpers.alert, 'create_signin_session.js', 'checkEmailExistence', err)
+    helpers.alert && alertCrashedEvent(helpers.alert, 'render_form_sso.js', 'getUserAccountByUID', err)
   )
 }
 
