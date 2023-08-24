@@ -96,7 +96,6 @@ api.add(endpoint.User.Password, {
 /* API Query account
 step 1: Get form/account/query
 */
-console.log(endpoint.Form.QueryAccount)
 api.add(endpoint.Form.QueryAccount, {
   get: require('./account/render_form_queryaccount')
 })
