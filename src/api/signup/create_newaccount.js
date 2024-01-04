@@ -7,7 +7,7 @@ const middlewareFactory = require('../../lib/middleware_factory')
 const validateRequest = () => (req, res, next) => {
   if (req.body.email && isEmail(req.body.email) &&
       req.body.password &&
-      req.body.profile && req.body.profile.fullName &&
+      req.body.profile && req.body.profile.fullname &&
       req.body.app
   ) {
     next()
@@ -57,7 +57,7 @@ const createUID = (helpers) => (req, res, next) => {
 }
 
 const createUser = (helpers) => (req, res, next) => {
-  const profile = { ...req.body.profile }
+  const profile = { ...req.body.profile };
   const salty = { head: ustring(8), tail: ustring(8) };
   const user = {
     email: req.body.email.toLowerCase().trim(),
@@ -65,7 +65,7 @@ const createUser = (helpers) => (req, res, next) => {
     salty,
     credentials: { password: hashPassword(req.body.password, salty) },
     profile,
-    createdAt: (new Date()).getTime(),
+    created_at: new Date(),
     realms: { [res.locals.app.realm] : { roles: ['member'] } },
   }
   res.locals.user = user
@@ -87,7 +87,7 @@ const setCookie = () => (req, res, next) => {
 const sendEmail = (helpers) => (req, res, next) => {
   const user = res.locals.user
   helpers.hook.sendEmail({
-    to: { address: user.email, name: user.profile.fullName },
+    to: { address: user.email, name: user.profile.fullname },
     template: 'welcome_new_user'
   })
   .then(() => next())
@@ -100,7 +100,7 @@ const onCreatedUserCallback = (helpers) => (req, res, next) => {
     uid: user.uid,
     email: user.email,
     profile: user.profile,
-    createdAt: user.createdAt,
+    created_at: user.created_at,
     realms: user.realms,
   })
   .then(() => next())

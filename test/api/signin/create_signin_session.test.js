@@ -150,11 +150,11 @@ test('Authenticate with response code 201', async () => {
   helpers.Database.Account.find.mockResolvedValueOnce({
     uid: 'uid',
     email: 'email@test.ext',
-    profile: { phone: '098', fullName: 'Awesome' },
+    profile: { phone: '098', fullname: 'Awesome' },
     realms: { test: { roles: ['member'] } },
     credentials: { password: hashPassword('correct', { head: 'head', tail: 'tail' }) },
     salty: { head: 'head', tail: 'tail' },
-    createdAt: 1234567890
+    created_at: 1234567890
   })
 
   await request(app).post(endpoint)
@@ -166,8 +166,8 @@ test('Authenticate with response code 201', async () => {
     expect(res.body).toEqual({
       user: {
         email: 'email@test.ext',
-        profile: { phone: '098', fullName: 'Awesome' },
-        createdAt: 1234567890,
+        profile: { phone: '098', fullname: 'Awesome' },
+        created_at: 1234567890,
       },
       token: jwt.sign({uid: 'uid', roles: ['member']}, 'key'),
       sid: expect.any(String),

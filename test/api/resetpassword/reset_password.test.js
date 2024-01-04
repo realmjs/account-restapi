@@ -21,7 +21,7 @@ const helpers = {
     },
     Account: {
       find: jest.fn(),
-      update: jest.fn(),
+      Password: { update: jest.fn() },
     }
   }
 }
@@ -136,7 +136,7 @@ test('Change password and response 200', async () => {
     salty,
     realms: { test: { roles: ['member'] } }
   })
-  helpers.Database.Account.update.mockResolvedValue()
+  helpers.Database.Account.Password.update.mockResolvedValue()
 
   const token = jwt.sign({ uid: 'uid' }, process.env.EMAIL_VALLIDATION_SIGN_KEY)
   await request(app).put(endpoint)
@@ -144,15 +144,14 @@ test('Change password and response 200', async () => {
   .send({ app: 'app', password: 'password', token: token })
   .expect(200)
 
-  expect(helpers.Database.Account.update).toHaveBeenCalledTimes(1)
-  expect(helpers.Database.Account.update.mock.calls[0]).toEqual([
-    { uid: 'uid' },
-    'credentials.password',
+  expect(helpers.Database.Account.Password.update).toHaveBeenCalledTimes(1)
+  expect(helpers.Database.Account.Password.update.mock.calls[0]).toEqual([
+    'uid',
     hashPassword('password', salty)
   ])
 
   helpers.Database.App.find.mockClear()
   helpers.Database.Account.find.mockClear()
-  helpers.Database.Account.update.mockClear()
+  helpers.Database.Account.Password.update.mockClear()
 
 })

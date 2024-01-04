@@ -23,7 +23,7 @@ const helpers = {
     },
     Account: {
       find: jest.fn(),
-      update: jest.fn(),
+      Password: { update: jest.fn() },
     }
   }
 }
@@ -151,7 +151,7 @@ test('Check current password and response 403', async () => {
   .send({ app: 'app', password: { current: 'wrong', new: 'new' }, token: token })
   .expect(403)
 
-  expect(helpers.Database.Account.update).not.toHaveBeenCalled()
+  expect(helpers.Database.Account.Password.update).not.toHaveBeenCalled()
 
   helpers.Database.App.find.mockClear()
   helpers.Database.Account.find.mockClear()
@@ -169,7 +169,7 @@ test('Change password and response 200', async () => {
     realms: { test: { roles: ['member'] } },
     credentials: { password: hashPassword('current', salty) },
   })
-  helpers.Database.Account.update.mockResolvedValue()
+  helpers.Database.Account.Password.update.mockResolvedValue()
 
   const token = jwt.sign({ uid: 'uid' }, 'appkey')
   await request(app).put(endpoint)
@@ -177,16 +177,15 @@ test('Change password and response 200', async () => {
   .send({ app: 'app', password: { current: 'current', new: 'new' }, token: token })
   .expect(200)
 
-  expect(helpers.Database.Account.update).toHaveBeenCalledTimes(1)
-  expect(helpers.Database.Account.update.mock.calls[0]).toEqual([
-    { uid: 'uid' },
-    'credentials.password',
+  expect(helpers.Database.Account.Password.update).toHaveBeenCalledTimes(1)
+  expect(helpers.Database.Account.Password.update.mock.calls[0]).toEqual([
+    'uid',
     hashPassword('new', salty)
   ])
 
   helpers.Database.App.find.mockClear()
   helpers.Database.Account.find.mockClear()
-  helpers.Database.Account.update.mockClear()
+  helpers.Database.Account.Password.update.mockClear()
 
 })
 

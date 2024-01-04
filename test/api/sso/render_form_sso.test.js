@@ -162,11 +162,11 @@ test('Reponse signin session for valid request', async () => {
   helpers.Database.Account.find.mockResolvedValue({
     uid: 'uid',
     email: 'email@test.ext',
-    profile: { phone: '098', fullName: 'Awesome' },
+    profile: { phone: '098', fullname: 'Awesome' },
     realms: { test: { roles: ['member'] } },
     credentials: { password: 'secret-hashed-string' },
     salty: { head: 'head', tail: 'tail' },
-    createdAt: 1234567890
+    created_at: 1234567890
   })
 
   const cookie = createCookie('uid', 'test')
@@ -182,8 +182,8 @@ test('Reponse signin session for valid request', async () => {
   expect(helpers.form.mock.calls[0]).toEqual(['sso', {
     user: {
       email: 'email@test.ext',
-      profile: { phone: '098', fullName: 'Awesome' },
-      createdAt: 1234567890,
+      profile: { phone: '098', fullname: 'Awesome' },
+      created_at: 1234567890,
     },
     token: jwt.sign({uid: 'uid', roles: ['member']}, 'appkey'),
     sid: JSON.parse(cookie[1]).sessionId,

@@ -17,7 +17,7 @@ const helpers = {
     },
     Account: {
       find: jest.fn(),
-      update: jest.fn()
+      Password: { update: jest.fn() },
     },
   },
   form: jest.fn(),
@@ -53,10 +53,10 @@ test('Request reset password and update the new one', async() => {
   helpers.Database.Account.find.mockResolvedValue({
     uid: 'uid',
     salty,
-    profile: { fullName: 'Awesome' },
+    profile: { fullname: 'Awesome' },
     realms: { test: { roles: ['member'] } }
   })
-  helpers.Database.Account.update.mockResolvedValue()
+  helpers.Database.Account.Password.update.mockResolvedValue()
   helpers.hook.sendEmail.mockResolvedValue(undefined)
   helpers.form.mockReturnValue('200_html_page')
 
@@ -93,10 +93,9 @@ test('Request reset password and update the new one', async() => {
   .send({ app: 'apptest', password: 'password', token: token })
   .expect(200)
 
-  expect(helpers.Database.Account.update).toHaveBeenCalledTimes(1)
-  expect(helpers.Database.Account.update.mock.calls[0]).toEqual([
-    { uid: 'uid' },
-    'credentials.password',
+  expect(helpers.Database.Account.Password.update).toHaveBeenCalledTimes(1)
+  expect(helpers.Database.Account.Password.update.mock.calls[0]).toEqual([
+    'uid',
     hashPassword('password', salty)
   ])
 

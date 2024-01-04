@@ -111,7 +111,7 @@ test('Generate reset link and call send email hook', async () => {
   helpers.Database.App.find.mockResolvedValue({realm: 'test', url: 'url'})
   helpers.Database.Account.find.mockResolvedValue({
     uid: 'uid',
-    profile: { fullName: 'Awesome' },
+    profile: { fullname : 'Awesome' },
     realms: { test: { roles: ['member'] } }
   })
   helpers.hook.sendEmail.mockResolvedValue(undefined)

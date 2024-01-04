@@ -142,11 +142,11 @@ test('Reponse html file', async () => {
   .mockResolvedValueOnce({
     uid: 'test',
     email: 'test@test.ext',
-    profile: { phone: '098', fullName: 'Awesome' },
+    profile: { phone: '098', fullname: 'Awesome' },
     realms: { test: { roles: ['member'] } },
     credentials: { password: 'secret-hashed-string' },
     salty: { head: 'head', tail: 'tail' },
-    createdAt: 1234567890
+    created_at: 1234567890
   })
 
   const cookie = createCookie('uid', 'secure')
@@ -165,8 +165,8 @@ test('Reponse html file', async () => {
     app: { id: 'apptest', url: 'url' },
     account: {
       email: 'test@test.ext',
-      profile: { phone: '098', fullName: 'Awesome' },
-      createdAt: 1234567890,
+      profile: { phone: '098', fullname: 'Awesome' },
+      created_at: 1234567890,
     },
   }])
 

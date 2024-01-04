@@ -63,7 +63,7 @@ test('Validate request and response 400 if missing parameters', async () => {
 
   await request(app).post(endpoint)
   .set('Accept', 'application/json')
-  .send({ email: 'email@exists.test', password: 'secret', profile: { phone: '098', fullName: 'Awesome' } })
+  .send({ email: 'email@exists.test', password: 'secret', profile: { phone: '098', fullname: 'Awesome' } })
   .expect(400)
 
 })
@@ -75,7 +75,7 @@ test('Response 403 if verify app failed', async () => {
 
   await request(app).post(endpoint)
   .set('Accept', 'application/json')
-  .send({ email: 'email@exists.test', password: 'secret', profile: { fullName: 'Awesome' }, app: 'invalid' })
+  .send({ email: 'email@exists.test', password: 'secret', profile: { fullname: 'Awesome' }, app: 'invalid' })
   .expect(403)
 
   expect(helpers.Database.App.find).toHaveBeenCalledTimes(1)
@@ -93,7 +93,7 @@ test('Response 409 if email is already registered', async () => {
 
   await request(app).post(endpoint)
   .set('Accept', 'application/json')
-  .send({ email: 'email@exists.test', password: 'secret', profile: { phone: '098', fullName: 'Awesome' }, app: 'test' })
+  .send({ email: 'email@exists.test', password: 'secret', profile: { phone: '098', fullname: 'Awesome' }, app: 'test' })
   .expect(409)
 
   expect(helpers.Database.Account.find).toHaveBeenCalledTimes(1)
@@ -113,15 +113,15 @@ test('Create new account, call helpers.hook to send email and callback', async (
 
   await request(app).post(endpoint)
   .set('Accept', 'application/json')
-  .send({ email: 'email@test.ext', password: 'secret', profile: { phone: '098', fullName: 'Awesome' }, app: 'test' })
+  .send({ email: 'email@test.ext', password: 'secret', profile: { phone: '098', fullname: 'Awesome' }, app: 'test' })
   .expect(200)
   .expect('set-cookie', new RegExp(`${process.env.COOKIE_SESSION}_test=.+; Path=/; HttpOnly`))
   .then( res =>
     expect(res.body).toEqual({
       user: {
         email: 'email@test.ext',
-        profile: { phone: '098', fullName: 'Awesome' },
-        createdAt: expect.any(Number),
+        profile: { phone: '098', fullname: 'Awesome' },
+        created_at: expect.any(String),
       },
       token: expect.any(String),
       sid: expect.any(String),
@@ -134,8 +134,8 @@ test('Create new account, call helpers.hook to send email and callback', async (
     email: 'email@test.ext',
     credentials: { password: expect.any(String) },
     salty: { head: expect.any(String), tail: expect.any(String) },
-    profile: { phone: '098', fullName: 'Awesome' },
-    createdAt: expect.any(Number),
+    profile: { phone: '098', fullname: 'Awesome' },
+    created_at: expect.any(Date),
     realms: { test: { roles: ['member'] } }
   }])
 
@@ -149,8 +149,8 @@ test('Create new account, call helpers.hook to send email and callback', async (
   expect(helpers.hook.onCreatedUser.mock.calls[0]).toEqual([{
     uid: expect.any(String),
     email: 'email@test.ext',
-    profile: { phone: '098', fullName: 'Awesome' },
-    createdAt: expect.any(Number),
+    profile: { phone: '098', fullname: 'Awesome' },
+    created_at: expect.any(Date),
     realms: { test: { roles: ['member'] } }
   }])
 
@@ -174,7 +174,7 @@ test('Guarantee no dupplicate uid when creating account', async () => {
 
   await request(app).post(endpoint)
   .set('Accept', 'application/json')
-  .send({ email: 'email@test.ext', password: 'secret', profile: { phone: '098', fullName: 'Awesome' }, app: 'test' })
+  .send({ email: 'email@test.ext', password: 'secret', profile: { phone: '098', fullname: 'Awesome' }, app: 'test' })
   .expect(200)
 
   expect(helpers.Database.Account.find).toHaveBeenCalledTimes(3)

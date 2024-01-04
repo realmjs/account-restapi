@@ -48,11 +48,11 @@ test('Signin with a registered account', async() => {
   helpers.Database.Account.find.mockResolvedValue({
     uid: 'uid',
     email: 'e2e@test.ext',
-    profile: { phone: '098', fullName: 'Awesome' },
+    profile: { phone: '098', fullname: 'Awesome' },
     realms: { test: { roles: ['member'] } },
     credentials: { password: hashPassword('correct', { head: 'head', tail: 'tail' }) },
     salty: { head: 'head', tail: 'tail' },
-    createdAt: 1234567890
+    created_at: 1234567890
   })
 
   // step 1: GET form/signin
@@ -76,8 +76,8 @@ test('Signin with a registered account', async() => {
     expect(res.body).toEqual({
       user: {
         email: 'e2e@test.ext',
-        profile: { phone: '098', fullName: 'Awesome' },
-        createdAt: 1234567890,
+        profile: { phone: '098', fullname: 'Awesome' },
+        created_at: 1234567890,
       },
       token: jwt.sign({uid: 'uid', roles: ['member']}, 'appkey'),
       sid: expect.any(String),
@@ -99,11 +99,11 @@ test('Signin with a registered account but wrong password', async() => {
   helpers.Database.Account.find.mockResolvedValue({
     uid: 'uid',
     email: 'e2e@test.ext',
-    profile: { phone: '098', fullName: 'Awesome' },
+    profile: { phone: '098', fullname: 'Awesome' },
     realms: { test: { roles: ['member'] } },
     credentials: { password: hashPassword('correct', { head: 'head', tail: 'tail' }) },
     salty: { head: 'head', tail: 'tail' },
-    createdAt: 1234567890
+    created_at: 1234567890
   })
 
   // step 1: GET form/signin

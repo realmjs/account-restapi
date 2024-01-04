@@ -100,15 +100,15 @@ test('Signup a new account', async() => {
   // step 3: POST account
   await request(app).post(endpoint.Account.New)
   .set('Accept', 'application/json')
-  .send({ email: email, password: 'secret', profile: { phone: '098', fullName: 'Awesome' }, app: apptest })
+  .send({ email: email, password: 'secret', profile: { phone: '098', fullname: 'Awesome' }, app: apptest })
   .expect(200)
   .expect('set-cookie', new RegExp(`${process.env.COOKIE_SESSION}_test=.+; Path=/; HttpOnly`))
   .then( res =>
     expect(res.body).toEqual({
       user: {
         email: email,
-        profile: { phone: '098', fullName: 'Awesome' },
-        createdAt: expect.any(Number),
+        profile: { phone: '098', fullname: 'Awesome' },
+        created_at: expect.any(String),
       },
       token: expect.any(String),
       sid: expect.any(String),

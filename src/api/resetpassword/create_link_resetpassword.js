@@ -58,7 +58,7 @@ const sendEmail = (helpers) => (req, res, next) => {
   helpers.Database.App.find({id: 'account'})
   .then(account => {
     helpers.hook.sendEmail({
-      to: { address: email, name: res.locals.user.profile.fullName },
+      to: { address: email, name: res.locals.user.profile.fullname },
       template: 'reset_password',
       data: { link: `${account.url}/form/account/newpassword?a=${app}&t=${token}` }
     })

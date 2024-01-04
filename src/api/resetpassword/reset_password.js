@@ -47,7 +47,7 @@ const getUserAccountByUid = (helpers) => (req, res, next) => {
 const changePassword = (helpers) => (req, res, next) => {
   const password = req.body.password
   const salty = res.locals.user.salty
-  helpers.Database.Account.update({ uid: res.locals.uid }, 'credentials.password', hashPassword(password, salty))
+  helpers.Database.Account.Password.update(res.locals.uid, hashPassword(password, salty))
   .then(() => next())
   .catch( err =>
     helpers.alert && alertCrashedEvent(helpers.alert, 'reset_password.js', 'changePassword', err)

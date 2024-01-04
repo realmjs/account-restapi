@@ -17,7 +17,7 @@ const helpers = {
     },
     Account: {
       find: jest.fn(),
-      update: jest.fn()
+      Password: { update: jest.fn() },
     },
   },
   form: jest.fn()
@@ -53,7 +53,7 @@ test('Request change password and update the new one', async() => {
     realms: { test: { roles: ['member'] } },
     credentials: { password: hashPassword('current', salty) },
   })
-  helpers.Database.Account.update.mockResolvedValue()
+  helpers.Database.Account.Password.update.mockResolvedValue()
 
   const token = jwt.sign({ uid: 'uid' }, 'appkey')
 
@@ -74,10 +74,9 @@ test('Request change password and update the new one', async() => {
   .send({ app: 'apptest', password: { current: 'current', new: 'new' }, token: token })
   .expect(200)
 
-  expect(helpers.Database.Account.update).toHaveBeenCalledTimes(1)
-  expect(helpers.Database.Account.update.mock.calls[0]).toEqual([
-    { uid: 'uid' },
-    'credentials.password',
+  expect(helpers.Database.Account.Password.update).toHaveBeenCalledTimes(1)
+  expect(helpers.Database.Account.Password.update.mock.calls[0]).toEqual([
+    'uid',
     hashPassword('new', salty)
   ])
 
@@ -100,7 +99,7 @@ test('Prevent update password if current password is not matched', async() => {
     realms: { test: { roles: ['member'] } },
     credentials: { password: hashPassword('current', salty) },
   })
-  helpers.Database.Account.update.mockResolvedValue()
+  helpers.Database.Account.Password.update.mockResolvedValue()
 
   const token = jwt.sign({ uid: 'uid' }, 'appkey')
 
@@ -121,6 +120,6 @@ test('Prevent update password if current password is not matched', async() => {
   .send({ app: 'apptest', password: { current: 'wrong', new: 'new' }, token: token })
   .expect(403)
 
-  expect(helpers.Database.Account.update).not.toHaveBeenCalled()
+  expect(helpers.Database.Account.Password.update).not.toHaveBeenCalled()
 
 })
