@@ -25,7 +25,10 @@ const helpers = {
     },
     Account: {
       find: jest.fn()
-    }
+    },
+    LoginSession: {
+      find: jest.fn()
+    },
   },
   form: jest.fn().mockReturnValue('mock_html_page')
 }
@@ -130,6 +133,10 @@ test('Verify account and response 404 for invalid user', async () => {
   helpers.Database.App.find.mockResolvedValue({ id: 'app', url: 'url', realm: 'test' })
   helpers.form.mockReturnValue('error_404_html_page')
   helpers.Database.Account.find.mockResolvedValue(undefined)
+  helpers.Database.LoginSession.find.mockResolvedValue({
+    uid: 'uid',
+    sid: 'sid',
+  });
 
   const cookie = createCookie('uid', 'test')
   await request(app).get(`${endpoint}?a=app`)
@@ -168,6 +175,10 @@ test('Reponse signin session for valid request', async () => {
     salty: { head: 'head', tail: 'tail' },
     created_at: 1234567890
   })
+  helpers.Database.LoginSession.find.mockResolvedValue({
+    uid: 'uid',
+    sid: 'sid',
+  });
 
   const cookie = createCookie('uid', 'test')
   await request(app).get(`${endpoint}?a=apptest`)
@@ -185,9 +196,14 @@ test('Reponse signin session for valid request', async () => {
       profile: { phone: '098', fullname: 'Awesome' },
       created_at: 1234567890,
     },
-    token: jwt.sign({uid: 'uid', roles: ['member']}, 'appkey'),
-    sid: JSON.parse(cookie[1]).sessionId,
+    token: jwt.sign({uid: 'uid', sid: JSON.parse(cookie[1]).sessionId}, 'appkey'),
     app: { id: 'apptest', url: 'url' }
+  }])
+
+  expect(helpers.Database.LoginSession.find).toHaveBeenCalledTimes(1)
+  expect(helpers.Database.LoginSession.find.mock.calls[0]).toEqual([{
+    uid: 'uid',
+    sid:  JSON.parse(cookie[1]).sessionId,
   }])
 
   helpers.form.mockClear()

@@ -42,6 +42,21 @@ const getSessionFromCookie = (helpers) => (req, res, next) => {
 
 }
 
+const validateWithLoginSession = (helpers) => async (req, res, next) => {
+  try {
+    const session = await helpers.Database.LoginSession.find({ uid: res.locals.uid, sid: res.locals.sid });
+    if (session) {
+      next();
+    } else {
+      res.writeHead( 404, { 'Content-Type': 'text/html' } )
+      res.end(helpers.form('sso', { code: 404, reason: 'No Session', app: {id: res.locals.app.id, url: res.locals.app.url}, }))
+    }
+  } catch (err) {
+    res.writeHead( 404, { 'Content-Type': 'text/html' } )
+    res.end(helpers.form('sso', { code: 404, reason: 'No Session', app: {id: res.locals.app.id, url: res.locals.app.url}, }))
+  }
+}
+
 const getUserAccountByUID = (helpers) => (req, res, next) => {
   helpers.Database.Account.find({ uid: res.locals.uid })
   .then( user => {
@@ -62,8 +77,7 @@ const getUserAccountByUID = (helpers) => (req, res, next) => {
     res.writeHead( 200, { 'Content-Type': 'text/html' } )
     res.end(helpers.form('sso', {
       user: maskUser(res.locals.user),
-      token: createSessionToken(res.locals.user, res.locals.app),
-      sid: res.locals.sid,
+      token: createSessionToken(res.locals.user.uid, res.locals.sid, res.locals.app.key),
       app: {id: res.locals.app.id, url: res.locals.app.url},
      }))
  }
@@ -72,6 +86,7 @@ module.exports = [
   validateRequest,
   validateAppThenStoreToLocals,
   getSessionFromCookie,
+  validateWithLoginSession,
   getUserAccountByUID,
   final
 ]

@@ -8,8 +8,6 @@ import endpoint from '@realmjs/account-endpoint'
 import { app } from '../../testutils/fakeserver'
 import api from '../../../src/api/index'
 
-import { hashPassword } from '../../../src/lib/util'
-
 const helpers = {
   Database: {
     App: {
@@ -18,6 +16,9 @@ const helpers = {
     Account: {
       find: jest.fn()
     },
+    LoginSession: {
+      find: jest.fn()
+    }
   },
   form: jest.fn()
 }
@@ -55,6 +56,10 @@ test('SSO a signed in session', async() => {
     salty: { head: 'head', tail: 'tail' },
     created_at: 1234567890
   })
+  helpers.Database.LoginSession.find.mockResolvedValue({
+    uid: 'uid',
+    sid: 'sid',
+  });
 
   const cookie = createCookie('uid', 'test')
   await request(app).get(`${endpoint.SSO}?a=apptest`)
@@ -72,8 +77,7 @@ test('SSO a signed in session', async() => {
       profile: { phone: '098', fullname: 'Awesome' },
       created_at: 1234567890,
     },
-    token: jwt.sign({uid: 'uid', roles: ['member']}, 'appkey'),
-    sid: JSON.parse(cookie[1]).sessionId,
+    token: jwt.sign({uid: 'uid', sid: JSON.parse(cookie[1]).sessionId}, 'appkey'),
     app: {id: 'apptest', url: 'url'}
   }])
 
