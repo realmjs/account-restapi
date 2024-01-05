@@ -21,7 +21,10 @@ const helpers = {
     Account: {
       find: jest.fn(),
       insert: jest.fn(),
-    }
+    },
+    LoginSession: {
+      insert: jest.fn()
+    },
   },
   hook: {
     sendEmail: jest.fn().mockResolvedValue(),
@@ -109,7 +112,16 @@ test('Create new account, call helpers.hook to send email and callback', async (
 
   helpers.Database.App.find.mockResolvedValueOnce({ realm: 'test', key: 'appkey' })
   helpers.Database.Account.find.mockResolvedValue(undefined)
-  helpers.Database.Account.insert.mockResolvedValue(undefined)
+  helpers.Database.Account.insert.mockResolvedValue({
+    uid: 'auto-generated-uid',
+    email: 'email@test.ext',
+    credentials: { password: 'hashed' },
+    salty: { head: 'xxx', tail: 'xxx' },
+    profile: { phone: '098', fullname: 'Awesome' },
+    created_at: new Date(),
+    realms: { test: { roles: ['member'] } }
+  })
+  helpers.Database.LoginSession.insert.mockResolvedValue()
 
   await request(app).post(endpoint)
   .set('Accept', 'application/json')
@@ -124,13 +136,11 @@ test('Create new account, call helpers.hook to send email and callback', async (
         created_at: expect.any(String),
       },
       token: expect.any(String),
-      sid: expect.any(String),
     })
   )
 
   expect(helpers.Database.Account.insert).toHaveBeenCalledTimes(1)
   expect(helpers.Database.Account.insert.mock.calls[0]).toEqual([{
-    uid: expect.any(String),
     email: 'email@test.ext',
     credentials: { password: expect.any(String) },
     salty: { head: expect.any(String), tail: expect.any(String) },
@@ -147,39 +157,20 @@ test('Create new account, call helpers.hook to send email and callback', async (
 
   expect(helpers.hook.onCreatedUser).toHaveBeenCalledTimes(1)
   expect(helpers.hook.onCreatedUser.mock.calls[0]).toEqual([{
-    uid: expect.any(String),
+    uid: 'auto-generated-uid',
     email: 'email@test.ext',
     profile: { phone: '098', fullname: 'Awesome' },
     created_at: expect.any(Date),
     realms: { test: { roles: ['member'] } }
   }])
 
-  helpers.Database.Account.find.mockClear()
-  helpers.Database.Account.insert.mockClear()
-  helpers.hook.sendEmail.mockClear()
-  helpers.hook.onCreatedUser.mockClear()
-  helpers.Database.App.find.mockClear()
-
-})
-
-
-test('Guarantee no dupplicate uid when creating account', async () => {
-
-  helpers.Database.App.find.mockResolvedValueOnce({ realm: 'test', key: 'appkey' })
-  helpers.Database.Account.find
-  .mockResolvedValueOnce(undefined)  // find email
-  .mockResolvedValueOnce({})         // find uid
-  .mockResolvedValueOnce(undefined)  // second try with another uid
-  helpers.Database.Account.insert.mockResolvedValue(undefined)
-
-  await request(app).post(endpoint)
-  .set('Accept', 'application/json')
-  .send({ email: 'email@test.ext', password: 'secret', profile: { phone: '098', fullname: 'Awesome' }, app: 'test' })
-  .expect(200)
-
-  expect(helpers.Database.Account.find).toHaveBeenCalledTimes(3)
-  expect(helpers.Database.Account.find.mock.calls[1]).toEqual([{ uid: expect.any(String) }])
-  expect(helpers.Database.Account.find.mock.calls[2]).toEqual([{ uid: expect.any(String) }])
+  expect(helpers.Database.LoginSession.insert).toHaveBeenCalledTimes(1)
+  expect(helpers.Database.LoginSession.insert.mock.calls[0]).toEqual([{
+    uid: 'auto-generated-uid',
+    sid:  expect.any(String),
+    skey: expect.any(String),
+    created_at: expect.any(Date)
+  }])
 
   helpers.Database.Account.find.mockClear()
   helpers.Database.Account.insert.mockClear()

@@ -17,6 +17,9 @@ const helpers = {
       find: jest.fn(),
       insert: jest.fn()
     },
+    LoginSession: {
+      insert: jest.fn()
+    },
   },
   hook: {
     sendEmail: jest.fn(),
@@ -48,7 +51,15 @@ test('Signup a new account', async() => {
   )
   helpers.form.mockReturnValue('mock_html_page')
   helpers.Database.Account.find.mockResolvedValue(undefined)
-  helpers.Database.Account.insert.mockResolvedValue(undefined)
+  helpers.Database.Account.insert.mockResolvedValue({
+    uid: 'auto-generated-uid',
+    email: 'e2e@test.ext',
+    credentials: { password: 'hashed' },
+    salty: { head: 'xxx', tail: 'xxx' },
+    profile: { phone: '098', fullname: 'Awesome' },
+    created_at: new Date(),
+    realms: { test: { roles: ['member'] } }
+  })
   helpers.hook.sendEmail.mockResolvedValue(undefined)
   helpers.hook.onCreatedUser.mockResolvedValue(undefined)
 
@@ -111,7 +122,6 @@ test('Signup a new account', async() => {
         created_at: expect.any(String),
       },
       token: expect.any(String),
-      sid: expect.any(String),
     })
   )
 

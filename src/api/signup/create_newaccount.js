@@ -1,6 +1,5 @@
 'use strict'
 
-const uuid = require('uuid/v1');
 const { isEmail, alertCrashedEvent, hashPassword, ustring, createCookie, maskUser, createSessionToken } = require('../../lib/util')
 const middlewareFactory = require('../../lib/middleware_factory')
 
@@ -37,41 +36,23 @@ const checkEmailExistence = (helpers) => (req, res, next) => {
   )
 }
 
-const createUID = (helpers) => (req, res, next) => {
-  generateUID()
-  function generateUID() {
-    const uid = uuid()
-    helpers.Database.Account.find({ uid })
-    .then(user => {
-      if (user) {
-        generateUID()
-      } else {
-        res.locals.uid = uid
-        next()
-      }
-    })
-    .catch( err =>
-      helpers.alert && alertCrashedEvent(helpers.alert, 'create_newaccount.js', 'createUID', err)
-    )
-  }
-}
-
 const createUser = (helpers) => (req, res, next) => {
   const profile = { ...req.body.profile };
   const salty = { head: ustring(8), tail: ustring(8) };
   const user = {
     email: req.body.email.toLowerCase().trim(),
-    uid: res.locals.uid,
     salty,
     credentials: { password: hashPassword(req.body.password, salty) },
     profile,
     created_at: new Date(),
     realms: { [res.locals.app.realm] : { roles: ['member'] } },
   }
-  res.locals.user = user
 
   helpers.Database.Account.insert(user)
-  .then(user => next())
+  .then(user => {
+    res.locals.user = user
+    next()
+  })
   .catch( err =>
     helpers.alert && alertCrashedEvent(helpers.alert, 'create_newaccount.js', 'createUser', err)
   )
@@ -106,20 +87,36 @@ const onCreatedUserCallback = (helpers) => (req, res, next) => {
   .then(() => next())
 }
 
+
+const writeToLoginSessionTable = (helpers) => async (req, res, next) => {
+  try {
+    const session = {
+      uid: res.locals.user.uid,
+      sid: res.locals.sessionId,
+      skey: ustring(16),
+      user_agent: req.useragent,
+      created_at: new Date()
+    };
+    await helpers.Database.LoginSession.insert(session);
+    next();
+  } catch( err ) {
+    helpers.alert && alertCrashedEvent(helpers.alert, 'create_newaccount.js', 'writeToLoginSessionTable', err)
+  }
+}
+
 const final = () => (req, res) => res.status(200).json({
   user: maskUser(res.locals.user),
-  token: createSessionToken(res.locals.user, res.locals.app),
-  sid: res.locals.sessionId
+  token: createSessionToken(res.locals.user.uid, res.locals.sessionId, res.locals.app.key),
 })
 
 module.exports = [
   validateRequest,
   validateAppThenStoreToLocals,
   checkEmailExistence,
-  createUID,
   createUser,
   setCookie,
   sendEmail,
   onCreatedUserCallback,
+  writeToLoginSessionTable,
   final
 ]
