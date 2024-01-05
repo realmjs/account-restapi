@@ -26,6 +26,9 @@ const helpers = {
     Account: {
       find: jest.fn()
     },
+    LoginSession: {
+      remove: jest.fn()
+    }
   },
 }
 
@@ -134,6 +137,7 @@ test('Verify cookie session id and response 400', async () => {
 test('Clear cookie for valid request', async () => {
 
   helpers.Database.App.find.mockResolvedValue({ realm: 'test', key: 'key' })
+  helpers.Database.LoginSession.remove.mockResolvedValue()
 
   const cookie = createCookie('uid', 'test')
   await request(app).delete(endpoint)
@@ -142,5 +146,11 @@ test('Clear cookie for valid request', async () => {
   .send({ app: 'app', sid: JSON.parse(cookie[1]).sessionId })
   .expect(200)
   .expect('set-cookie', new RegExp(`${process.env.COOKIE_SESSION}_test=; Path=/`));
+
+  expect(helpers.Database.LoginSession.remove).toHaveBeenCalledTimes(1);
+  expect(helpers.Database.LoginSession.remove.mock.calls[0]).toEqual([{
+    uid: 'uid',
+    sid: JSON.parse(cookie[1]).sessionId
+  }]);
 
 })

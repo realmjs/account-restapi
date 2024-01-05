@@ -25,6 +25,7 @@ const getSessionFromCookie = (helpers) => (req, res, next) => {
   decodeCookie(cookies, app)
   .then( session => {
     if (session && session.sessionId && session.sessionId === req.body.sid) {
+      res.locals.session = session;
       next();
     } else {
       res.status(400).send('Bad Request')
@@ -36,6 +37,16 @@ const getSessionFromCookie = (helpers) => (req, res, next) => {
 
 }
 
+const removeLoginSession = (helpers) => async (req, res, next) => {
+  try {
+    const { uid, sessionId } = res.locals.session;
+    await helpers.Database.LoginSession.remove({ uid, sid: sessionId });
+    next()
+  } catch (err) {
+    helpers.alert && alertCrashedEvent(helpers.alert, 'delete_signin_session.js', 'removeLoginSession', err)
+  }
+}
+
 const final = () => (req, res) => res.status(200).send()
 
 module.exports = [
@@ -43,5 +54,6 @@ module.exports = [
   validateAppThenStoreToLocals,
   getSessionFromCookie,
   cleanCookieMiddleware,
+  removeLoginSession,
   final
 ]

@@ -3,6 +3,7 @@
 import 'core-js/stable'
 import 'regenerator-runtime/runtime'
 
+const jwt = require('jsonwebtoken')
 import endpoint from '@realmjs/account-endpoint'
 
 import { app } from '../../testutils/fakeserver'
@@ -17,6 +18,9 @@ const helpers = {
       find: jest.fn(),
       insert: jest.fn()
     },
+    LoginSession: {
+      remove: jest.fn()
+    }
   },
   hook: {
     sendEmail: jest.fn(),
@@ -48,12 +52,14 @@ test('Signout a session', async() => {
                 Promise.resolve(undefined)
   )
   helpers.form.mockReturnValueOnce('signout_200_html_page')
+  helpers.Database.LoginSession.remove.mockResolvedValue()
 
   const cookie = createCookie('uid', 'test')
   const sid = JSON.parse(cookie[1]).sessionId
 
   // step 1: GET form/signout
-  await request(app).get(`${endpoint.Form.Signout}?a=apptest&s=${sid}`)
+  const token = jwt.sign({uid: 'uid', sid: sid}, 'appkey')
+  await request(app).get(`${endpoint.Form.Signout}?a=apptest&t=${token}`)
   .expect(200)
   .expect('Content-Type', /text\/html/)
   .then(res => {
