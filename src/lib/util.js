@@ -30,12 +30,9 @@ function authenticateRequestMiddleware() {
   }
 }
 
-function createSessionToken(user, app) {
-  const data = { uid: user.uid };
-  if (user.realms[app.realm] && user.realms[app.realm].roles) {
-    data.roles = user.realms[app.realm].roles;
-  }
-  return jwt.sign(data, app.key);
+function createSessionToken(uid, sid, key) {
+  const data = { uid, sid };
+  return jwt.sign(data, key);
 }
 
 function createCookie(uid, realm) {

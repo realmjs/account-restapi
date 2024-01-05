@@ -18,6 +18,10 @@ const helpers = {
     Account: {
       find: jest.fn()
     },
+    LoginSession: {
+      remove: jest.fn(),
+      insert: jest.fn()
+    }
   },
   form: jest.fn()
 }
@@ -54,6 +58,8 @@ test('Signin with a registered account', async() => {
     salty: { head: 'head', tail: 'tail' },
     created_at: 1234567890
   })
+  helpers.Database.LoginSession.remove.mockResolvedValue()
+  helpers.Database.LoginSession.insert.mockResolvedValue()
 
   // step 1: GET form/signin
   await request(app).get(`${endpoint.Form.Signin}?a=apptest`)
@@ -79,8 +85,7 @@ test('Signin with a registered account', async() => {
         profile: { phone: '098', fullname: 'Awesome' },
         created_at: 1234567890,
       },
-      token: jwt.sign({uid: 'uid', roles: ['member']}, 'appkey'),
-      sid: expect.any(String),
+      token: jwt.sign({uid: 'uid', sid: helpers.Database.LoginSession.insert.mock.calls[0][0].sid}, 'appkey'),
     })
   )
 
@@ -105,6 +110,8 @@ test('Signin with a registered account but wrong password', async() => {
     salty: { head: 'head', tail: 'tail' },
     created_at: 1234567890
   })
+  helpers.Database.LoginSession.remove.mockResolvedValue()
+  helpers.Database.LoginSession.insert.mockResolvedValue()
 
   // step 1: GET form/signin
   await request(app).get(`${endpoint.Form.Signin}?a=apptest`)
@@ -141,6 +148,8 @@ test('Signin with a not registered account', async() => {
   )
   helpers.form.mockReturnValue('mock_html_page')
   helpers.Database.Account.find.mockResolvedValue(undefined)
+  helpers.Database.LoginSession.remove.mockResolvedValue()
+  helpers.Database.LoginSession.insert.mockResolvedValue()
 
   // step 1: GET form/signin
   await request(app).get(`${endpoint.Form.Signin}?a=apptest`)

@@ -25,6 +25,10 @@ const helpers = {
     Account: {
       find: jest.fn()
     },
+    LoginSession: {
+      remove: jest.fn(),
+      insert: jest.fn()
+    },
   },
 }
 
@@ -156,6 +160,8 @@ test('Authenticate with response code 201', async () => {
     salty: { head: 'head', tail: 'tail' },
     created_at: 1234567890
   })
+  helpers.Database.LoginSession.remove.mockResolvedValue()
+  helpers.Database.LoginSession.insert.mockResolvedValue()
 
   await request(app).post(endpoint)
   .set('Accept', 'application/json')
@@ -169,12 +175,23 @@ test('Authenticate with response code 201', async () => {
         profile: { phone: '098', fullname: 'Awesome' },
         created_at: 1234567890,
       },
-      token: jwt.sign({uid: 'uid', roles: ['member']}, 'key'),
-      sid: expect.any(String),
+      token: jwt.sign({uid: 'uid', sid: helpers.Database.LoginSession.insert.mock.calls[0][0].sid}, 'key'),
     })
   )
 
+  expect(helpers.Database.LoginSession.remove).toHaveBeenCalledTimes(1)
+  expect(helpers.Database.LoginSession.remove.mock.calls[0]).toEqual([{ uid: 'uid' }])
+  expect(helpers.Database.LoginSession.insert).toHaveBeenCalledTimes(1)
+  expect(helpers.Database.LoginSession.insert.mock.calls[0]).toEqual([{
+    uid: 'uid',
+    sid:  expect.any(String),
+    skey: expect.any(String),
+    created_at: expect.any(Date)
+  }])
+
   helpers.Database.App.find.mockClear()
   helpers.Database.Account.find.mockClear()
+  helpers.Database.LoginSession.remove.mockClear()
+  helpers.Database.LoginSession.insert.mockClear()
 
 })
