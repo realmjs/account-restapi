@@ -6,6 +6,7 @@ const Builder = require('express-api-builder')
 const api = Builder()
 
 api.use(require('cookie-parser')())
+api.use(require('express-useragent').express())
 
 /* API Sign up
 step 1: GET form/signup/email
