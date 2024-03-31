@@ -47,7 +47,6 @@ const createUser = (helpers) => (req, res, next) => {
     created_at: new Date(),
     realms: { [res.locals.app.realm] : { roles: ['member'] } },
   }
-
   helpers.Database.Account.insert(user)
   .then(user => {
     res.locals.user = user
