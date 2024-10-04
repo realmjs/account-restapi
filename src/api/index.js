@@ -101,4 +101,12 @@ api.add(endpoint.Form.QueryAccount, {
   get: require('./account/render_form_queryaccount')
 })
 
+
+/* API Update Profile
+step 1: PUT me/profile
+*/
+api.add(endpoint.User.Profile, {
+  put: require('./profile/update_profile')
+});
+
 module.exports = api
