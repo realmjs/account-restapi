@@ -1,5 +1,7 @@
 "use strict"
 
+const alertCrashedEvent = require('./util')
+
 class MiddlewareFactory {
 
   middlewares = {}
