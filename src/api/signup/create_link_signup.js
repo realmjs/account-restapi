@@ -52,10 +52,12 @@ const sendEmail = (helpers) => (req, res, next) => {
       data: { link: `${account.url}/form/account/new?e=${email}&a=${app}&t=${token}` }
     })
     .then( () => next() )
+    .catch( (err) => res.status(500).send('Failed to send signup link. Please try again later'))
   })
-  .catch( err =>
+  .catch( err => {
     helpers.alert && alertCrashedEvent(helpers.alert, 'create_link_signup.js', 'sendEmail', err)
-  )
+    res.status(404).send('Unknown app')
+  })
 }
 
 const final = () => (req, res) => res.status(200).send('Register link is sent')
