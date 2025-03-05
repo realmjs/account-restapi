@@ -1,7 +1,7 @@
 "use strict"
 
 const middlewareFactory = require('../../lib/middleware_factory')
-const { decodeCookie, maskUser, createSessionToken } = require('../../lib/util')
+const { decodeCookie, maskUser, createSessionToken, alertCrashedEvent } = require('../../lib/util')
 
 const validateRequest = (helpers) => (req, res, next) => {
   if (req.query.a) {

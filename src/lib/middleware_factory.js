@@ -1,6 +1,6 @@
 "use strict"
 
-const alertCrashedEvent = require('./util')
+const { alertCrashedEvent } = require('./util')
 
 class MiddlewareFactory {
 
@@ -41,9 +41,10 @@ function validateAppThenStoreToLocals(checkInRequestType = 'byRequestQuery', fil
           res.end(helpers.form('error', { code: 403, reason: 'Permission Denied' }))
         }
       })
-      .catch( err =>
-        helpers.alert && alertCrashedEvent(helpers.alert, filename, 'validateApp', err)
-      )
+      .catch( err => {
+        helpers.alert && helpers.alert(`Error occurs when calling function from ${filename}`);
+        helpers.alert && alertCrashedEvent(helpers.alert, module.filename, 'validateAppInRequestQueryMiddleware', err);
+      })
     }
   }
 
@@ -58,9 +59,10 @@ function validateAppThenStoreToLocals(checkInRequestType = 'byRequestQuery', fil
           res.status(403).send('Permission Denied')
         }
       })
-      .catch( err =>
-        helpers.alert && alertCrashedEvent(helpers.alert, filename, 'validateApp', err)
-      )
+      .catch( err => {
+        helpers.alert && helpers.alert(`Error occurs when calling function from ${filename}`);
+        helpers.alert && alertCrashedEvent(helpers.alert, module.filename, 'validateAppInRequestBodyByMiddleware', err)
+      })
     }
   }
 
