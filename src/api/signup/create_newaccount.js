@@ -71,6 +71,10 @@ const sendEmail = (helpers) => (req, res, next) => {
     template: 'welcome_new_user'
   })
   .then(() => next())
+  .catch((err) => {
+    helpers.alert && alertCrashedEvent(helpers.alert, 'create_newaccount.js', 'sendEmail', err);
+    next();
+  })
 }
 
 
