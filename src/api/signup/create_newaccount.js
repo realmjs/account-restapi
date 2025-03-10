@@ -68,7 +68,7 @@ const sendEmail = (helpers) => (req, res, next) => {
   const user = res.locals.user
   helpers.hook.sendEmail({
     to: { address: user.email, name: user.profile.fullname },
-    template: 'welcome_new_user'
+    template: 'WelcomeNewUserEmail',
   })
   .then(() => next())
   .catch((err) => {
